@@ -1,8 +1,8 @@
+
 import React from 'react';
 import { Layout as LogoIcon } from 'lucide-react';
-import CVCustomizer, { CVCustomizerProps } from './CVCustomizer';
-
-const SidebarHeader: React.FC<CVCustomizerProps> = (props) => {
+import CVCustomizer from './CVCustomizer';
+const SidebarHeader: React.FC = () => {
   return (
     <header className="sidebar-config-header">
       <div className="main-app-header__branding">
@@ -14,7 +14,7 @@ const SidebarHeader: React.FC<CVCustomizerProps> = (props) => {
         </h1>
       </div>
 
-      <CVCustomizer {...props} />
+      <CVCustomizer />
     </header>
   );
 };

@@ -1,4 +1,3 @@
-import { BaseFormProps } from './types';
 import { LOCAL_STORAGE_KEY } from '../../constants';
 import { ResumeField } from '../../types';
 
@@ -77,7 +76,10 @@ const FORM_STEPS = [
   },
 ];
 
-const ResumeForm: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
+import { useResumeStore } from '../../store/useResumeStore';
+
+const ResumeForm: React.FC = () => {
+  const { resumeData, setResumeData } = useResumeStore();
   const navigate = useNavigate();
   const location = useLocation();
 

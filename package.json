@@ -16,7 +16,8 @@
     "react-scripts": "5.0.1",
     "react-to-print": "^3.2.0",
     "sass": "^1.97.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.10"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,26 +1,20 @@
-import { FontFamily, LayoutType, ThemeType } from '../../types';
+import { FontFamily } from '../../types';
 
 import React from 'react';
 import { Check, Type, Layout as LayoutIcon, Palette } from 'lucide-react';
 import themes, { fontFamilies, layouts } from '../../constants/themes';
 
-export interface CVCustomizerProps {
-  currentLayout: LayoutType;
-  currentTheme: ThemeType;
-  currentFontFamily: FontFamily;
-  setLayout: (layout: LayoutType) => void;
-  setTheme: (theme: ThemeType) => void;
-  onFontFamilyChange: (fontFamily: FontFamily) => void;
-}
+import { useResumeStore } from '../../store/useResumeStore';
 
-const CVCustomizer: React.FC<CVCustomizerProps> = ({
-  currentLayout,
-  currentTheme,
-  currentFontFamily,
-  setLayout,
-  setTheme,
-  onFontFamilyChange,
-}) => {
+const CVCustomizer: React.FC = () => {
+  const {
+    layout: currentLayout,
+    theme: currentTheme,
+    fontFamily: currentFontFamily,
+    setLayout,
+    setTheme,
+    setFontFamily: onFontFamilyChange,
+  } = useResumeStore();
   return (
     <div className="cv-customizer compact">
       {/* 1. Layout Row */}

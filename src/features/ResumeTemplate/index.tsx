@@ -1,28 +1,20 @@
-import React from 'react';
 import {
-  LayoutType,
   ProjectType,
-  ResumeData,
   ResumeField,
-  ThemeType,
 } from '../../types';
 import ResumeHeader from './layout/ResumeHeader';
 import { LAYOUT_CONFIG } from './layoutConfig';
 import TimelineSection from './layout/TimeLine';
 
-interface Props {
-  data: ResumeData;
-  layout: LayoutType;
-  theme: ThemeType;
-  fontFamily: string;
-}
+import { useResumeStore } from '../../store/useResumeStore';
 
-const ResumeTemplate: React.FC<Props> = ({
-  data,
-  layout,
-  theme,
-  fontFamily,
-}) => {
+const ResumeTemplate: React.FC = () => {
+  const {
+    resumeData: data,
+    layout,
+    theme,
+    fontFamily,
+  } = useResumeStore();
   const config = LAYOUT_CONFIG[layout];
 
   const renderSection = (field: ResumeField) => {
