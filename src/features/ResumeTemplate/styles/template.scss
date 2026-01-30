@@ -1,0 +1,802 @@
+/* =========================================
+   4. RESUME TEMPLATE
+   ========================================= */
+
+$bullet-size: 5px;
+$section-title-border: 2px;
+$modern-accent-border: 4px;
+
+/* --- Outer Wrapper & Page --- */
+.template-resume-outer-wrapper {
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-bg-preview);
+  font-family: var(--font-family-base);
+
+  @media screen and (max-width: 768px) {
+    padding: var(--zero);
+    background-color: var(--color-bg-white);
+  }
+}
+
+.template-resume-page {
+  width: var(--a4-width);
+  min-height: var(--a4-height);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-white);
+  box-shadow: var(--shadow-preview);
+  overflow: hidden;
+
+  @media screen and (max-width: 768px) {
+    width: var(--percent-full);
+    box-shadow: var(--none);
+  }
+}
+
+/* --- Header --- */
+.template-resume-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: var(--spacing-3xl) var(--spacing-page-padding) var(--spacing-xl)
+    var(--spacing-page-padding);
+  border-top: var(--border-header) solid var(--color-primary);
+  border-bottom: var(--border-thick) solid var(--color-primary);
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+  }
+
+  .template-header-left {
+    text-align: left;
+  }
+
+  .template-header-name {
+    margin: var(--zero);
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-heavy);
+    color: var(--color-text-main);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-neg);
+    line-height: var(--line-height-base);
+  }
+
+  .template-header-position {
+    margin-top: 4px;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .template-header-right {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: right;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  .template-contact-item {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+
+    span {
+      font-weight: var(--font-weight-medium);
+    }
+
+    &.template-contact-item {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+/* --- Body & Columns --- */
+.template-resume-body {
+  display: flex;
+  flex: var(--one);
+}
+
+.template-left-column {
+  width: var(--col-left-width);
+  background-color: var(--color-bg-resume-sidebar);
+  padding: var(--spacing-section) var(--spacing-page-padding);
+  box-sizing: border-box;
+}
+
+.template-right-column {
+  width: var(--col-right-width);
+  padding: var(--spacing-3xl) var(--spacing-page-padding);
+  box-sizing: border-box;
+}
+
+/* --- Typography & Sections --- */
+.template-main-section {
+  margin-bottom: var(--spacing-section);
+}
+.template-sidebar-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.template-section-title {
+  margin: var(--zero) var(--zero) var(--spacing-md);
+  padding-bottom: var(--spacing-xs);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: $section-title-border solid var(--color-border-gray);
+}
+
+/* --- Mixins --- */
+@mixin tech-pill-style {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 8px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  color: var(--color-primary);
+  background-color: var(--color-border-light);
+  border-radius: 3px;
+}
+
+/* --- Skills --- */
+.template-skill-item,
+.template-skills-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.template-bullet-dot,
+.template-skills-bullet {
+  width: $bullet-size;
+  height: $bullet-size;
+  flex-shrink: 0;
+  margin-top: 5px;
+  background-color: var(--color-primary);
+  border-radius: var(--percent-half);
+}
+
+.template-skill-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-main);
+  line-height: 1.4;
+}
+
+.template-skills-text {
+  @include tech-pill-style;
+}
+
+.template-skills-container {
+  margin-bottom: var(--spacing-lg);
+
+  .template-skills-group {
+    margin-bottom: var(--spacing-sm);
+    &:last-child {
+      margin-bottom: var(--zero);
+    }
+  }
+
+  .template-skills-category-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* --- Credentials (Education & Certifications) --- */
+.template-credential-item {
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .template-credential-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+    width: 100%;
+  }
+
+  .template-credential-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-main);
+    line-height: 1.2;
+    padding-right: 10px;
+  }
+
+  .template-credential-meta-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .template-credential-score,
+  .template-credential-year,
+  .template-credential-date {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    line-height: 1.2;
+  }
+
+  .template-credential-subtitle {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-main);
+    line-height: 1.4;
+  }
+
+  .template-credential-link {
+    font-size: var(--font-size-xs);
+    color: var(--color-link);
+    text-decoration: none;
+    margin-left: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* --- Content Blocks --- */
+.template-about-text {
+  max-width: 95%;
+  margin-bottom: var(--spacing-section);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-text);
+  color: var(--color-text-main);
+  text-align: left;
+}
+
+.template-impact-list {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-md);
+  list-style-type: square;
+}
+
+.template-impact-item {
+  margin-bottom: 2px;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-impact);
+  font-weight: var(--font-weight-medium);
+
+  strong {
+    color: var(--color-primary);
+  }
+}
+
+/* --- Timeline --- */
+.template-timeline-section {
+  margin: var(--spacing-section) var(--zero);
+
+  .template-timeline-track {
+    position: relative;
+    padding-left: var(--timeline-offset-left);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: var(--zero);
+      top: calc(var(--timeline-offset-left) * 1.15);
+      bottom: var(--zero);
+      width: var(--timeline-line-width);
+      background-color: var(--color-border-gray);
+    }
+  }
+
+  .template-timeline-item {
+    position: relative;
+    margin-bottom: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+  }
+
+  .template-timeline-marker {
+    position: absolute;
+    top: var(--spacing-3xl);
+    left: calc(var(--timeline-offset-left) * -1.15);
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    background-color: var(--color-bg-white);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--percent-half);
+  }
+}
+
+.template-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: var(--zero);
+
+  .template-item-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-main);
+  }
+
+  .template-item-date {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+}
+
+.template-item-subtitle {
+  margin: var(--zero) var(--zero) 4px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-link);
+}
+
+.template-item-desc {
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-light);
+  white-space: pre-wrap;
+}
+
+/* --- Tech Chips & Links --- */
+.template-tech-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+
+  .template-tech-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-main);
+  }
+
+  .template-item-tech {
+    @include tech-pill-style;
+  }
+}
+
+.template-project-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-link);
+  text-decoration: var(--none);
+}
+
+/* =========================================
+   LAYOUT VARIANTS
+   ========================================= */
+
+/* --- Classic --- */
+[data-layout='classic'] {
+  .template-resume-header {
+    flex-direction: row;
+    align-items: flex-end;
+    text-align: left;
+  }
+
+  .template-resume-body {
+    flex-direction: row;
+  }
+
+  .template-left-column {
+    width: var(--col-left-width);
+    background-color: var(--color-bg-resume-sidebar);
+    border-right: 1px solid var(--color-border-gray);
+  }
+
+  .template-right-column {
+    width: var(--col-right-width);
+  }
+
+  .template-contact-item {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+}
+
+/* --- Modern --- */
+[data-layout='modern'] {
+  .template-resume-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: var(--spacing-xl);
+    border-bottom: $modern-accent-border solid var(--color-primary);
+  }
+
+  .template-header-left {
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .template-header-right {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .template-resume-body {
+    flex-direction: column;
+  }
+
+  .template-left-column {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-page-padding);
+    background-color: transparent;
+    border-bottom: none;
+  }
+
+  .template-right-column {
+    width: 100%;
+    padding: var(--spacing-page-padding);
+    padding-top: var(--zero);
+  }
+
+  .template-section-title,
+  .template-skills-category-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: var(--zero);
+    padding-left: 10px;
+    border-bottom: none;
+    border-left: $modern-accent-border solid var(--color-primary);
+    line-height: 1;
+  }
+
+  .template-skills-item-container {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--spacing-sm);
+  }
+
+  .template-skills-bullet {
+    visibility: hidden;
+  }
+}
+
+/* --- Minimalist --- */
+[data-layout='minimalist'] {
+  font-family: 'Georgia', 'Times New Roman', serif;
+
+  .template-resume-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: var(--spacing-md);
+    border-top: none;
+    border-bottom: 1px solid var(--color-border-gray);
+  }
+
+  .template-header-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-sm);
+  }
+
+  .template-resume-body {
+    flex-direction: column;
+  }
+
+  .template-left-column,
+  .template-right-column {
+    width: 100%;
+    padding: var(--zero) var(--spacing-page-padding);
+    background-color: transparent;
+    border: none;
+  }
+
+  .template-section-title {
+    margin-top: var(--spacing-xl);
+    text-align: center;
+    border-bottom: 1px solid var(--color-text-main);
+    color: var(--color-text-main);
+    letter-spacing: 1px;
+  }
+
+  .template-bullet-dot,
+  .template-skills-bullet {
+    background-color: var(--color-text-main);
+  }
+
+  .template-skills-item-container {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--spacing-sm);
+  }
+
+  .template-skills-bullet {
+    visibility: hidden;
+  }
+}
+
+/* --- Executive --- */
+[data-layout='executive'] {
+  .template-resume-header {
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 4px solid var(--color-text-main);
+  }
+
+  .template-header-name {
+    color: var(--color-text-main);
+  }
+  .template-header-position {
+    color: var(--color-text-light);
+  }
+
+  .template-resume-body {
+    flex-direction: row;
+  }
+
+  .template-left-column {
+    width: 65%;
+    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-xl)
+      var(--spacing-page-padding);
+    background-color: var(--color-bg-white);
+    border-right: none;
+  }
+
+  .template-right-column {
+    width: 35%;
+    padding: var(--spacing-xl) var(--spacing-page-padding);
+    background-color: var(--color-bg-resume-sidebar);
+    border-left: 1px solid var(--color-border-gray);
+  }
+
+  .template-section-title {
+    color: var(--color-text-main);
+    border-bottom: 2px solid var(--color-primary);
+  }
+
+  .template-contact-item {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+}
+
+/* --- Creative --- */
+[data-layout='creative'] {
+  /* --- Header --- */
+  .template-resume-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-page-padding) var(--spacing-page-padding)
+      var(--spacing-xl) var(--spacing-page-padding);
+    border-top: none;
+    border-bottom: 1px solid var(--color-border-gray);
+    background-color: var(--color-bg-white);
+  }
+
+  .template-header-left {
+    text-align: left;
+    width: 100%;
+  }
+
+  .template-header-name {
+    font-size: var(--font-size-3xl);
+    line-height: 1.1;
+    color: var(--color-text-main);
+  }
+
+  .template-header-position {
+    margin-top: 8px;
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .template-header-right {
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    text-align: left;
+  }
+
+  .template-contact-item {
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-main);
+    align-items: center;
+    margin-bottom: 0 !important;
+
+    span {
+      color: var(--color-primary);
+      font-weight: var(--font-weight-bold);
+    }
+  }
+
+  /* --- Body Layout --- */
+  .template-resume-body {
+    flex-direction: row;
+  }
+
+  .template-left-column {
+    width: 32%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-right: none;
+  }
+
+  .template-right-column {
+    width: 68%;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background-color: var(--color-bg-white);
+  }
+
+  .template-sidebar-section {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  /* --- SIDEBAR SECTION TITLES FIX --- */
+  .template-skills-container {
+    margin-bottom: var(--spacing-md);
+
+    .template-skills-group {
+      margin-bottom: 0;
+    }
+
+    .template-skills-category-label {
+      margin-bottom: 4px;
+    }
+  }
+
+  .template-skills-category-label {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .template-skills-item {
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  .template-skills-bullet {
+    visibility: hidden;
+  }
+
+  .template-skills-text {
+    background-color: white;
+    border: 1px solid var(--color-border-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--color-text-main);
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .template-section-title {
+    font-size: var(--font-size-lg);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-primary);
+    border-bottom: 3px solid var(--color-primary);
+    padding-bottom: 8px;
+    margin-bottom: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+  }
+
+  .template-about-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-main);
+    line-height: 1.6;
+  }
+
+  .template-timeline-section {
+    margin-top: var(--spacing-xs);
+  }
+
+  .template-timeline-track {
+    padding-left: 0;
+    &::before {
+      display: none;
+    }
+  }
+
+  .template-timeline-item {
+    padding-top: var(--zero);
+    padding-left: var(--zero);
+    padding-bottom: 2px !important;
+  }
+
+  .template-timeline-marker {
+    display: none;
+  }
+
+  .template-item-header {
+    align-items: center !important;
+    margin-bottom: var(--zero);
+  }
+
+  .template-item-title {
+    font-size: var(--font-size-md);
+    color: var(--color-text-main);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+  }
+
+  .template-item-date {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-left: auto;
+    line-height: 1;
+    height: fit-content;
+  }
+
+  .template-item-subtitle {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-normal);
+    text-transform: none;
+    margin-bottom: 4px;
+    margin-top: 0px;
+  }
+
+  .template-item-desc {
+    margin-top: var(--spacing-sm);
+    color: var(--color-text-main);
+    font-size: var(--font-size-sm);
+  }
+
+  .template-tech-wrapper {
+    margin-top: var(--spacing-sm);
+  }
+}

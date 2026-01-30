@@ -1,0 +1,88 @@
+import { FontFamily, LayoutType, ThemeType } from '../../types';
+
+import React from 'react';
+import { Check, Type, Layout as LayoutIcon, Palette } from 'lucide-react';
+import themes, { fontFamilies, layouts } from '../../constants/themes';
+
+export interface CVCustomizerProps {
+  currentLayout: LayoutType;
+  currentTheme: ThemeType;
+  currentFontFamily: FontFamily;
+  setLayout: (layout: LayoutType) => void;
+  setTheme: (theme: ThemeType) => void;
+  onFontFamilyChange: (fontFamily: FontFamily) => void;
+}
+
+const CVCustomizer: React.FC<CVCustomizerProps> = ({
+  currentLayout,
+  currentTheme,
+  currentFontFamily,
+  setLayout,
+  setTheme,
+  onFontFamilyChange,
+}) => {
+  return (
+    <div className="cv-customizer compact">
+      {/* 1. Layout Row */}
+      <div className="compact-row">
+        <div className="control-label-wrapper">
+          <LayoutIcon size={12} />
+          <span className="control-label">Layout</span>
+        </div>
+        <div className="segmented-control mini">
+          {layouts.map((layout) => (
+            <button
+              key={layout}
+              onClick={() => setLayout(layout)}
+              className={`segmented-btn ${currentLayout === layout ? 'active' : ''}`}
+            >
+              {layout.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. Typography Row (Using a Select for maximum space saving) */}
+      <div className="compact-row">
+        <div className="control-label-wrapper">
+          <Type size={12} />
+          <span className="control-label">Font</span>
+        </div>
+        <select
+          className="mini-select"
+          value={currentFontFamily}
+          onChange={(e) => onFontFamilyChange(e.target.value as FontFamily)}
+          style={{ fontFamily: currentFontFamily }}
+        >
+          {fontFamilies.map((font) => (
+            <option key={font} value={font} style={{ fontFamily: font }}>
+              {font}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* 3. Theme Row */}
+      <div className="compact-row">
+        <div className="control-label-wrapper">
+          <Palette size={12} />
+          <span className="control-label">Theme</span>
+        </div>
+        <div className="swatch-grid mini">
+          {themes.map((theme) => (
+            <button
+              key={theme.name}
+              onClick={() => setTheme(theme.name)}
+              className={`swatch-btn mini ${currentTheme === theme.name ? 'active' : ''}`}
+              style={{ backgroundColor: theme.color }}
+            >
+              {currentTheme === theme.name && <Check size={15} color="white" />}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CVCustomizer;

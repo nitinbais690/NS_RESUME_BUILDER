@@ -1,0 +1,424 @@
+/* =========================================
+   5. RESUME FORM
+   ========================================= */
+
+/* --- Layout Structure --- */
+.form-resume-form-layout {
+  display: flex;
+  height: var(--percent-full);
+  background-color: var(--color-bg-sidebar);
+  border-radius: var(--radius-md);
+  margin: var(--spacing-negative-sidebar);
+  overflow: hidden;
+}
+
+/* --- Sidebar Navigation --- */
+.form-nav-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--color-bg-white);
+  border-right: var(--border-thin) solid var(--color-border-light);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: var(--zero);
+
+  .form-nav-header {
+    padding: var(--spacing-xl);
+    border-bottom: var(--border-thin) solid var(--color-border-light);
+
+    h3 {
+      margin: var(--zero);
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-main);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-sm);
+    }
+  }
+
+  .form-nav-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+  }
+
+  .form-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: var(--border-thin) solid var(--transparent);
+    background: var(--none);
+    text-align: left;
+    font-family: var(--font-family-base);
+    font-size: inherit;
+    cursor: pointer;
+    color: var(--color-text-light);
+    transition: all var(--transition-base);
+    border-radius: var(--radius-sm);
+
+    &:hover {
+      background-color: var(--color-border-alt);
+      color: var(--color-text-main);
+    }
+
+    &.completed {
+      color: var(--color-text-main);
+    }
+
+    &.active {
+      font-weight: var(--font-weight-bold);
+      background-color: var(--color-primary-soft);
+      color: var(--color-primary);
+      border-color: var(--color-primary-medium);
+    }
+  }
+
+  .form-active-indicator {
+    position: absolute;
+    right: var(--spacing-md);
+    width: var(--indicator-size);
+    height: var(--indicator-size);
+    border-radius: var(--percent-half);
+    background-color: var(--color-primary);
+  }
+}
+
+/* --- Main Content Area --- */
+.form-content-area {
+  flex: var(--one);
+  display: flex;
+  flex-direction: column;
+  overflow-y: var(--auto);
+  padding: var(--spacing-2xl);
+
+  .form-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: var(--border-thin) solid var(--color-border-light);
+  }
+
+  .form-section-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    background-color: var(--color-primary-medium);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+  }
+
+  .form-section-info {
+    h2 {
+      margin: var(--zero);
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-main);
+    }
+
+    p {
+      margin: var(--spacing-xs) var(--zero) var(--zero);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+/* --- Navigation Buttons --- */
+.form-navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--auto);
+  padding-top: var(--spacing-xl);
+  border-top: var(--border-thin) solid var(--color-border-light);
+}
+
+.form-btn-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border: var(--border-thin) solid var(--transparent);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-sm);
+
+  &:disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+    background-color: var(--transparent);
+    color: var(--color-text-placeholder);
+    box-shadow: var(--none);
+  }
+
+  &.form-btn-prev {
+    background-color: var(--color-bg-white);
+    border-color: var(--color-border-light);
+    color: var(--color-text-main);
+  }
+
+  &.form-btn-next {
+    background-color: var(--color-primary);
+    color: var(--color-bg-white);
+    box-shadow: var(--shadow-sm);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-primary-dark);
+      transform: translateY(var(--y-active));
+      box-shadow: var(--shadow-md);
+    }
+  }
+}
+
+.form-btn-add-new {
+  border: var(--none);
+  background: var(--none);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+/* --- Form Container & Headers --- */
+.form-resume-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-section);
+
+  .form-section-heading {
+    margin: var(--zero);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-heavy);
+    letter-spacing: var(--letter-spacing-md);
+    text-transform: uppercase;
+    color: var(--color-text-main);
+  }
+
+  .form-header-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: var(--percent-full);
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: var(--border-thin) solid var(--form-header-separator);
+
+    .form-header-center {
+      flex: var(--one);
+      text-align: center;
+    }
+    .form-header-right {
+      min-width: 100px;
+      text-align: right;
+    }
+  }
+
+  .form-step-text {
+    margin: var(--zero);
+    font-size: var(--step-text-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-light);
+  }
+}
+
+/* --- Cards --- */
+.form-card,
+.form-skills-card {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  background: var(--color-bg-card);
+  border: var(--border-thin) solid var(--color-border-light);
+  border-radius: var(--radius-md);
+
+  .form-btn-remove {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    border: var(--none);
+    background: var(--none);
+    color: var(--color-text-placeholder);
+    cursor: pointer;
+    transition: color var(--transition-base);
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
+/* --- Labels --- */
+.form-label,
+.form-skills-label {
+  display: var(--auto);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+  text-transform: uppercase;
+  color: var(--color-text-placeholder);
+}
+
+/* --- Inputs & Textareas --- */
+.form-input,
+.form-textarea {
+  width: var(--percent-full);
+  border: var(--none);
+  outline: var(--none);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-xl);
+  transition: border-color var(--transition-base);
+
+  &-underline {
+    border-bottom: var(--border-thin) solid var(--color-border-light);
+    padding: var(--spacing-sm) var(--zero);
+  }
+
+  &-box {
+    border: var(--border-thin) solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm);
+  }
+
+  &-name {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    background: var(--transparent);
+  }
+
+  &-company {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  &-meta {
+    font-size: var(--font-size-md);
+    font-style: italic;
+    text-align: right;
+    color: var(--color-text-placeholder);
+    background: var(--transparent);
+    border: var(--none);
+  }
+}
+
+/* --- Shared Grid Layouts --- */
+.form-grid-2,
+.form-skills-grid,
+.form-personal-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-skills-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* =========================================
+   3. COMPACT CUSTOMIZER
+   ========================================= */
+
+.sidebar-config-header {
+  padding: var(--nav-header-padding);
+  border-bottom: var(--border-thin) solid var(--color-border-alt);
+  background: var(--color-bg-white);
+}
+
+.cv-customizer.compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+
+  .compact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  .control-label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: var(--label-min-width);
+    color: var(--color-text-light);
+
+    .control-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-sm);
+    }
+  }
+
+  /* --- Controls --- */
+  .mini-select {
+    flex: 0 0 var(--mini-select-width);
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-base);
+    border: var(--border-thin) solid var(--color-border-medium);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-white);
+  }
+
+  .segmented-control.mini {
+    display: flex;
+    padding: var(--segmented-control-padding);
+    background: var(--color-border-alt);
+    border: var(--border-thin) solid var(--color-border-medium);
+    border-radius: var(--radius-sm);
+
+    .segmented-btn {
+      padding: var(--spacing-xs) var(--spacing-md);
+      border: var(--none);
+      background: var(--transparent);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      cursor: pointer;
+
+      &.active {
+        background: var(--color-bg-white);
+        color: var(--color-primary);
+        border-radius: var(--border-radius-pill);
+        box-shadow: var(--shadow-sm);
+      }
+    }
+  }
+
+  /* --- Swatches --- */
+  .swatch-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+
+    .swatch-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: var(--swatch-size);
+      height: var(--swatch-size);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+
+      &.active {
+        transform: scale(1.1);
+        border-color: var(--color-text-black);
+      }
+    }
+  }
+}
