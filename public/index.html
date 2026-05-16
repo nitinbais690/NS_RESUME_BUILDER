@@ -17,4 +17,26 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
+  <script>
+    function updateMobileScale() {
+      const vw = window.innerWidth;
+      if (vw < 768) {
+        const available = vw - 24;
+        const scale = Math.min(available / 793, 0.55);
+        document.documentElement.style.setProperty(
+          '--scale-mobile',
+          scale.toFixed(4),
+        );
+      } else {
+        document.documentElement.style.removeProperty('--scale-mobile');
+      }
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateMobileScale, 100);
+    });
+    updateMobileScale();
+  </script>
 </html>

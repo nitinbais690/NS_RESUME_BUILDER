@@ -252,3 +252,951 @@
     page-break-inside: avoid;
   }
 }
+
+/* =========================================
+   6. RESPONSIVE — MOBILE FIRST FIXES
+   ========================================= */
+
+/* --- Breakpoint Mixins --- */
+@mixin mobile {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: 1024px) {
+    @content;
+  }
+}
+
+/* =====================
+   APP LAYOUT
+   ===================== */
+.app-layout {
+  @include mobile {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* =====================
+   SIDEBAR
+   ===================== */
+.sidebar {
+  @include mobile {
+    flex: none;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-medium);
+    box-shadow: none;
+    z-index: var(--z-sidebar);
+  }
+
+  &-content {
+    @include mobile {
+      padding: var(--spacing-md);
+      overflow-y: visible;
+    }
+  }
+}
+
+.main-app-header {
+  @include mobile {
+    padding-right: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+
+    &__top {
+      width: 100%;
+      margin-bottom: 0;
+    }
+
+    &__branding {
+      min-width: 0;
+    }
+  }
+}
+
+.app-header {
+  @include mobile {
+    flex-wrap: wrap;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+}
+
+.app-title {
+  @include mobile {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* =====================
+   FORM LAYOUT
+   ===================== */
+.form-resume-form-layout {
+  @include mobile {
+    flex-direction: column;
+    margin: calc(var(--spacing-negative-sidebar) * -1);
+    border-radius: 0;
+    min-height: auto;
+  }
+}
+
+/* --- Nav Sidebar → Horizontal Tabs --- */
+.form-nav-sidebar {
+  @include mobile {
+    width: 100%;
+    flex-shrink: 0;
+    border-right: none;
+    border-bottom: var(--border-thin) solid var(--color-border-light);
+
+    .form-nav-header {
+      display: none;
+    }
+
+    .form-nav-items {
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-md);
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .form-nav-item {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: var(--font-size-xs);
+      border-radius: var(--radius-full);
+
+      .form-nav-icon {
+        display: none;
+      }
+    }
+
+    .form-active-indicator {
+      display: none;
+    }
+  }
+}
+
+/* --- Content Area --- */
+.form-content-area {
+  @include mobile {
+    padding: var(--spacing-md);
+    overflow-y: visible;
+  }
+
+  .form-section-header {
+    @include mobile {
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-md);
+    }
+  }
+
+  .form-section-info {
+    h2 {
+      @include mobile {
+        font-size: var(--font-size-xl);
+      }
+    }
+  }
+}
+
+/* --- Form Header --- */
+.form-resume-form-container {
+  .form-header-main {
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-md);
+
+      .form-header-center {
+        text-align: left;
+      }
+
+      .form-header-right {
+        text-align: left;
+        min-width: auto;
+      }
+    }
+  }
+}
+
+/* --- Grids → Single Column --- */
+.form-grid-2,
+.form-skills-grid,
+.form-personal-details-grid {
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+}
+
+/* --- Cards --- */
+.form-card,
+.form-skills-card {
+  @include mobile {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* --- Inputs --- */
+.form-input,
+.form-textarea {
+  &-name {
+    @include mobile {
+      font-size: var(--font-size-xl);
+    }
+  }
+}
+
+/* --- Navigation Buttons --- */
+.form-navigation-buttons {
+  @include mobile {
+    flex-direction: column-reverse;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    position: sticky;
+    bottom: 0;
+    background: var(--color-bg-sidebar);
+    margin-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-top: var(--border-thin) solid var(--color-border-light);
+  }
+}
+
+.form-btn-nav {
+  @include mobile {
+    justify-content: center;
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-md);
+  }
+}
+
+.form-btn-add-new {
+  @include mobile {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) 0;
+  }
+}
+
+/* --- Skills Row --- */
+.form-skills-row {
+  @include mobile {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* =====================
+   COMPACT CUSTOMIZER
+   ===================== */
+.cv-customizer.compact {
+  @include mobile {
+    gap: var(--spacing-sm);
+
+    .compact-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+    }
+
+    .control-label-wrapper {
+      min-width: auto;
+    }
+
+    .mini-select {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+
+    .segmented-control.mini {
+      width: 100%;
+      justify-content: center;
+
+      .segmented-btn {
+        flex: 1;
+        text-align: center;
+        padding: var(--spacing-sm) var(--spacing-md);
+      }
+    }
+
+    .swatch-grid {
+      width: 100%;
+      justify-content: flex-start;
+
+      .swatch-btn {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
+}
+
+.sidebar-config-header {
+  @include mobile {
+    padding: var(--spacing-md);
+  }
+}
+
+/* =====================
+   PREVIEW AREA
+   ===================== */
+.preview-area {
+  @include mobile {
+    padding: var(--spacing-md);
+    flex: none;
+    width: 100%;
+    min-height: auto;
+    overflow-y: visible;
+  }
+}
+
+.preview-scroll {
+  @include mobile {
+    overflow: visible;
+  }
+}
+
+.preview-sheet-wrapper {
+  @include mobile {
+    transform: scale(var(--scale-mobile, 0.42));
+    transform-origin: top center;
+    width: 100%;
+    margin-bottom: calc(
+      var(--a4-height) * var(--scale-mobile, 0.42) * -1 + var(--a4-height) * var(--scale-mobile, 0.42) - 40px
+    );
+    // Simplified: just a small bottom margin
+    margin-bottom: 20px;
+  }
+}
+
+/* Calculate a proper mobile scale dynamically via JS or use a safe value */
+:root {
+  --scale-mobile: 0.45;
+}
+
+.btn-download-container {
+  @include mobile {
+    position: relative;
+    top: auto;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.btn-download {
+  @include mobile {
+    width: 100%;
+    justify-content: center;
+    padding: var(--spacing-md) 24px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+  }
+}
+
+/* =====================
+   RESUME TEMPLATE — MOBILE
+   ===================== */
+.template-resume-outer-wrapper {
+  @include mobile {
+    padding: 0;
+    background-color: var(--color-bg-white);
+  }
+}
+
+.template-resume-page {
+  @include mobile {
+    width: 100%;
+    min-height: auto;
+    box-shadow: none;
+  }
+}
+
+/* --- Header --- */
+.template-resume-header {
+  @include mobile {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
+    border-top-width: 8px;
+  }
+
+  .template-header-name {
+    @include mobile {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  .template-header-position {
+    @include mobile {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  .template-header-right {
+    @include mobile {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      width: 100%;
+      margin-top: var(--spacing-sm);
+    }
+  }
+
+  .template-contact-item {
+    @include mobile {
+      justify-content: flex-start;
+      font-size: var(--font-size-xs);
+    }
+  }
+}
+
+/* --- Body Columns → Stack --- */
+.template-resume-body {
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.template-left-column {
+  @include mobile {
+    width: 100%;
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-resume-sidebar);
+    border-right: none;
+    border-bottom: var(--border-thin) solid var(--color-border-light);
+  }
+}
+
+.template-right-column {
+  @include mobile {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+}
+
+/* --- Sections --- */
+.template-main-section {
+  @include mobile {
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+.template-sidebar-section {
+  @include mobile {
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+.template-section-title {
+  @include mobile {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
+  }
+}
+
+/* --- About --- */
+.template-about-text {
+  @include mobile {
+    max-width: 100%;
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* --- Impact List --- */
+.template-impact-list {
+  @include mobile {
+    padding-left: var(--spacing-md);
+  }
+}
+
+.template-impact-item {
+  @include mobile {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* --- Timeline --- */
+.template-timeline-section {
+  @include mobile {
+    margin: var(--spacing-md) 0;
+
+    .template-timeline-track {
+      padding-left: var(--spacing-3xl);
+
+      &::before {
+        left: calc(var(--timeline-dot-size) / 2);
+        top: var(--spacing-3xl);
+      }
+    }
+
+    .template-timeline-marker {
+      left: 0;
+      transform: translateY(-50%);
+      width: var(--timeline-dot-size);
+      height: var(--timeline-dot-size);
+    }
+
+    .template-timeline-item {
+      margin-bottom: var(--spacing-md);
+    }
+  }
+}
+
+.template-item-header {
+  @include mobile {
+    flex-direction: column;
+    gap: 2px;
+
+    .template-item-title {
+      font-size: var(--font-size-base);
+    }
+
+    .template-item-date {
+      font-size: var(--font-size-xs);
+    }
+  }
+}
+
+.template-item-subtitle {
+  @include mobile {
+    font-size: var(--font-size-sm);
+  }
+}
+
+.template-item-desc {
+  @include mobile {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* --- Credentials --- */
+.template-credential-item {
+  @include mobile {
+    .template-credential-header {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .template-credential-meta-wrapper {
+      text-align: left;
+    }
+
+    .template-credential-title {
+      font-size: var(--font-size-sm);
+    }
+  }
+}
+
+/* --- Skills --- */
+.template-skill-item,
+.template-skills-item {
+  @include mobile {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+}
+
+.template-skill-name {
+  @include mobile {
+    font-size: var(--font-size-sm);
+  }
+}
+
+.template-skills-text {
+  @include mobile {
+    font-size: var(--font-size-sm);
+    padding: 3px 8px;
+  }
+}
+
+.template-skills-category-label {
+  @include mobile {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* --- Tech Chips --- */
+.template-tech-wrapper {
+  @include mobile {
+    gap: 3px;
+
+    .template-tech-label {
+      font-size: var(--font-size-xs);
+    }
+
+    .template-item-tech {
+      font-size: var(--font-size-xs);
+      padding: 2px 5px;
+    }
+  }
+}
+
+/* =====================
+   LAYOUT VARIANTS — MOBILE OVERRIDES
+   ===================== */
+
+/* --- Classic Mobile --- */
+[data-layout='classic'] {
+  @include mobile {
+    .template-resume-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .template-contact-item {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .template-left-column {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .template-right-column {
+      width: 100%;
+    }
+  }
+}
+
+/* --- Modern Mobile --- */
+[data-layout='modern'] {
+  @include mobile {
+    .template-resume-header {
+      align-items: flex-start;
+      text-align: left;
+      padding-bottom: var(--spacing-md);
+    }
+
+    .template-header-left {
+      text-align: left;
+    }
+
+    .template-header-right {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .template-left-column {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+    }
+
+    .template-right-column {
+      padding: var(--spacing-md);
+      padding-top: 0;
+    }
+
+    .template-section-title,
+    .template-skills-category-label {
+      padding-left: 8px;
+    }
+  }
+}
+
+/* --- Minimalist Mobile --- */
+[data-layout='minimalist'] {
+  @include mobile {
+    .template-resume-header {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .template-header-right {
+      justify-content: flex-start;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .template-section-title {
+      text-align: left;
+    }
+
+    .template-left-column,
+    .template-right-column {
+      padding: 0 var(--spacing-md);
+    }
+  }
+}
+
+/* --- Executive Mobile --- */
+[data-layout='executive'] {
+  @include mobile {
+    .template-resume-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-bottom: var(--spacing-md);
+      border-bottom-width: 2px;
+    }
+
+    .template-contact-item {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .template-left-column {
+      width: 100%;
+      padding: var(--spacing-md);
+      border-right: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .template-right-column {
+      width: 100%;
+      padding: var(--spacing-md);
+      border-left: none;
+    }
+  }
+}
+
+/* --- Creative Mobile --- */
+[data-layout='creative'] {
+  @include mobile {
+    .template-resume-header {
+      padding: var(--spacing-md);
+    }
+
+    .template-header-name {
+      font-size: var(--font-size-2xl);
+    }
+
+    .template-header-position {
+      font-size: var(--font-size-base);
+    }
+
+    .template-header-right {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .template-left-column {
+      width: 100%;
+      padding: var(--spacing-md);
+      border-right: none;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .template-right-column {
+      width: 100%;
+      padding: var(--spacing-md);
+    }
+
+    .template-section-title {
+      font-size: var(--font-size-base);
+      border-bottom-width: 2px;
+      padding-bottom: 6px;
+      margin-bottom: var(--spacing-sm);
+      margin-top: var(--spacing-md);
+    }
+
+    .template-item-date {
+      font-size: 9px;
+      padding: 3px 6px;
+    }
+
+    .template-skills-text {
+      font-size: var(--font-size-sm);
+      padding: 3px 8px;
+    }
+  }
+}
+
+/* =====================
+   SAFE AREA / NOTCHED DEVICES
+   ===================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .app-layout {
+    @include mobile {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+
+  .form-navigation-buttons {
+    @include mobile {
+      padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+    }
+  }
+
+  .btn-download {
+    @include mobile {
+      padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* =====================
+   LANDSCAPE PHONE
+   ===================== */
+@media screen and (max-width: 767px) and (orientation: landscape) {
+  .app-layout {
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 45%;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--color-border-medium);
+    border-bottom: none;
+  }
+
+  .preview-area {
+    width: 55%;
+    height: 100vh;
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+    flex: none;
+  }
+
+  .preview-sheet-wrapper {
+    transform: scale(0.38);
+    margin-bottom: 0;
+  }
+
+  .form-nav-sidebar {
+    .form-nav-items {
+      flex-direction: column;
+      overflow-x: visible;
+      overflow-y: auto;
+    }
+
+    .form-nav-item {
+      white-space: normal;
+    }
+  }
+
+  .form-navigation-buttons {
+    position: relative;
+    flex-direction: row;
+    bottom: auto;
+  }
+
+  .form-btn-nav {
+    width: auto;
+  }
+}
+
+/* =====================
+   TINY SCREENS (< 360px)
+   ===================== */
+@media screen and (max-width: 359px) {
+  :root {
+    --scale-mobile: 0.38;
+  }
+
+  .form-nav-sidebar {
+    .form-nav-item {
+      padding: var(--spacing-xs) var(--spacing-md);
+      font-size: 9px;
+    }
+  }
+
+  .form-content-area {
+    padding: var(--spacing-sm);
+  }
+
+  .form-card,
+  .form-skills-card {
+    padding: var(--spacing-sm);
+  }
+
+  .template-resume-header {
+    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
+    border-top-width: 6px;
+  }
+
+  .template-left-column,
+  .template-right-column {
+    padding: var(--spacing-sm);
+  }
+
+  .template-header-name {
+    font-size: var(--font-size-xl) !important;
+  }
+
+  .btn-download {
+    padding: var(--spacing-sm) 16px;
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* =====================
+   REDUCE MOTION
+   ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .form-nav-item,
+  .form-btn-nav,
+  .btn-download,
+  .template-contact-item,
+  .swatch-btn {
+    transition: none !important;
+  }
+
+  .btn-download:hover,
+  .form-btn-next:hover:not(:disabled) {
+    transform: none !important;
+  }
+
+  .preview-sheet-wrapper {
+    transition: none !important;
+  }
+}
+
+/* =====================
+   HIGH CONTRAST
+   ===================== */
+@media (prefers-contrast: high) {
+  .form-nav-item.active {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  .form-btn-nav {
+    outline: 1px solid var(--color-border-dark);
+  }
+
+  .template-section-title {
+    border-bottom-width: 3px;
+  }
+
+  .template-timeline-track::before {
+    width: 3px;
+  }
+}
