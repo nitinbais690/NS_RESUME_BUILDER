@@ -1,0 +1,14 @@
+{
+  "name": "ns-resume-builder-mono",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "web": "yarn workspace @ns-resume/web start",
+    "mobile": "yarn workspace @ns-resume/mobile start",
+    "build:web": "yarn workspace @ns-resume/web build"
+  }
+}
