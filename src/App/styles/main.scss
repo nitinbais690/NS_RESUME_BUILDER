@@ -47,27 +47,39 @@
   &__brand {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     min-width: 0;
   }
 
   &__logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-primary);
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-base);
+
+    &:hover {
+      transform: translateY(var(--y-active));
+    }
   }
 
   &__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-tiny);
     margin: var(--zero);
     font-size: var(--font-size-branding);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-heavy);
     line-height: var(--one);
+    letter-spacing: var(--letter-spacing-neg);
+    color: var(--color-text-black);
     white-space: nowrap;
 
     span {
-      font-weight: var(--font-weight-normal);
-      opacity: var(--opacity-muted);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary);
+      opacity: var(--one);
     }
   }
 

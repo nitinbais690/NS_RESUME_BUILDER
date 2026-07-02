@@ -21,7 +21,7 @@ const AppShell: React.FC = () => {
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: 'NS_CV_Resume',
+    documentTitle: 'NS_Studio_Resume',
   });
 
   return (

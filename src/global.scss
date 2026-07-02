@@ -152,19 +152,24 @@ $transition-base: 0.2s ease-in-out;
    ========================================= */
 [data-theme] {
   &[data-theme='blue'] {
-    --color-primary: #1e3a8a;
+    --color-primary: #1e40af;
+    --color-primary-dark: #1e3a8a;
+    --color-primary-soft: rgba(30, 64, 175, 0.05);
+    --color-primary-medium: rgba(30, 64, 175, 0.1);
     --color-link: #1d4ed8;
   }
-  &[data-theme='slate'] {
-    --color-primary: #334155;
-    --color-link: #475569;
-  }
   &[data-theme='teal'] {
-    --color-primary: #0d9488;
+    --color-primary: #0f766e;
+    --color-primary-dark: #115e59;
+    --color-primary-soft: rgba(15, 118, 110, 0.05);
+    --color-primary-medium: rgba(15, 118, 110, 0.1);
     --color-link: #0f766e;
   }
-  &[data-theme='burgundy'] {
-    --color-primary: #881337;
-    --color-link: #9f1239;
+  &[data-theme='purple'] {
+    --color-primary: #6b21a8;
+    --color-primary-dark: #581c87;
+    --color-primary-soft: rgba(107, 33, 168, 0.05);
+    --color-primary-medium: rgba(107, 33, 168, 0.1);
+    --color-link: #7e22ce;
   }
 }

@@ -1,7 +1,13 @@
 import { FontFamily } from '../../types';
 
 import React from 'react';
-import { Check, Type, Layout as LayoutIcon, Palette } from 'lucide-react';
+import {
+  Check,
+  Type,
+  Layout as LayoutIcon,
+  Palette,
+  ChevronDown,
+} from 'lucide-react';
 import themes, { fontFamilies, layouts } from '../../constants/themes';
 
 import { useResumeStore } from '../../store/useResumeStore';
@@ -40,18 +46,22 @@ const CVCustomizer: React.FC = () => {
           <Type size={12} />
           <span className="control-label">Font</span>
         </div>
-        <select
-          className="mini-select"
-          value={currentFontFamily}
-          onChange={(e) => onFontFamilyChange(e.target.value as FontFamily)}
-          style={{ fontFamily: currentFontFamily }}
-        >
-          {fontFamilies.map((font) => (
-            <option key={font} value={font} style={{ fontFamily: font }}>
-              {font}
-            </option>
-          ))}
-        </select>
+        <div className="mini-select-wrapper">
+          <select
+            className="mini-select"
+            aria-label="Font family"
+            value={currentFontFamily}
+            onChange={(e) => onFontFamilyChange(e.target.value as FontFamily)}
+            style={{ fontFamily: currentFontFamily }}
+          >
+            {fontFamilies.map((font) => (
+              <option key={font} value={font} style={{ fontFamily: font }}>
+                {font.split(',')[0]}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="mini-select-chevron" size={14} />
+        </div>
       </div>
 
       {/* 3. Theme Row */}

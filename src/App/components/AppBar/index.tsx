@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Layout as LogoIcon, SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
 import DownloadButton from '../../sections/DownloadButton';
@@ -41,11 +41,15 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
   return (
     <header className="appbar">
       <div className="appbar__brand">
-        <div className="appbar__logo">
-          <LogoIcon size={22} strokeWidth={2.5} />
-        </div>
+        <img
+          className="appbar__logo"
+          src={`${process.env.PUBLIC_URL}/apple-touch-icon.png`}
+          alt="NS Studio"
+          width={36}
+          height={36}
+        />
         <h1 className="appbar__title">
-          NS <span>CV</span>
+          NS<span>Studio</span>
         </h1>
       </div>
 

@@ -17,6 +17,23 @@ $modern-accent-border: 4px;
     padding: var(--zero);
     background-color: var(--color-bg-white);
   }
+
+  /* Smoothly fade colour-bearing elements when the theme changes. */
+  &,
+  * {
+    transition:
+      color 0.35s ease,
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      fill 0.35s ease,
+      opacity 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-resume-outer-wrapper * {
+    transition: var(--none);
+  }
 }
 
 .template-resume-page {

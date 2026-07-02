@@ -2,6 +2,7 @@ import {
   User,
   FileText,
   GraduationCap,
+  Award,
   Wrench,
   Briefcase,
   FolderCode,
@@ -55,7 +56,7 @@ export const FORM_STEPS: FormStep[] = [
     id: 'certification',
     title: ResumeField.CERTIFICATIONS,
     description: "Licenses and certifications you've earned.",
-    icon: GraduationCap,
+    icon: Award,
     component: Certification,
   },
   {
