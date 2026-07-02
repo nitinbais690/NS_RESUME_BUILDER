@@ -1,107 +1,254 @@
 /* =========================================
-   2. APP LAYOUT
+   BREAKPOINT MIXINS
    ========================================= */
+@mixin mobile {
+  @media screen and (max-width: 767px) {
+    @content;
+  }
+}
 
-/* --- Main Layout --- */
-.app-layout {
+@mixin tablet {
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: 1024px) {
+    @content;
+  }
+}
+
+/* =========================================
+   APP SHELL — global layout
+   ========================================= */
+.shell {
   display: flex;
+  flex-direction: column;
   height: var(--viewport-height);
-  width: var(--viewport-width);
+  width: var(--percent-full);
   background-color: var(--color-bg-app);
   overflow: hidden;
-
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-    overflow-y: auto;
-  }
 }
 
-/* --- Sidebar --- */
-.sidebar {
-  flex: var(--one);
-  height: var(--percent-full);
+/* --- Top App Bar --- */
+.appbar {
   display: flex;
-  flex-direction: column;
-  background-color: var(--color-bg-white);
-  border-right: var(--border-thin) solid var(--color-border-medium);
-  box-shadow: var(--shadow-sidebar);
-  z-index: var(--z-sidebar);
-
-  @media screen and (max-width: 768px) {
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border-medium);
-  }
-
-  &-content {
-    flex: var(--one);
-    overflow-y: var(--auto);
-    padding: var(--spacing-2xl);
-    background-color: var(--color-bg-sidebar);
-
-    &::-webkit-scrollbar {
-      width: var(--scrollbar-sm);
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--color-border-medium);
-      border-radius: var(--spacing-tiny);
-    }
-  }
-}
-
-/* --- Sidebar Header --- */
-.main-app-header {
-  display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-md);
-  padding-right: var(--spacing-md);
+  flex-shrink: 0;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background-color: var(--color-bg-white);
+  border-bottom: var(--border-thin) solid var(--color-border-medium);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-sticky);
 
-  &__top {
+  &__brand {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    min-width: 0;
   }
 
-  &__branding {
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+  }
+
+  &__title {
+    margin: var(--zero);
+    font-size: var(--font-size-branding);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--one);
+    white-space: nowrap;
+
+    span {
+      font-weight: var(--font-weight-normal);
+      opacity: var(--opacity-muted);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  &__customize {
+    position: relative;
+  }
+
+  &__customize-trigger {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-bg-white);
+    border: var(--border-thin) solid var(--color-border-medium);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-main);
+    cursor: pointer;
+    transition: all var(--transition-base);
+
+    &:hover,
+    &.is-open {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-soft);
+    }
+  }
+
+  &__popover {
+    position: absolute;
+    top: calc(100% + var(--spacing-sm));
+    right: 0;
+    min-width: 280px;
+    padding: var(--spacing-xl);
+    background: var(--color-bg-white);
+    border: var(--border-thin) solid var(--color-border-medium);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-sticky);
   }
 }
 
-.main-logo-icon-wrapper {
+/* Download button — app bar variant (inline, not sticky) */
+.btn-download--appbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: var(--color-primary);
-}
-
-.main-app-title {
-  font-size: var(--font-size-branding);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-2xl);
+  background-color: var(--color-primary);
+  color: var(--color-bg-white);
   font-weight: var(--font-weight-bold);
-  line-height: var(--one);
+  font-size: var(--font-size-base);
+  border: var(--none);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-base);
 
-  span {
-    font-weight: var(--font-weight-normal);
-    opacity: var(--opacity-muted);
+  &:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(var(--y-active));
+    box-shadow: var(--shadow-md);
   }
 }
 
-/* --- Preview Area --- */
-.preview-area {
+/* --- Body: editor + preview panes --- */
+.shell__body {
   flex: var(--one);
+  display: flex;
+  min-height: 0;
+}
+
+.shell__pane {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
   height: var(--percent-full);
+}
+
+.shell__pane--edit {
+  background-color: var(--color-bg-sidebar);
+  border-right: var(--border-thin) solid var(--color-border-medium);
+}
+
+.shell__pane--preview {
+  background-color: var(--color-bg-preview);
+}
+
+.shell__editor-scroll {
+  flex: var(--one);
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow-y: var(--auto);
-  padding: var(--spacing-4xl);
+  overflow: hidden; /* .form-content-area is the real scroller */
 }
 
-.preview-scroll {
+/* --- Compact section icon rail (desktop) --- */
+.rail {
+  display: none; /* shown at >=1024 */
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  padding: var(--spacing-md) var(--spacing-sm);
+  background-color: var(--color-bg-white);
+  border-right: var(--border-thin) solid var(--color-border-light);
+  overflow-y: auto;
+
+  &__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    color: var(--color-text-light);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-base),
+      color var(--transition-base);
+
+    &:hover {
+      background-color: var(--color-border-alt);
+      color: var(--color-text-main);
+    }
+
+    &.is-active {
+      background-color: var(--color-primary-soft);
+      color: var(--color-primary);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* Flyout label — absolute so hovering never shifts layout */
+  &__label {
+    position: absolute;
+    left: calc(100% + var(--spacing-sm));
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-text-black);
+    color: var(--color-bg-white);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+    z-index: var(--z-sticky);
+  }
+
+  &__item:hover &__label {
+    opacity: 1;
+  }
+}
+
+/* --- Preview pane (fit-to-width) --- */
+.preview {
+  flex: var(--one);
+  min-width: 0;
+  overflow: auto;
+  padding: var(--spacing-4xl);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
   &::-webkit-scrollbar {
     width: var(--scrollbar-md);
   }
@@ -109,49 +256,90 @@
     background-color: var(--color-bg-scrollbar);
     border-radius: var(--radius-sm);
   }
-}
 
-.preview-sheet-wrapper {
-  transform: scale(var(--scale-default));
-  transform-origin: top center;
-  margin-bottom: var(--spacing-page-padding);
+  &__frame {
+    position: relative;
+    width: var(--percent-full);
+  }
 
-  @media screen and (max-width: 1024px) {
-    transform: scale(var(--scale-tablet));
+  /* Scale is applied inline via JS (usePreviewScale). Absolute-positioned +
+     top-center so the compensating frame height controls scroll extent. */
+  &__scaler {
+    position: absolute;
+    top: 0;
+    left: var(--percent-half);
+    margin-left: calc(var(--a4-width) / -2);
+    transform-origin: top center;
+  }
+
+  &__measure {
+    width: var(--a4-width);
   }
 }
 
-/* --- App Header & Branding --- */
-.app-header {
-  display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-2xl);
-  border-bottom: var(--border-thin) solid var(--color-border-alt);
+.resume-print-container {
+  background-color: var(--color-bg-white);
+  border: var(--border-thin) solid var(--color-border-medium);
+  box-shadow: var(--shadow-print);
 }
 
-.logo-icon-wrapper {
+/* --- Bottom tab bar (mobile / tablet-portrait) --- */
+.tabbar {
+  display: none; /* shown at <1024 */
+  position: fixed;
+  left: var(--zero);
+  right: var(--zero);
+  bottom: var(--zero);
+  height: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--color-bg-white);
+  border-top: var(--border-thin) solid var(--color-border-medium);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: var(--z-sticky);
+
+  &__tab {
+    flex: var(--one);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-tiny);
+    border: var(--none);
+    background: var(--none);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-light);
+    transition: color var(--transition-base);
+
+    &.is-active {
+      color: var(--color-primary);
+    }
+  }
+}
+
+/* Clear-progress button at bottom of the editor */
+.btn-clear-storage {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
-  background-color: var(--color-primary);
-  color: var(--color-bg-white);
-  border-radius: var(--radius-sm);
-}
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--none);
+  border: var(--none);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-placeholder);
+  transition: color var(--transition-base);
 
-.app-title {
-  margin: var(--zero);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-heavy);
-  text-transform: uppercase;
-  color: var(--color-text-black);
-
-  span {
+  &:hover {
     color: var(--color-primary);
   }
 }
 
-/* --- Buttons --- */
+/* Legacy generic download button (still used by common/Button → AddButton) */
 .btn-download-container {
   position: sticky;
   top: var(--zero);
@@ -185,269 +373,94 @@
   }
 }
 
-.resume-print-container {
-  background-color: var(--color-bg-white);
-  border: var(--border-thin) solid var(--color-border-medium);
-  box-shadow: var(--shadow-print);
-}
-
 /* =========================================
-   REFINED PRINT STYLES
+   RESPONSIVE — pane visibility
    ========================================= */
-@media print {
-  @page {
-    size: auto;
-    margin: var(--zero);
+@include desktop {
+  .rail {
+    display: flex;
   }
-
-  body {
-    margin: 0 !important;
-    background-color: var(--color-bg-white) !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    text-rendering: optimizeLegibility;
+  .tabbar {
+    display: none;
   }
-
-  /* Hide Elements */
-  .sidebar,
-  .btn-download-container,
-  .main-app-header,
-  .form-navigation-buttons,
-  .preview-area::-webkit-scrollbar {
-    display: var(--none) !important;
-  }
-
-  /* Reset Preview Area */
-  .preview-area {
-    padding: 0 !important;
-    margin: 0 !important;
-    display: block !important;
-    overflow: visible !important;
-    background: none !important;
-  }
-
-  /* Reset Sheet Wrapper */
-  .preview-sheet-wrapper {
-    transform: scale(1) !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-  }
-
-  /* Reset Print Container */
-  .resume-print-container,
-  .resume-page {
-    width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  /* Prevent Page Breaks inside items */
-  .timeline-item,
-  .edu-item,
-  .sidebar-section {
-    page-break-inside: avoid;
+  .shell__pane {
+    flex: 1 1 50%;
   }
 }
 
-/* =========================================
-   6. RESPONSIVE — MOBILE FIRST FIXES
-   ========================================= */
-
-/* --- Breakpoint Mixins --- */
-@mixin mobile {
-  @media screen and (max-width: 767px) {
-    @content;
+@media screen and (max-width: 1023px) {
+  .rail {
+    display: none;
   }
-}
-
-@mixin tablet {
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
-    @content;
+  .tabbar {
+    display: flex;
   }
-}
-
-@mixin desktop {
-  @media screen and (min-width: 1024px) {
-    @content;
+  .shell__body {
+    padding-bottom: var(--tabbar-height);
   }
-}
-
-/* =====================
-   APP LAYOUT
-   ===================== */
-.app-layout {
-  @include mobile {
-    flex-direction: column;
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+  .shell__pane {
+    flex: 1 1 100%;
   }
-}
-
-/* =====================
-   SIDEBAR
-   ===================== */
-.sidebar {
-  @include mobile {
-    flex: none;
-    width: 100%;
-    height: auto;
-    max-height: none;
+  .shell__pane--edit {
     border-right: none;
-    border-bottom: 1px solid var(--color-border-medium);
-    box-shadow: none;
-    z-index: var(--z-sidebar);
   }
-
-  &-content {
-    @include mobile {
-      padding: var(--spacing-md);
-      overflow-y: visible;
-    }
+  .shell[data-pane='edit'] .shell__pane--preview {
+    display: none;
+  }
+  .shell[data-pane='preview'] .shell__pane--edit {
+    display: none;
   }
 }
 
-.main-app-header {
+/* =========================================
+   RESPONSIVE — app bar & form tweaks
+   ========================================= */
+.appbar {
   @include mobile {
-    padding-right: 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
 
-    &__top {
-      width: 100%;
-      margin-bottom: 0;
+    &__customize-trigger span {
+      display: none; /* icon-only on small screens */
     }
 
-    &__branding {
+    &__popover {
+      position: fixed;
+      top: 56px;
+      left: var(--spacing-md);
+      right: var(--spacing-md);
       min-width: 0;
     }
   }
 }
 
-.app-header {
+.btn-download--appbar {
   @include mobile {
-    flex-wrap: wrap;
-    padding: var(--spacing-md);
-    gap: var(--spacing-sm);
-  }
-}
+    padding: var(--spacing-sm) var(--spacing-lg);
 
-.app-title {
-  @include mobile {
-    font-size: var(--font-size-xl);
-  }
-}
-
-/* =====================
-   FORM LAYOUT
-   ===================== */
-.form-resume-form-layout {
-  @include mobile {
-    flex-direction: column;
-    margin: calc(var(--spacing-negative-sidebar) * -1);
-    border-radius: 0;
-    min-height: auto;
-  }
-}
-
-/* --- Nav Sidebar → Horizontal Tabs --- */
-.form-nav-sidebar {
-  @include mobile {
-    width: 100%;
-    flex-shrink: 0;
-    border-right: none;
-    border-bottom: var(--border-thin) solid var(--color-border-light);
-
-    .form-nav-header {
-      display: none;
-    }
-
-    .form-nav-items {
-      flex-direction: row;
-      overflow-x: auto;
-      overflow-y: hidden;
-      gap: var(--spacing-xs);
-      padding: var(--spacing-sm) var(--spacing-md);
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-
-    .form-nav-item {
-      flex-shrink: 0;
-      white-space: nowrap;
-      padding: var(--spacing-sm) var(--spacing-lg);
-      font-size: var(--font-size-xs);
-      border-radius: var(--radius-full);
-
-      .form-nav-icon {
-        display: none;
-      }
-    }
-
-    .form-active-indicator {
-      display: none;
+    span {
+      display: none; /* icon-only */
     }
   }
 }
 
-/* --- Content Area --- */
+/* Form content area tweaks on small screens */
 .form-content-area {
   @include mobile {
     padding: var(--spacing-md);
-    overflow-y: visible;
-  }
 
-  .form-section-header {
-    @include mobile {
+    .form-section-header {
       flex-wrap: wrap;
       gap: var(--spacing-sm);
       margin-bottom: var(--spacing-md);
       padding-bottom: var(--spacing-md);
     }
-  }
 
-  .form-section-info {
-    h2 {
-      @include mobile {
-        font-size: var(--font-size-xl);
-      }
+    .form-section-info h2 {
+      font-size: var(--font-size-xl);
     }
   }
 }
 
-/* --- Form Header --- */
-.form-resume-form-container {
-  .form-header-main {
-    @include mobile {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--spacing-sm);
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-md);
-
-      .form-header-center {
-        text-align: left;
-      }
-
-      .form-header-right {
-        text-align: left;
-        min-width: auto;
-      }
-    }
-  }
-}
-
-/* --- Grids → Single Column --- */
 .form-grid-2,
 .form-skills-grid,
 .form-personal-details-grid {
@@ -457,7 +470,6 @@
   }
 }
 
-/* --- Cards --- */
 .form-card,
 .form-skills-card {
   @include mobile {
@@ -466,49 +478,23 @@
   }
 }
 
-/* --- Inputs --- */
-.form-input,
-.form-textarea {
-  &-name {
-    @include mobile {
-      font-size: var(--font-size-xl);
-    }
-  }
-}
-
-/* --- Navigation Buttons --- */
 .form-navigation-buttons {
   @include mobile {
     flex-direction: column-reverse;
     gap: var(--spacing-sm);
-    padding-top: var(--spacing-md);
-    position: sticky;
-    bottom: 0;
-    background: var(--color-bg-sidebar);
-    margin-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
-    border-top: var(--border-thin) solid var(--color-border-light);
   }
 }
 
 .form-btn-nav {
   @include mobile {
     justify-content: center;
-    width: 100%;
+    width: var(--percent-full);
     padding: var(--spacing-md) var(--spacing-xl);
     font-size: var(--font-size-base);
     border-radius: var(--radius-md);
   }
 }
 
-.form-btn-add-new {
-  @include mobile {
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-sm) 0;
-  }
-}
-
-/* --- Skills Row --- */
 .form-skills-row {
   @include mobile {
     flex-wrap: wrap;
@@ -516,9 +502,7 @@
   }
 }
 
-/* =====================
-   COMPACT CUSTOMIZER
-   ===================== */
+/* Compact customizer inside the app-bar popover on small screens */
 .cv-customizer.compact {
   @include mobile {
     gap: var(--spacing-sm);
@@ -535,22 +519,22 @@
 
     .mini-select {
       flex: 1 1 100%;
-      width: 100%;
+      width: var(--percent-full);
     }
 
     .segmented-control.mini {
-      width: 100%;
+      width: var(--percent-full);
       justify-content: center;
 
       .segmented-btn {
-        flex: 1;
+        flex: var(--one);
         text-align: center;
         padding: var(--spacing-sm) var(--spacing-md);
       }
     }
 
     .swatch-grid {
-      width: 100%;
+      width: var(--percent-full);
       justify-content: flex-start;
 
       .swatch-btn {
@@ -561,72 +545,15 @@
   }
 }
 
-.sidebar-config-header {
+.preview {
   @include mobile {
     padding: var(--spacing-md);
   }
 }
 
-/* =====================
-   PREVIEW AREA
-   ===================== */
-.preview-area {
-  @include mobile {
-    padding: var(--spacing-md);
-    flex: none;
-    width: 100%;
-    min-height: auto;
-    overflow-y: visible;
-  }
-}
-
-.preview-scroll {
-  @include mobile {
-    overflow: visible;
-  }
-}
-
-.preview-sheet-wrapper {
-  @include mobile {
-    transform: scale(var(--scale-mobile, 0.42));
-    transform-origin: top center;
-    width: 100%;
-    margin-bottom: calc(
-      var(--a4-height) * var(--scale-mobile, 0.42) * -1 + var(--a4-height) * var(--scale-mobile, 0.42) - 40px
-    );
-    // Simplified: just a small bottom margin
-    margin-bottom: 20px;
-  }
-}
-
-/* Calculate a proper mobile scale dynamically via JS or use a safe value */
-:root {
-  --scale-mobile: 0.45;
-}
-
-.btn-download-container {
-  @include mobile {
-    position: relative;
-    top: auto;
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.btn-download {
-  @include mobile {
-    width: 100%;
-    justify-content: center;
-    padding: var(--spacing-md) 24px;
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
-  }
-}
-
-/* =====================
+/* =========================================
    RESUME TEMPLATE — MOBILE
-   ===================== */
+   ========================================= */
 .template-resume-outer-wrapper {
   @include mobile {
     padding: 0;
@@ -862,9 +789,9 @@
   }
 }
 
-/* =====================
+/* =========================================
    LAYOUT VARIANTS — MOBILE OVERRIDES
-   ===================== */
+   ========================================= */
 
 /* --- Classic Mobile --- */
 [data-layout='classic'] {
@@ -1036,98 +963,21 @@
   }
 }
 
-/* =====================
+/* =========================================
    SAFE AREA / NOTCHED DEVICES
-   ===================== */
+   ========================================= */
 @supports (padding: env(safe-area-inset-bottom)) {
-  .app-layout {
-    @include mobile {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-  }
-
   .form-navigation-buttons {
-    @include mobile {
-      padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
-    }
-  }
-
-  .btn-download {
     @include mobile {
       padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
     }
   }
 }
 
-/* =====================
-   LANDSCAPE PHONE
-   ===================== */
-@media screen and (max-width: 767px) and (orientation: landscape) {
-  .app-layout {
-    flex-direction: row;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .sidebar {
-    width: 45%;
-    height: 100vh;
-    overflow-y: auto;
-    border-right: 1px solid var(--color-border-medium);
-    border-bottom: none;
-  }
-
-  .preview-area {
-    width: 55%;
-    height: 100vh;
-    overflow-y: auto;
-    padding: var(--spacing-sm);
-    flex: none;
-  }
-
-  .preview-sheet-wrapper {
-    transform: scale(0.38);
-    margin-bottom: 0;
-  }
-
-  .form-nav-sidebar {
-    .form-nav-items {
-      flex-direction: column;
-      overflow-x: visible;
-      overflow-y: auto;
-    }
-
-    .form-nav-item {
-      white-space: normal;
-    }
-  }
-
-  .form-navigation-buttons {
-    position: relative;
-    flex-direction: row;
-    bottom: auto;
-  }
-
-  .form-btn-nav {
-    width: auto;
-  }
-}
-
-/* =====================
+/* =========================================
    TINY SCREENS (< 360px)
-   ===================== */
+   ========================================= */
 @media screen and (max-width: 359px) {
-  :root {
-    --scale-mobile: 0.38;
-  }
-
-  .form-nav-sidebar {
-    .form-nav-item {
-      padding: var(--spacing-xs) var(--spacing-md);
-      font-size: 9px;
-    }
-  }
-
   .form-content-area {
     padding: var(--spacing-sm);
   }
@@ -1150,40 +1000,110 @@
   .template-header-name {
     font-size: var(--font-size-xl) !important;
   }
+}
 
-  .btn-download {
-    padding: var(--spacing-sm) 16px;
-    font-size: var(--font-size-sm);
+/* =========================================
+   PRINT
+   ========================================= */
+@media print {
+  @page {
+    size: auto;
+    margin: var(--zero);
+  }
+
+  body {
+    margin: 0 !important;
+    background-color: var(--color-bg-white) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Hide all chrome */
+  .appbar,
+  .rail,
+  .tabbar,
+  .form-navigation-buttons,
+  .btn-clear-storage,
+  .btn-download-container,
+  .shell__editor-scroll {
+    display: none !important;
+  }
+
+  /* Reset shell + preview to plain flow */
+  .shell,
+  .shell__body,
+  .shell__pane,
+  .shell__pane--preview,
+  .preview,
+  .preview__frame {
+    display: block !important;
+    height: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+  }
+
+  /* CRITICAL: reset the JS-applied inline scale */
+  .preview__scaler {
+    position: static !important;
+    transform: none !important;
+    margin-left: 0 !important;
+  }
+
+  .preview__measure {
+    width: auto !important;
+  }
+
+  .resume-print-container,
+  .resume-page {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Prevent page breaks inside items */
+  .timeline-item,
+  .edu-item,
+  .sidebar-section {
+    page-break-inside: avoid;
   }
 }
 
-/* =====================
-   REDUCE MOTION
-   ===================== */
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
 @media (prefers-reduced-motion: reduce) {
-  .form-nav-item,
+  .rail__item,
+  .rail__label,
+  .tabbar__tab,
   .form-btn-nav,
   .btn-download,
+  .btn-download--appbar,
+  .appbar__customize-trigger,
   .template-contact-item,
   .swatch-btn {
     transition: none !important;
   }
 
   .btn-download:hover,
+  .btn-download--appbar:hover,
   .form-btn-next:hover:not(:disabled) {
     transform: none !important;
   }
-
-  .preview-sheet-wrapper {
-    transition: none !important;
-  }
 }
 
-/* =====================
+/* =========================================
    HIGH CONTRAST
-   ===================== */
+   ========================================= */
 @media (prefers-contrast: high) {
-  .form-nav-item.active {
+  .rail__item.is-active,
+  .tabbar__tab.is-active {
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
