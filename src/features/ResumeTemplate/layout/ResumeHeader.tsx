@@ -42,9 +42,9 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
         </p>
       </div>
       <div className="template-header-right">
-        {contactFields.map((field, idx) => (
+        {contactFields.map((field) => (
           <ContactItem
-            key={idx}
+            key={field.type}
             value={field.value}
             Icon={field.Icon}
             color={iconColor}

@@ -23,6 +23,14 @@ const PersonalDetails: React.FC = () => {
             className="form-input-name"
           />
         </div>
+        <div className="full-width">
+          <FormField
+            label={ContactInfo.POSITION}
+            name={ContactInfo.POSITION}
+            value={contact[ContactInfo.POSITION]}
+            onChange={handleChange}
+          />
+        </div>
         <FormField
           label={ContactInfo.PHONE}
           name={ContactInfo.PHONE}
@@ -46,6 +54,12 @@ const PersonalDetails: React.FC = () => {
           label={ContactInfo.GITHUB}
           name={ContactInfo.GITHUB}
           value={contact[ContactInfo.GITHUB]}
+          onChange={handleChange}
+        />
+        <FormField
+          label={ContactInfo.LOCATION}
+          name={ContactInfo.LOCATION}
+          value={contact[ContactInfo.LOCATION]}
           onChange={handleChange}
         />
       </div>

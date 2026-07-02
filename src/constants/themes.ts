@@ -23,7 +23,7 @@ const themes = [
     name: 'blue' as ThemeType,
     color: '#1e40af',
   },
-  { name: 'teal' as ThemeType, color: '#0f766e', fontFamily: 'Arial' },
+  { name: 'teal' as ThemeType, color: '#0f766e' },
   {
     name: 'purple' as ThemeType,
     color: '#6b21a8',

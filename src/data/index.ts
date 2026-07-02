@@ -21,7 +21,12 @@ const dummyResumeData: ResumeData = {
     'Increased user engagement by 20% using analytics-driven iteration',
   ],
 
-  [ResumeField.SKILLS]: ['Skills1'],
+  [ResumeField.SKILLS]: [
+    'React & React Native',
+    'TypeScript',
+    'System Design',
+    'Performance Optimization',
+  ],
 
   [ResumeField.TOOLS]: [
     'TypeScript',

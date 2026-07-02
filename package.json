@@ -1,7 +1,7 @@
 {
-  "name": "NS_RESUME_BUILDER",
+  "name": "ns-resume-builder",
   "version": "0.1.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
@@ -15,7 +15,6 @@
     "react-scripts": "5.0.1",
     "react-to-print": "^3.2.0",
     "sass": "^1.97.2",
-    "web-vitals": "^2.1.4",
     "zustand": "^5.0.10"
   },
   "scripts": {
