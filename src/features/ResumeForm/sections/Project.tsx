@@ -22,38 +22,62 @@ const Project: React.FC = () => {
 
   return (
     <section>
-      <AddButton onAdd={onAdd} />
-      {items.map((proj) => (
-        <FormCardWrapper key={proj.id} onRemove={() => removeProject(proj.id)}>
-          <input
-            placeholder="Project Name"
-            className="form-input form-input-underline form-input-title"
-            value={proj.name}
-            onChange={(e) => updateProject(proj.id, { name: e.target.value })}
-          />
-          <input
-            placeholder="Link"
-            className="form-input form-input-underline form-input-link"
-            value={proj.link}
-            onChange={(e) => updateProject(proj.id, { link: e.target.value })}
-          />
+      <AddButton onAdd={onAdd} label="Add Project" />
 
-          <TechTagInput
-            tags={proj.technologies}
-            onChange={(newTags) =>
-              updateProject(proj.id, { technologies: newTags })
-            }
-          />
+      {items.length === 0 ? (
+        <div className="form-empty-state">
+          No projects added yet. Click “Add Project” to get started.
+        </div>
+      ) : (
+        items.map((proj, i) => (
+          <FormCardWrapper
+            key={proj.id}
+            title="Project"
+            index={i + 1}
+            onRemove={() => removeProject(proj.id)}
+          >
+            <div className="form-input-group">
+              <label className="form-label">Project Name</label>
+              <input
+                placeholder="e.g. Portfolio Website"
+                className="form-input form-input-title"
+                value={proj.name}
+                onChange={(e) => updateProject(proj.id, { name: e.target.value })}
+              />
+            </div>
 
-          <textarea
-            placeholder="Details"
-            className="form-textarea"
-            style={{ height: '80px', marginTop: '10px' }}
-            value={proj.desc}
-            onChange={(e) => updateProject(proj.id, { desc: e.target.value })}
-          />
-        </FormCardWrapper>
-      ))}
+            <div className="form-input-group">
+              <label className="form-label">Link</label>
+              <input
+                placeholder="https://…"
+                className="form-input"
+                value={proj.link}
+                onChange={(e) => updateProject(proj.id, { link: e.target.value })}
+              />
+            </div>
+
+            <div className="form-input-group">
+              <label className="form-label">Technologies</label>
+              <TechTagInput
+                tags={proj.technologies}
+                onChange={(newTags) =>
+                  updateProject(proj.id, { technologies: newTags })
+                }
+              />
+            </div>
+
+            <div className="form-input-group">
+              <label className="form-label">Details</label>
+              <textarea
+                placeholder="What the project does"
+                className="form-textarea form-textarea--short"
+                value={proj.desc}
+                onChange={(e) => updateProject(proj.id, { desc: e.target.value })}
+              />
+            </div>
+          </FormCardWrapper>
+        ))
+      )}
     </section>
   );
 };

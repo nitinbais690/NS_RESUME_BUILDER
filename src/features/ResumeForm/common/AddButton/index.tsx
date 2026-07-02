@@ -1,19 +1,17 @@
 import React from 'react';
-import { PlusCircle } from 'lucide-react';
-import Button from '../../../../App/common/Button';
+import { Plus } from 'lucide-react';
 
 interface AddButtonProps {
   onAdd: () => void;
   label?: string;
 }
 
-const AddButton: React.FC<AddButtonProps> = ({ onAdd, label = 'ADD NEW' }) => {
+const AddButton: React.FC<AddButtonProps> = ({ onAdd, label = 'Add Item' }) => {
   return (
-    <div className="form-btn-add-new-container">
-      <Button onClick={onAdd}>
-        <PlusCircle size={14} /> {label}
-      </Button>
-    </div>
+    <button type="button" className="form-btn-add" onClick={onAdd}>
+      <Plus size={16} />
+      <span>{label}</span>
+    </button>
   );
 };
 

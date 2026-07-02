@@ -22,6 +22,7 @@ interface TextAreaProps {
 export const FormField = ({
   label,
   type = 'text',
+  className,
   ...props
 }: InputFieldProps) => (
   <div className="form-input-group">
@@ -29,7 +30,7 @@ export const FormField = ({
     <input
       {...props}
       type={type}
-      className={`form-input form-input-underline ${props.className || ''}`}
+      className={`form-input ${className || ''}`}
     />
   </div>
 );
@@ -37,10 +38,6 @@ export const FormField = ({
 export const TextAreaField = ({ label, ...props }: TextAreaProps) => (
   <div className="form-input-group full-width">
     {label && <label className="form-label">{label}</label>}
-    <textarea
-      {...props}
-      className="form-textarea"
-      style={{ height: '120px' }}
-    />
+    <textarea {...props} className="form-textarea form-textarea--tall" />
   </div>
 );

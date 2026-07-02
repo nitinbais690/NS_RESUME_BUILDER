@@ -21,35 +21,71 @@ const Education: React.FC = () => {
 
   return (
     <section>
-      <AddButton onAdd={onAdd} />
-      {items.map((edu) => (
-        <FormCardWrapper key={edu.id} onRemove={() => removeEducation(edu.id)}>
-          <input
-            placeholder="Degree"
-            className="form-input form-input-underline form-input-title"
-            value={edu.degree}
-            onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
-          />
-          <input
-            placeholder="Institution"
-            className="form-input form-input-underline form-input-text"
-            value={edu.school}
-            onChange={(e) => updateEducation(edu.id, { school: e.target.value })}
-          />
-          <input
-            placeholder="Score"
-            className="form-input form-input-meta"
-            value={edu.score}
-            onChange={(e) => updateEducation(edu.id, { score: e.target.value })}
-          />
-          <input
-            placeholder="Year"
-            className="form-input form-input-meta"
-            value={edu.year}
-            onChange={(e) => updateEducation(edu.id, { year: e.target.value })}
-          />
-        </FormCardWrapper>
-      ))}
+      <AddButton onAdd={onAdd} label="Add Education" />
+
+      {items.length === 0 ? (
+        <div className="form-empty-state">
+          No education added yet. Click “Add Education” to get started.
+        </div>
+      ) : (
+        items.map((edu, i) => (
+          <FormCardWrapper
+            key={edu.id}
+            title="Education"
+            index={i + 1}
+            onRemove={() => removeEducation(edu.id)}
+          >
+            <div className="form-input-group">
+              <label className="form-label">Degree</label>
+              <input
+                placeholder="e.g. B.Sc. Computer Science"
+                className="form-input form-input-title"
+                value={edu.degree}
+                onChange={(e) =>
+                  updateEducation(edu.id, { degree: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="form-input-group">
+              <label className="form-label">Institution</label>
+              <input
+                placeholder="School / University"
+                className="form-input"
+                value={edu.school}
+                onChange={(e) =>
+                  updateEducation(edu.id, { school: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="form-grid-2">
+              <div className="form-input-group">
+                <label className="form-label">Score</label>
+                <input
+                  placeholder="e.g. 3.8 GPA"
+                  className="form-input"
+                  value={edu.score}
+                  onChange={(e) =>
+                    updateEducation(edu.id, { score: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-input-group">
+                <label className="form-label">Year</label>
+                <input
+                  placeholder="e.g. 2019 – 2023"
+                  className="form-input"
+                  value={edu.year}
+                  onChange={(e) =>
+                    updateEducation(edu.id, { year: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+          </FormCardWrapper>
+        ))
+      )}
     </section>
   );
 };

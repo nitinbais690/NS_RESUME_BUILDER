@@ -39,6 +39,7 @@ const ResumeForm: React.FC = () => {
       <SectionHeader
         icon={ActiveIcon}
         title={FORM_STEPS[currentStep].title}
+        description={FORM_STEPS[currentStep].description}
         currentStep={currentStep + 1}
         totalSteps={FORM_STEPS.length}
       />

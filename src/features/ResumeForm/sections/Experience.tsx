@@ -23,52 +23,81 @@ const Experience: React.FC = () => {
 
   return (
     <section>
-      <AddButton onAdd={onAdd} />
-      {items.map((exp) => (
-        <FormCardWrapper key={exp.id} onRemove={() => removeExperience(exp.id)}>
-          <div className="form-grid-2">
-            <input
-              placeholder="Title"
-              className="form-input form-input-underline form-input-title"
-              value={exp.title}
-              onChange={(e) =>
-                updateExperience(exp.id, { title: e.target.value })
-              }
-            />
-            <input
-              placeholder="Date Range"
-              className="form-input form-input-meta"
-              value={exp.date}
-              onChange={(e) =>
-                updateExperience(exp.id, { date: e.target.value })
-              }
-            />
-          </div>
-          <input
-            placeholder="Company"
-            className="form-input form-input-underline form-input-company"
-            value={exp.company}
-            onChange={(e) =>
-              updateExperience(exp.id, { company: e.target.value })
-            }
-          />
+      <AddButton onAdd={onAdd} label="Add Experience" />
 
-          <TechTagInput
-            tags={exp.technologies}
-            onChange={(newTags) =>
-              updateExperience(exp.id, { technologies: newTags })
-            }
-          />
+      {items.length === 0 ? (
+        <div className="form-empty-state">
+          No experience added yet. Click “Add Experience” to get started.
+        </div>
+      ) : (
+        items.map((exp, i) => (
+          <FormCardWrapper
+            key={exp.id}
+            title="Experience"
+            index={i + 1}
+            onRemove={() => removeExperience(exp.id)}
+          >
+            <div className="form-grid-2">
+              <div className="form-input-group">
+                <label className="form-label">Title</label>
+                <input
+                  placeholder="e.g. Senior Engineer"
+                  className="form-input"
+                  value={exp.title}
+                  onChange={(e) =>
+                    updateExperience(exp.id, { title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="form-input-group">
+                <label className="form-label">Date Range</label>
+                <input
+                  placeholder="e.g. 2021 – Present"
+                  className="form-input"
+                  value={exp.date}
+                  onChange={(e) =>
+                    updateExperience(exp.id, { date: e.target.value })
+                  }
+                />
+              </div>
+            </div>
 
-          <textarea
-            placeholder="Description"
-            className="form-textarea"
-            style={{ height: '80px', marginTop: '10px' }}
-            value={exp.desc}
-            onChange={(e) => updateExperience(exp.id, { desc: e.target.value })}
-          />
-        </FormCardWrapper>
-      ))}
+            <div className="form-input-group">
+              <label className="form-label">Company</label>
+              <input
+                placeholder="Company name"
+                className="form-input form-input-company"
+                value={exp.company}
+                onChange={(e) =>
+                  updateExperience(exp.id, { company: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="form-input-group">
+              <label className="form-label">Technologies</label>
+              <TechTagInput
+                tags={exp.technologies}
+                onChange={(newTags) =>
+                  updateExperience(exp.id, { technologies: newTags })
+                }
+              />
+            </div>
+
+            <div className="form-input-group">
+              <label className="form-label">Description</label>
+              <textarea
+                placeholder="What you did and achieved"
+                className="form-textarea form-textarea--short"
+                value={exp.desc}
+                onChange={(e) =>
+                  updateExperience(exp.id, { desc: e.target.value })
+                }
+              />
+            </div>
+          </FormCardWrapper>
+        ))
+      )}
     </section>
   );
 };

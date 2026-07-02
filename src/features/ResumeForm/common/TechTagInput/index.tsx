@@ -6,58 +6,31 @@ interface TechTagProps {
 }
 
 export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
-  <div style={{ marginTop: '10px' }}>
-    <div
-      className="tech-tags-container"
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '6px',
-        marginBottom: '8px',
-      }}
-    >
-      {tags.map((tech, tIndex) => (
-        <span
-          key={tech}
-          className="tech-tag-edit"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            fontSize: '12px',
-            background: '#e5e7eb',
-            padding: '2px 8px',
-            borderRadius: '4px',
-            color: '#333',
-          }}
-        >
-          {tech}
-          <button
-            type="button"
-            aria-label={`Remove ${tech}`}
-            onClick={() => onChange(tags.filter((_, idx) => idx !== tIndex))}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              marginLeft: '4px',
-              padding: '0',
-              display: 'flex',
-              alignItems: 'center',
-              color: '#666',
-            }}
-          >
-            <X size={10} />
-          </button>
-        </span>
-      ))}
-    </div>
+  <div className="tech-tags">
+    {tags.length > 0 && (
+      <div className="tech-tags-container">
+        {tags.map((tech, tIndex) => (
+          <span key={tech} className="tech-tag-edit">
+            {tech}
+            <button
+              type="button"
+              aria-label={`Remove ${tech}`}
+              className="tech-tag-remove"
+              onClick={() => onChange(tags.filter((_, idx) => idx !== tIndex))}
+            >
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+      </div>
+    )}
     <input
       type="text"
-      placeholder="Technologies (Press Enter)"
-      className="form-input"
-      style={{ fontSize: '13px' }}
+      placeholder="Add technology (press Enter)"
+      className="form-input form-input-text"
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
+          e.preventDefault();
           const val = e.currentTarget.value.trim();
           if (val && !tags.includes(val)) onChange([...tags, val]);
           e.currentTarget.value = '';
