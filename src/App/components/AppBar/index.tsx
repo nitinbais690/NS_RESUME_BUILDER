@@ -72,7 +72,7 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
           )}
         </div>
 
-        <DownloadButton onClick={onDownload} variant="appbar" />
+        <DownloadButton onClick={onDownload} />
       </div>
     </header>
   );
