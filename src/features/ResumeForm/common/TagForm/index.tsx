@@ -1,16 +1,15 @@
-import { BaseFormProps } from '../../types';
-
-import { ResumeField } from '@/types';
+import { ResumeField } from '../../../../types';
 import { Trash2 } from 'lucide-react';
 import AddButton from '../AddButton';
+import { useResumeStore } from '../../../../store/useResumeStore';
 
-export const ToolForm: React.FC<
-  BaseFormProps & {
-    name: ResumeField.SKILLS | ResumeField.TOOLS;
-  }
-> = ({ resumeData, setResumeData, name }) => {
-  const fields = resumeData[name];
-  const onAdd = () => setResumeData({ ...resumeData, [name]: [...fields, ''] });
+export const ToolForm: React.FC<{
+  name: ResumeField.SKILLS | ResumeField.TOOLS;
+}> = ({ name }) => {
+  const fields = useResumeStore((s) => s.resumeData[name]);
+  const updateListField = useResumeStore((s) => s.updateListField);
+
+  const onAdd = () => updateListField(name, [...fields, '']);
 
   return (
     <section>
@@ -25,15 +24,17 @@ export const ToolForm: React.FC<
               onChange={(e) => {
                 const next = [...fields];
                 next[i] = e.target.value;
-                setResumeData({ ...resumeData, [name]: next });
+                updateListField(name, next);
               }}
             />
             <button
+              type="button"
+              aria-label={`Remove ${name} item`}
               onClick={() =>
-                setResumeData({
-                  ...resumeData,
-                  [name]: fields.filter((_, idx) => idx !== i),
-                })
+                updateListField(
+                  name,
+                  fields.filter((_, idx) => idx !== i)
+                )
               }
               className="form-btn-remove"
               style={{ position: 'static' }}

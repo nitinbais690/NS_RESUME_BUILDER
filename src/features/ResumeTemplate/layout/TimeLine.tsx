@@ -42,8 +42,8 @@ const TimelineItem: React.FC<TimelineSectionItemProps> = ({
     {technologies && technologies.length > 0 && (
       <div className="template-tech-wrapper">
         <span className="template-tech-label">Technologies:</span>
-        {technologies.map((tech: string, idx: number) => (
-          <span key={idx} className="template-item-tech">
+        {technologies.map((tech: string) => (
+          <span key={tech} className="template-item-tech">
             {tech}
           </span>
         ))}

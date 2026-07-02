@@ -22,7 +22,6 @@ interface ResumeState {
   fontFamily: FontFamily;
 
   // Actions
-  setResumeData: (data: ResumeData) => void;
   setTheme: (theme: ThemeType) => void;
   setLayout: (layout: LayoutType) => void;
   setFontFamily: (fontFamily: FontFamily) => void;
@@ -60,7 +59,6 @@ export const useResumeStore = create<ResumeState>()(
       layout: 'classic',
       fontFamily: 'Inter, sans-serif',
 
-      setResumeData: (data) => set({ resumeData: data }),
       setTheme: (theme) => set({ theme }),
       setLayout: (layout) => set({ layout }),
       setFontFamily: (fontFamily) => set({ fontFamily }),

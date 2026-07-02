@@ -1,22 +1,19 @@
-import { ProjectType, ResumeField } from '../../../types';
-import { BaseFormProps } from '../types';
+import { ResumeField } from '../../../types';
 
 import { FormCardWrapper } from '../common/FormCardWrapper';
 import { TechTagInput } from '../common/TechTagInput';
-
-import { useFormArray } from '../hooks/useFormArray';
 import AddButton from '../common/AddButton';
+import { useResumeStore } from '../../../store/useResumeStore';
 
-const Project: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
-  const { items, addItem, removeItem, updateItem } = useFormArray<ProjectType>(
-    resumeData,
-    setResumeData,
-    ResumeField.PROJECTS,
-  );
+const Project: React.FC = () => {
+  const items = useResumeStore((s) => s.resumeData[ResumeField.PROJECTS]);
+  const addProject = useResumeStore((s) => s.addProject);
+  const updateProject = useResumeStore((s) => s.updateProject);
+  const removeProject = useResumeStore((s) => s.removeProject);
 
   const onAdd = () =>
-    addItem({
-      id: Date.now().toString(),
+    addProject({
+      id: crypto.randomUUID(),
       name: '',
       link: '',
       desc: '',
@@ -26,24 +23,26 @@ const Project: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
   return (
     <section>
       <AddButton onAdd={onAdd} />
-      {items.map((proj, i) => (
-        <FormCardWrapper key={proj.id || i} onRemove={() => removeItem(i)}>
+      {items.map((proj) => (
+        <FormCardWrapper key={proj.id} onRemove={() => removeProject(proj.id)}>
           <input
             placeholder="Project Name"
             className="form-input form-input-underline form-input-title"
             value={proj.name}
-            onChange={(e) => updateItem(i, { name: e.target.value })}
+            onChange={(e) => updateProject(proj.id, { name: e.target.value })}
           />
           <input
             placeholder="Link"
             className="form-input form-input-underline form-input-link"
             value={proj.link}
-            onChange={(e) => updateItem(i, { link: e.target.value })}
+            onChange={(e) => updateProject(proj.id, { link: e.target.value })}
           />
 
           <TechTagInput
             tags={proj.technologies}
-            onChange={(newTags) => updateItem(i, { technologies: newTags })}
+            onChange={(newTags) =>
+              updateProject(proj.id, { technologies: newTags })
+            }
           />
 
           <textarea
@@ -51,7 +50,7 @@ const Project: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
             className="form-textarea"
             style={{ height: '80px', marginTop: '10px' }}
             value={proj.desc}
-            onChange={(e) => updateItem(i, { desc: e.target.value })}
+            onChange={(e) => updateProject(proj.id, { desc: e.target.value })}
           />
         </FormCardWrapper>
       ))}

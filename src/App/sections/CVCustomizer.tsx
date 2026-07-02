@@ -7,14 +7,12 @@ import themes, { fontFamilies, layouts } from '../../constants/themes';
 import { useResumeStore } from '../../store/useResumeStore';
 
 const CVCustomizer: React.FC = () => {
-  const {
-    layout: currentLayout,
-    theme: currentTheme,
-    fontFamily: currentFontFamily,
-    setLayout,
-    setTheme,
-    setFontFamily: onFontFamilyChange,
-  } = useResumeStore();
+  const currentLayout = useResumeStore((s) => s.layout);
+  const currentTheme = useResumeStore((s) => s.theme);
+  const currentFontFamily = useResumeStore((s) => s.fontFamily);
+  const setLayout = useResumeStore((s) => s.setLayout);
+  const setTheme = useResumeStore((s) => s.setTheme);
+  const onFontFamilyChange = useResumeStore((s) => s.setFontFamily);
   return (
     <div className="cv-customizer compact">
       {/* 1. Layout Row */}

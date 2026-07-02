@@ -40,7 +40,7 @@ export interface ExperienceType {
   technologies: string[];
 }
 
-export const enum ContactInfo {
+export enum ContactInfo {
   NAME = 'Name',
   POSITION = 'Position',
   PHONE = 'Phone',

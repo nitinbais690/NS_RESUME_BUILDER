@@ -9,12 +9,10 @@ import TimelineSection from './layout/TimeLine';
 import { useResumeStore } from '../../store/useResumeStore';
 
 const ResumeTemplate: React.FC = () => {
-  const {
-    resumeData: data,
-    layout,
-    theme,
-    fontFamily,
-  } = useResumeStore();
+  const data = useResumeStore((s) => s.resumeData);
+  const layout = useResumeStore((s) => s.layout);
+  const theme = useResumeStore((s) => s.theme);
+  const fontFamily = useResumeStore((s) => s.fontFamily);
   const config = LAYOUT_CONFIG[layout];
 
   const renderSection = (field: ResumeField) => {
@@ -33,11 +31,9 @@ const ResumeTemplate: React.FC = () => {
             <h3 className="template-section-title">{ResumeField.KEY_IMPACT}</h3>
             <ul className="template-impact-list">
               {data[ResumeField.KEY_IMPACT].map((impact) => (
-                <li
-                  key={impact}
-                  className="template-impact-item"
-                  dangerouslySetInnerHTML={{ __html: impact }}
-                />
+                <li key={impact} className="template-impact-item">
+                  {impact}
+                </li>
               ))}
             </ul>
           </section>
@@ -89,6 +85,7 @@ const ResumeTemplate: React.FC = () => {
       case ResumeField.PROJECTS:
         return (
           <TimelineSection
+            key={field}
             title={ResumeField.PROJECTS}
             items={data[ResumeField.PROJECTS].map((proj: ProjectType) => ({
               ...proj,
@@ -171,11 +168,11 @@ const ResumeTemplate: React.FC = () => {
 
         <div className="template-resume-body">
           <aside className="template-left-column">
-            {config.left?.map((field) => renderSection(field as ResumeField))}
+            {config.left?.map((field) => renderSection(field))}
           </aside>
 
           <main className="template-right-column">
-            {config.right?.map((field) => renderSection(field as ResumeField))}
+            {config.right?.map((field) => renderSection(field))}
           </main>
         </div>
       </div>

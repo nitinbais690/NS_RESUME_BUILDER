@@ -18,7 +18,7 @@ export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
     >
       {tags.map((tech, tIndex) => (
         <span
-          key={tIndex}
+          key={tech}
           className="tech-tag-edit"
           style={{
             display: 'inline-flex',
@@ -32,6 +32,8 @@ export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
         >
           {tech}
           <button
+            type="button"
+            aria-label={`Remove ${tech}`}
             onClick={() => onChange(tags.filter((_, idx) => idx !== tIndex))}
             style={{
               background: 'none',

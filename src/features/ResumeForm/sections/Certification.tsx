@@ -1,27 +1,18 @@
-import { ResumeField, CertificationType } from '../../../types';
-import { BaseFormProps } from '../types';
-
-import React from 'react';
+import { ResumeField } from '../../../types';
 
 import { FormCardWrapper } from '../common/FormCardWrapper';
 import AddButton from '../common/AddButton';
+import { useResumeStore } from '../../../store/useResumeStore';
 
-import { useFormArray } from '../hooks/useFormArray';
-
-const Certification: React.FC<BaseFormProps> = ({
-  resumeData,
-  setResumeData,
-}) => {
-  const { items, addItem, removeItem, updateItem } =
-    useFormArray<CertificationType>(
-      resumeData,
-      setResumeData,
-      ResumeField.CERTIFICATIONS,
-    );
+const Certification: React.FC = () => {
+  const items = useResumeStore((s) => s.resumeData[ResumeField.CERTIFICATIONS]);
+  const addCertification = useResumeStore((s) => s.addCertification);
+  const updateCertification = useResumeStore((s) => s.updateCertification);
+  const removeCertification = useResumeStore((s) => s.removeCertification);
 
   const onAdd = () =>
-    addItem({
-      id: Date.now().toString(),
+    addCertification({
+      id: crypto.randomUUID(),
       name: '',
       issuer: '',
       date: '',
@@ -31,32 +22,43 @@ const Certification: React.FC<BaseFormProps> = ({
   return (
     <section>
       <AddButton onAdd={onAdd} />
-      {items.map((cert, i) => (
-        <FormCardWrapper key={cert.id || i} onRemove={() => removeItem(i)}>
+      {items.map((cert) => (
+        <FormCardWrapper
+          key={cert.id}
+          onRemove={() => removeCertification(cert.id)}
+        >
           <input
             placeholder="Certification Name"
             className="form-input form-input-underline form-input-title"
             value={cert.name}
-            onChange={(e) => updateItem(i, { name: e.target.value })}
+            onChange={(e) =>
+              updateCertification(cert.id, { name: e.target.value })
+            }
           />
           <input
             placeholder="Issuing Organization"
             className="form-input form-input-underline form-input-text"
             value={cert.issuer}
-            onChange={(e) => updateItem(i, { issuer: e.target.value })}
+            onChange={(e) =>
+              updateCertification(cert.id, { issuer: e.target.value })
+            }
           />
           <div className="flex gap-4">
             <input
               placeholder="Date"
               className="form-input form-input-meta"
               value={cert.date}
-              onChange={(e) => updateItem(i, { date: e.target.value })}
+              onChange={(e) =>
+                updateCertification(cert.id, { date: e.target.value })
+              }
             />
             <input
               placeholder="Credential Link (Optional)"
               className="form-input form-input-meta"
               value={cert.link || ''}
-              onChange={(e) => updateItem(i, { link: e.target.value })}
+              onChange={(e) =>
+                updateCertification(cert.id, { link: e.target.value })
+              }
             />
           </div>
         </FormCardWrapper>

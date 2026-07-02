@@ -1,24 +1,18 @@
-import { ResumeField, EducationType } from '../../../types';
-import { BaseFormProps } from '../types';
-
-import React from 'react';
+import { ResumeField } from '../../../types';
 
 import { FormCardWrapper } from '../common/FormCardWrapper';
 import AddButton from '../common/AddButton';
+import { useResumeStore } from '../../../store/useResumeStore';
 
-import { useFormArray } from '../hooks/useFormArray';
-
-const Education: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
-  const { items, addItem, removeItem, updateItem } =
-    useFormArray<EducationType>(
-      resumeData,
-      setResumeData,
-      ResumeField.EDUCATION,
-    );
+const Education: React.FC = () => {
+  const items = useResumeStore((s) => s.resumeData[ResumeField.EDUCATION]);
+  const addEducation = useResumeStore((s) => s.addEducation);
+  const updateEducation = useResumeStore((s) => s.updateEducation);
+  const removeEducation = useResumeStore((s) => s.removeEducation);
 
   const onAdd = () =>
-    addItem({
-      id: Date.now().toString(),
+    addEducation({
+      id: crypto.randomUUID(),
       degree: '',
       school: '',
       year: '',
@@ -28,31 +22,31 @@ const Education: React.FC<BaseFormProps> = ({ resumeData, setResumeData }) => {
   return (
     <section>
       <AddButton onAdd={onAdd} />
-      {items.map((edu, i) => (
-        <FormCardWrapper key={edu.id || i} onRemove={() => removeItem(i)}>
+      {items.map((edu) => (
+        <FormCardWrapper key={edu.id} onRemove={() => removeEducation(edu.id)}>
           <input
             placeholder="Degree"
             className="form-input form-input-underline form-input-title"
             value={edu.degree}
-            onChange={(e) => updateItem(i, { degree: e.target.value })}
+            onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
           />
           <input
             placeholder="Institution"
             className="form-input form-input-underline form-input-text"
             value={edu.school}
-            onChange={(e) => updateItem(i, { school: e.target.value })}
+            onChange={(e) => updateEducation(edu.id, { school: e.target.value })}
           />
           <input
             placeholder="Score"
             className="form-input form-input-meta"
-            value={edu.year}
-            onChange={(e) => updateItem(i, { year: e.target.value })}
+            value={edu.score}
+            onChange={(e) => updateEducation(edu.id, { score: e.target.value })}
           />
           <input
             placeholder="Year"
             className="form-input form-input-meta"
             value={edu.year}
-            onChange={(e) => updateItem(i, { year: e.target.value })}
+            onChange={(e) => updateEducation(edu.id, { year: e.target.value })}
           />
         </FormCardWrapper>
       ))}

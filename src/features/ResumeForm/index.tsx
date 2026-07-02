@@ -76,10 +76,7 @@ const FORM_STEPS = [
   },
 ];
 
-import { useResumeStore } from '../../store/useResumeStore';
-
 const ResumeForm: React.FC = () => {
-  const { resumeData, setResumeData } = useResumeStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -169,16 +166,7 @@ const ResumeForm: React.FC = () => {
               element={<Navigate to={'/' + FORM_STEPS[0].id} replace />}
             />
             {FORM_STEPS.map(({ id, component: Component }) => (
-              <Route
-                key={id}
-                path={id}
-                element={
-                  <Component
-                    resumeData={resumeData}
-                    setResumeData={setResumeData}
-                  />
-                }
-              />
+              <Route key={id} path={id} element={<Component />} />
             ))}
           </Routes>
         </div>

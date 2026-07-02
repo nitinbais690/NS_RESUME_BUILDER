@@ -1,23 +1,15 @@
 import { ResumeField, ContactInfo } from '../../../types';
-import { BaseFormProps } from '../types';
 
 import { FormField } from '../common/FormFields';
+import { useResumeStore } from '../../../store/useResumeStore';
 
-const PersonalDetails: React.FC<BaseFormProps> = ({
-  resumeData,
-  setResumeData,
-}) => {
+const PersonalDetails: React.FC = () => {
+  const contact = useResumeStore((s) => s.resumeData[ResumeField.CONTACT]);
+  const updateContactInfo = useResumeStore((s) => s.updateContactInfo);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setResumeData({
-      ...resumeData,
-      [ResumeField.CONTACT]: {
-        ...resumeData[ResumeField.CONTACT],
-        [e.target.name]: e.target.value,
-      },
-    });
+    updateContactInfo({ [e.target.name]: e.target.value });
   };
-
-  const contact = resumeData[ResumeField.CONTACT] || {};
 
   return (
     <section>
@@ -40,6 +32,7 @@ const PersonalDetails: React.FC<BaseFormProps> = ({
         <FormField
           label={ContactInfo.EMAIL}
           name={ContactInfo.EMAIL}
+          type="email"
           value={contact[ContactInfo.EMAIL]}
           onChange={handleChange}
         />
