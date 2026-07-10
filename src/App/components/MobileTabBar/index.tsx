@@ -2,16 +2,20 @@ import React from 'react';
 import { Pencil, Eye } from 'lucide-react';
 
 import { usePaneMode } from '../../hooks/usePaneMode';
+import { FORM_STEPS, useActiveStep } from '../../../features/ResumeForm/formSteps';
 
-/**
- * Fixed bottom tab bar for mobile / tablet-portrait. Toggles the single visible
- * pane between the editor and the resume preview. Hidden on desktop (>=1024).
- */
 const MobileTabBar: React.FC = () => {
   const [pane, setPane] = usePaneMode();
+  const currentStep = useActiveStep();
+  const progressPct = ((currentStep + 1) / FORM_STEPS.length) * 100;
 
   return (
     <nav className="tabbar" role="tablist" aria-label="View">
+      <div
+        className="tabbar__progress"
+        style={{ width: `${progressPct}%` }}
+        aria-hidden="true"
+      />
       <button
         type="button"
         role="tab"

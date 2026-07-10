@@ -21,6 +21,7 @@ const PersonalDetails: React.FC = () => {
             value={contact[ContactInfo.NAME]}
             onChange={handleChange}
             className="form-input-name"
+            required
           />
         </div>
         <div className="full-width">
@@ -29,6 +30,7 @@ const PersonalDetails: React.FC = () => {
             name={ContactInfo.POSITION}
             value={contact[ContactInfo.POSITION]}
             onChange={handleChange}
+            required
           />
         </div>
         <FormField
@@ -43,6 +45,7 @@ const PersonalDetails: React.FC = () => {
           type="email"
           value={contact[ContactInfo.EMAIL]}
           onChange={handleChange}
+          required
         />
         <FormField
           label={ContactInfo.LINKEDIN}

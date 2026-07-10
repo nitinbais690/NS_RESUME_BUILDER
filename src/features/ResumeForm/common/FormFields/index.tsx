@@ -8,6 +8,7 @@ interface InputFieldProps {
   placeholder?: string;
   className?: string;
   type?: string;
+  required?: boolean;
 }
 
 // Separate props for TextArea

@@ -112,6 +112,7 @@
     background-color: var(--color-primary-medium);
     border-radius: var(--radius-lg);
     color: var(--color-primary);
+    transition: background-color var(--transition-base);
   }
 
   .form-section-info {
@@ -149,35 +150,87 @@
   flex: 1 1 auto;
 }
 
-/* --- Entrance Animations --- */
+/* =========================================
+   ENTRANCE ANIMATIONS
+   ========================================= */
+
 @keyframes form-fade-in {
   from {
     opacity: var(--zero);
     transform: translateY(8px);
   }
-
   to {
     opacity: var(--one);
     transform: translateY(var(--zero));
   }
 }
 
-.form-component-wrapper > section {
-  animation: form-fade-in 0.28s ease both;
+/* Direction-aware step transitions */
+@keyframes form-slide-in-forward {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes form-slide-in-backward {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes form-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+/* Spin animation for download button */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-component-wrapper[data-direction='forward'] > section {
+  animation: form-slide-in-forward 0.28s ease both;
+}
+
+.form-component-wrapper[data-direction='backward'] > section {
+  animation: form-slide-in-backward 0.28s ease both;
 }
 
 .form-card {
-  animation: form-fade-in 0.28s ease both;
+  animation: form-fade-in 0.25s ease both;
+}
+
+.form-card.is-removing {
+  animation: form-fade-out 0.2s ease forwards;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .form-component-wrapper > section,
-  .form-card {
+  .form-card,
+  .form-card.is-removing {
     animation: var(--none);
   }
 }
 
-/* --- Navigation Buttons --- */
+/* =========================================
+   NAVIGATION BUTTONS
+   ========================================= */
+
 .form-navigation-buttons {
   display: flex;
   justify-content: space-between;
@@ -199,6 +252,10 @@
   transition: all var(--transition-base);
   border-radius: var(--radius-sm);
 
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
   &:disabled {
     opacity: var(--opacity-disabled);
     cursor: not-allowed;
@@ -211,9 +268,15 @@
     background-color: var(--color-bg-white);
     border-color: var(--color-border-light);
     color: var(--color-text-main);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-border-dark);
+      transform: translateY(var(--y-active));
+    }
   }
 
-  &.form-btn-next {
+  &.form-btn-next,
+  &.form-btn-finish {
     background-color: var(--color-primary);
     color: var(--color-bg-white);
     box-shadow: var(--shadow-sm);
@@ -239,7 +302,10 @@
   transition: opacity var(--transition-base);
 }
 
-/* --- Form Container & Headers --- */
+/* =========================================
+   FORM CONTAINER & HEADERS
+   ========================================= */
+
 .form-resume-form-container {
   display: flex;
   flex-direction: column;
@@ -281,21 +347,25 @@
   }
 }
 
-/* --- Cards --- */
+/* =========================================
+   CARDS — elevated floating style
+   ========================================= */
+
 .form-card,
 .form-skills-card {
+  position: relative;
   margin-bottom: var(--spacing-lg);
   background: var(--color-bg-white);
-  border: var(--border-thin) solid var(--color-border-medium);
+  border-left: 3px solid var(--color-primary);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   overflow: hidden;
   transition:
     box-shadow var(--transition-base),
     border-color var(--transition-base);
 
   &:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.11);
   }
 
   .form-card__header {
@@ -303,7 +373,7 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--color-bg-sidebar);
+    background: transparent;
     border-bottom: var(--border-thin) solid var(--color-border-light);
   }
 
@@ -329,23 +399,42 @@
     cursor: pointer;
     transition:
       color var(--transition-base),
-      background-color var(--transition-base);
+      background-color var(--transition-base),
+      transform var(--transition-base);
 
     &:hover {
       color: var(--color-primary);
       background-color: var(--color-primary-soft);
     }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  .form-card__remove-label {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.2s ease;
+  }
+
+  &:hover .form-card__remove-label {
+    max-width: 60px;
   }
 
   .form-card__body {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-lg);
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
   }
 }
 
-/* --- Labels --- */
+/* =========================================
+   LABELS
+   ========================================= */
+
 .form-label,
 .form-skills-label {
   display: block;
@@ -355,9 +444,24 @@
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-sm);
   color: var(--color-text-muted);
+  transition: color var(--transition-base);
 }
 
-/* --- Inputs & Textareas --- */
+/* Required field asterisk — no JS needed */
+.form-input-group:has(input:required) .form-label::after {
+  content: ' *';
+  color: var(--color-primary);
+}
+
+/* Label highlights on focus */
+.form-input-group:focus-within .form-label {
+  color: var(--color-primary);
+}
+
+/* =========================================
+   INPUTS & TEXTAREAS
+   ========================================= */
+
 .form-input,
 .form-textarea {
   width: var(--percent-full);
@@ -384,6 +488,12 @@
   &:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px var(--color-primary-medium);
+  }
+
+  /* Invalid state — only shown after user has typed something */
+  &:invalid:not(:placeholder-shown) {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
 }
 
@@ -418,7 +528,10 @@
   font-size: var(--font-size-lg);
 }
 
-/* --- Shared Grid Layouts --- */
+/* =========================================
+   GRID LAYOUTS
+   ========================================= */
+
 .form-grid-2,
 .form-skills-grid,
 .form-personal-details-grid {
@@ -434,7 +547,6 @@
   margin-bottom: var(--spacing-xs);
 }
 
-/* --- Input group --- */
 .form-input-group {
   display: flex;
   flex-direction: column;
@@ -444,7 +556,10 @@
   grid-column: 1 / -1;
 }
 
-/* --- Dashed Add button --- */
+/* =========================================
+   ADD BUTTON (dashed)
+   ========================================= */
+
 .form-btn-add {
   display: flex;
   align-items: center;
@@ -467,21 +582,66 @@
     border-color: var(--color-primary);
     color: var(--color-primary);
     background: var(--color-primary-soft);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
 
-/* --- Empty state --- */
+/* =========================================
+   EMPTY STATE
+   ========================================= */
+
 .form-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
   padding: var(--spacing-4xl) var(--spacing-xl);
   text-align: center;
   color: var(--color-text-placeholder);
-  font-size: var(--font-size-lg);
   background: var(--color-bg-sidebar);
   border: var(--border-thin) dashed var(--color-border-medium);
   border-radius: var(--radius-md);
+
+  &__icon {
+    color: var(--color-border-medium);
+    opacity: 0.7;
+  }
+
+  &__message {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-placeholder);
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-primary-soft);
+    border: var(--border-thin) solid var(--color-primary-medium);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+
+    &:hover {
+      background: var(--color-primary-medium);
+      transform: translateY(-1px);
+    }
+  }
 }
 
-/* --- Skill / tool rows --- */
+/* =========================================
+   SKILL / TOOL ROWS
+   ========================================= */
+
 .form-skill-row {
   display: flex;
   align-items: center;
@@ -505,15 +665,23 @@
   cursor: pointer;
   transition:
     color var(--transition-base),
-    background-color var(--transition-base);
+    background-color var(--transition-base),
+    transform var(--transition-base);
 
   &:hover {
     color: var(--color-primary);
     background-color: var(--color-primary-soft);
   }
+
+  &:active {
+    transform: scale(0.9);
+  }
 }
 
-/* --- Tech tags --- */
+/* =========================================
+   TECH TAGS
+   ========================================= */
+
 .tech-tags {
   display: flex;
   flex-direction: column;
@@ -524,6 +692,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
+  max-width: 100%;
 }
 
 .tech-tag-edit {
@@ -543,7 +712,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--zero);
+  min-width: 20px;
+  min-height: 20px;
+  padding: 2px;
   border: var(--none);
   background: var(--none);
   color: var(--color-primary);
@@ -557,7 +728,7 @@
 }
 
 /* =========================================
-   3. COMPACT CUSTOMIZER
+   COMPACT CUSTOMIZER
    ========================================= */
 
 .sidebar-config-header {
@@ -578,6 +749,12 @@
     gap: var(--spacing-md);
   }
 
+  .compact-divider {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+  }
+
   .control-label-wrapper {
     display: flex;
     align-items: center;
@@ -593,10 +770,10 @@
     }
   }
 
-  /* --- Controls --- */
+  /* --- Font select --- */
   .mini-select-wrapper {
     position: relative;
-    flex: 0 0 var(--mini-select-width);
+    flex: 1;
     display: flex;
     align-items: center;
 
@@ -637,31 +814,43 @@
     }
   }
 
-  .segmented-control.mini {
-    display: flex;
-    padding: var(--segmented-control-padding);
-    background: var(--color-border-alt);
+  /* --- Layout card grid (replaces segmented control) --- */
+  .layout-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xs);
+    flex: 1;
+  }
+
+  .layout-card-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
     border: var(--border-thin) solid var(--color-border-medium);
     border-radius: var(--radius-sm);
+    background: var(--color-bg-white);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-light);
+    cursor: pointer;
+    text-transform: capitalize;
+    text-align: center;
+    transition: all var(--transition-base);
 
-    .segmented-btn {
-      padding: var(--spacing-xs) var(--spacing-md);
-      border: var(--none);
-      background: var(--transparent);
-      font-size: var(--font-size-sm);
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-soft);
+    }
+
+    &.active {
+      border-color: var(--color-primary);
+      border-width: 2px;
+      color: var(--color-primary);
+      background: var(--color-primary-soft);
       font-weight: var(--font-weight-bold);
-      cursor: pointer;
-
-      &.active {
-        background: var(--color-bg-white);
-        color: var(--color-primary);
-        border-radius: var(--border-radius-pill);
-        box-shadow: var(--shadow-sm);
-      }
     }
   }
 
-  /* --- Swatches --- */
+  /* --- Swatches — bigger + ring indicator --- */
   .swatch-grid {
     display: flex;
     flex-wrap: wrap;
@@ -671,15 +860,75 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      width: var(--swatch-size);
-      height: var(--swatch-size);
+      width: 28px;
+      height: 28px;
       border-radius: var(--radius-sm);
+      border: none;
       cursor: pointer;
+      transition:
+        box-shadow var(--transition-base),
+        transform var(--transition-base);
+
+      &:hover {
+        transform: scale(1.08);
+      }
 
       &.active {
-        transform: scale(1.1);
-        border-color: var(--color-text-black);
+        box-shadow:
+          0 0 0 2px var(--color-bg-white),
+          0 0 0 4px var(--color-primary);
+        transform: scale(1.05);
       }
     }
+  }
+}
+
+/* =========================================
+   TOUCH TARGET IMPROVEMENTS
+   ========================================= */
+
+@media (pointer: coarse) {
+  .form-btn-nav {
+    padding: 12px 20px;
+  }
+
+  .form-btn-add {
+    padding: 14px;
+  }
+
+  .tech-tag-remove {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 4px;
+  }
+
+  .form-skill-remove {
+    padding: 10px;
+  }
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+  .form-grid-2,
+  .form-personal-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-content-area {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media screen and (max-width: 359px) {
+  .form-card .form-card__body {
+    padding: 8px;
+    gap: var(--spacing-md);
+  }
+
+  .tech-tags-container {
+    overflow-x: hidden;
   }
 }

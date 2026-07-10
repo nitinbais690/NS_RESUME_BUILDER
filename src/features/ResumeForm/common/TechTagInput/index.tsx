@@ -10,7 +10,7 @@ export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
     {tags.length > 0 && (
       <div className="tech-tags-container">
         {tags.map((tech, tIndex) => (
-          <span key={tech} className="tech-tag-edit">
+          <span key={`tag-${tech}-${tIndex}`} className="tech-tag-edit">
             {tech}
             <button
               type="button"

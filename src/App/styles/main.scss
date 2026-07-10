@@ -1,23 +1,4 @@
-/* =========================================
-   BREAKPOINT MIXINS
-   ========================================= */
-@mixin mobile {
-  @media screen and (max-width: 767px) {
-    @content;
-  }
-}
-
-@mixin tablet {
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
-    @content;
-  }
-}
-
-@mixin desktop {
-  @media screen and (min-width: 1024px) {
-    @content;
-  }
-}
+@import 'mixins';
 
 /* =========================================
    APP SHELL — global layout
@@ -80,6 +61,15 @@
       font-weight: var(--font-weight-medium);
       color: var(--color-primary);
       opacity: var(--one);
+      /* Gradient brand accent */
+      background: linear-gradient(
+        135deg,
+        var(--color-primary) 0%,
+        var(--color-primary-dark) 100%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   }
 
@@ -87,6 +77,25 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
+  }
+
+  /* Thin separator between Customize and Download */
+  &__actions-separator {
+    width: 1px;
+    height: 20px;
+    background-color: var(--color-border-medium);
+    flex-shrink: 0;
+  }
+
+  &__popover-title {
+    margin: 0 0 var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-md);
+    color: var(--color-text-muted);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: var(--border-thin) solid var(--color-border-light);
   }
 
   &__customize {
@@ -129,6 +138,12 @@
   }
 }
 
+@keyframes appbar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Download button — app bar variant (inline, not sticky) */
 .btn-download--appbar {
   display: flex;
@@ -140,16 +155,29 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-base);
   border: var(--none);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px var(--color-primary-shadow);
   cursor: pointer;
   white-space: nowrap;
   transition: all var(--transition-base);
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: var(--color-primary-dark);
     transform: translateY(var(--y-active));
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 6px 16px var(--color-primary-shadow-hover);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: default;
+  }
+
+  .btn-download__spinner {
+    animation: appbar-spin 0.8s linear infinite;
   }
 }
 
@@ -219,12 +247,31 @@
     &.is-active {
       background-color: var(--color-primary-soft);
       color: var(--color-primary);
+
+      /* VS Code–style left pill indicator */
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 20%;
+        height: 60%;
+        width: 3px;
+        background: var(--color-primary);
+        border-radius: 0 2px 2px 0;
+      }
+    }
+
+    &:hover {
+      .rail__icon {
+        transform: scale(1.05);
+      }
     }
   }
 
   &__icon {
     display: flex;
     flex-shrink: 0;
+    transition: transform var(--transition-base);
   }
 
   /* Flyout label — absolute so hovering never shifts layout */
@@ -304,10 +351,25 @@
   bottom: var(--zero);
   height: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   background: var(--color-bg-white);
   border-top: var(--border-thin) solid var(--color-border-medium);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: var(--z-sticky);
+
+  /* Form progress bar — sits at top of tabbar */
+  &__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 0 2px 2px 0;
+    transition:
+      width 0.3s ease,
+      background-color var(--transition-base);
+    pointer-events: none;
+  }
 
   &__tab {
     flex: var(--one);
@@ -323,9 +385,14 @@
     font-weight: var(--font-weight-bold);
     color: var(--color-text-light);
     transition: color var(--transition-base);
+    min-height: 44px; /* accessible touch target */
 
     &.is-active {
       color: var(--color-primary);
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 }
@@ -1107,6 +1174,42 @@
   .btn-download--appbar:hover,
   .form-btn-next:hover:not(:disabled) {
     transform: none !important;
+  }
+}
+
+/* =========================================
+   LANDSCAPE MOBILE OPTIMIZATION
+   ========================================= */
+@media screen and (max-width: 1023px) and (orientation: landscape) {
+  .form-content-area {
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+
+  .form-section-icon-wrapper {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .form-navigation-buttons {
+    padding-top: var(--spacing-md);
+  }
+
+  .tabbar {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
+
+/* =========================================
+   VERY SMALL VIEWPORTS (<360px)
+   ========================================= */
+@media screen and (max-width: 359px) {
+  .appbar__title {
+    display: none;
+  }
+
+  .tech-tags-container {
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
 

@@ -1,6 +1,9 @@
-import { ResumeField } from '../../../types';
+import { Award } from 'lucide-react';
 
+import { ResumeField } from '../../../types';
+import { createCertification } from '../../../constants/factories';
 import { FormCardWrapper } from '../common/FormCardWrapper';
+import { EmptyState } from '../common/EmptyState';
 import AddButton from '../common/AddButton';
 import { useResumeStore } from '../../../store/useResumeStore';
 
@@ -10,23 +13,19 @@ const Certification: React.FC = () => {
   const updateCertification = useResumeStore((s) => s.updateCertification);
   const removeCertification = useResumeStore((s) => s.removeCertification);
 
-  const onAdd = () =>
-    addCertification({
-      id: crypto.randomUUID(),
-      name: '',
-      issuer: '',
-      date: '',
-      link: '',
-    });
+  const onAdd = () => addCertification(createCertification());
 
   return (
     <section>
       <AddButton onAdd={onAdd} label="Add Certification" />
 
       {items.length === 0 ? (
-        <div className="form-empty-state">
-          No certifications added yet. Click “Add Certification” to get started.
-        </div>
+        <EmptyState
+          icon={Award}
+          message="No certifications added yet."
+          actionLabel="Add Certification"
+          onAction={onAdd}
+        />
       ) : (
         items.map((cert, i) => (
           <FormCardWrapper

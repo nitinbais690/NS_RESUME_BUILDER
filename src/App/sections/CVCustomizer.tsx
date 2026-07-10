@@ -1,13 +1,7 @@
 import { FontFamily } from '../../types';
 
 import React from 'react';
-import {
-  Check,
-  Type,
-  Layout as LayoutIcon,
-  Palette,
-  ChevronDown,
-} from 'lucide-react';
+import { Check, Type, Layout as LayoutIcon, Palette, ChevronDown } from 'lucide-react';
 import themes, { fontFamilies, layouts } from '../../constants/themes';
 
 import { useResumeStore } from '../../store/useResumeStore';
@@ -19,28 +13,32 @@ const CVCustomizer: React.FC = () => {
   const setLayout = useResumeStore((s) => s.setLayout);
   const setTheme = useResumeStore((s) => s.setTheme);
   const onFontFamilyChange = useResumeStore((s) => s.setFontFamily);
+
   return (
     <div className="cv-customizer compact">
-      {/* 1. Layout Row */}
+      {/* Layout Row — card grid replaces overflow-prone segmented control */}
       <div className="compact-row">
         <div className="control-label-wrapper">
           <LayoutIcon size={12} />
           <span className="control-label">Layout</span>
         </div>
-        <div className="segmented-control mini">
+        <div className="layout-card-grid">
           {layouts.map((layout) => (
             <button
               key={layout}
               onClick={() => setLayout(layout)}
-              className={`segmented-btn ${currentLayout === layout ? 'active' : ''}`}
+              className={`layout-card-btn ${currentLayout === layout ? 'active' : ''}`}
+              title={layout}
             >
-              {layout.toUpperCase()}
+              {layout}
             </button>
           ))}
         </div>
       </div>
 
-      {/* 2. Typography Row (Using a Select for maximum space saving) */}
+      <hr className="compact-divider" />
+
+      {/* Font Row */}
       <div className="compact-row">
         <div className="control-label-wrapper">
           <Type size={12} />
@@ -64,7 +62,9 @@ const CVCustomizer: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Theme Row */}
+      <hr className="compact-divider" />
+
+      {/* Theme Row */}
       <div className="compact-row">
         <div className="control-label-wrapper">
           <Palette size={12} />
@@ -77,8 +77,10 @@ const CVCustomizer: React.FC = () => {
               onClick={() => setTheme(theme.name)}
               className={`swatch-btn mini ${currentTheme === theme.name ? 'active' : ''}`}
               style={{ backgroundColor: theme.color }}
+              title={theme.name}
+              aria-label={`${theme.name} theme`}
             >
-              {currentTheme === theme.name && <Check size={15} color="white" />}
+              {currentTheme === theme.name && <Check size={14} color="white" />}
             </button>
           ))}
         </div>

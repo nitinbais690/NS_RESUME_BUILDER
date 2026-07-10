@@ -1,6 +1,9 @@
-import { ResumeField } from '../../../types';
+import { FolderCode } from 'lucide-react';
 
+import { ResumeField } from '../../../types';
+import { createProject } from '../../../constants/factories';
 import { FormCardWrapper } from '../common/FormCardWrapper';
+import { EmptyState } from '../common/EmptyState';
 import { TechTagInput } from '../common/TechTagInput';
 import AddButton from '../common/AddButton';
 import { useResumeStore } from '../../../store/useResumeStore';
@@ -11,23 +14,19 @@ const Project: React.FC = () => {
   const updateProject = useResumeStore((s) => s.updateProject);
   const removeProject = useResumeStore((s) => s.removeProject);
 
-  const onAdd = () =>
-    addProject({
-      id: crypto.randomUUID(),
-      name: '',
-      link: '',
-      desc: '',
-      technologies: [],
-    });
+  const onAdd = () => addProject(createProject());
 
   return (
     <section>
       <AddButton onAdd={onAdd} label="Add Project" />
 
       {items.length === 0 ? (
-        <div className="form-empty-state">
-          No projects added yet. Click “Add Project” to get started.
-        </div>
+        <EmptyState
+          icon={FolderCode}
+          message="No projects added yet."
+          actionLabel="Add Project"
+          onAction={onAdd}
+        />
       ) : (
         items.map((proj, i) => (
           <FormCardWrapper
@@ -42,7 +41,9 @@ const Project: React.FC = () => {
                 placeholder="e.g. Portfolio Website"
                 className="form-input form-input-title"
                 value={proj.name}
-                onChange={(e) => updateProject(proj.id, { name: e.target.value })}
+                onChange={(e) =>
+                  updateProject(proj.id, { name: e.target.value })
+                }
               />
             </div>
 
@@ -52,7 +53,9 @@ const Project: React.FC = () => {
                 placeholder="https://…"
                 className="form-input"
                 value={proj.link}
-                onChange={(e) => updateProject(proj.id, { link: e.target.value })}
+                onChange={(e) =>
+                  updateProject(proj.id, { link: e.target.value })
+                }
               />
             </div>
 
@@ -72,7 +75,9 @@ const Project: React.FC = () => {
                 placeholder="What the project does"
                 className="form-textarea form-textarea--short"
                 value={proj.desc}
-                onChange={(e) => updateProject(proj.id, { desc: e.target.value })}
+                onChange={(e) =>
+                  updateProject(proj.id, { desc: e.target.value })
+                }
               />
             </div>
           </FormCardWrapper>

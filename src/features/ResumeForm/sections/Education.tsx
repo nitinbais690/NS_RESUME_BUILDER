@@ -1,6 +1,9 @@
-import { ResumeField } from '../../../types';
+import { GraduationCap } from 'lucide-react';
 
+import { ResumeField } from '../../../types';
+import { createEducation } from '../../../constants/factories';
 import { FormCardWrapper } from '../common/FormCardWrapper';
+import { EmptyState } from '../common/EmptyState';
 import AddButton from '../common/AddButton';
 import { useResumeStore } from '../../../store/useResumeStore';
 
@@ -10,23 +13,19 @@ const Education: React.FC = () => {
   const updateEducation = useResumeStore((s) => s.updateEducation);
   const removeEducation = useResumeStore((s) => s.removeEducation);
 
-  const onAdd = () =>
-    addEducation({
-      id: crypto.randomUUID(),
-      degree: '',
-      school: '',
-      year: '',
-      score: '',
-    });
+  const onAdd = () => addEducation(createEducation());
 
   return (
     <section>
       <AddButton onAdd={onAdd} label="Add Education" />
 
       {items.length === 0 ? (
-        <div className="form-empty-state">
-          No education added yet. Click “Add Education” to get started.
-        </div>
+        <EmptyState
+          icon={GraduationCap}
+          message="No education added yet."
+          actionLabel="Add Education"
+          onAction={onAdd}
+        />
       ) : (
         items.map((edu, i) => (
           <FormCardWrapper

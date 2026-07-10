@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
@@ -8,13 +8,9 @@ interface AppBarProps {
   onDownload: () => void;
 }
 
-/**
- * Global top bar: branding (left) + customize popover & download (right).
- * Consistent across every breakpoint. The theme/layout/font controls live in a
- * popover so the bar stays clean on narrow screens.
- */
 const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
   const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const customizeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,6 +33,13 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [customizeOpen]);
+
+  const handleDownload = useCallback(() => {
+    setIsDownloading(true);
+    onDownload();
+    const timer = setTimeout(() => setIsDownloading(false), 1500);
+    return () => clearTimeout(timer);
+  }, [onDownload]);
 
   return (
     <header className="appbar">
@@ -66,13 +69,20 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
             <span>Customize</span>
           </button>
           {customizeOpen && (
-            <div className="appbar__popover" role="dialog" aria-label="Customize resume">
+            <div
+              className="appbar__popover"
+              role="dialog"
+              aria-label="Customize resume"
+            >
+              <p className="appbar__popover-title">Resume Style</p>
               <CVCustomizer />
             </div>
           )}
         </div>
 
-        <DownloadButton onClick={onDownload} />
+        <div className="appbar__actions-separator" aria-hidden="true" />
+
+        <DownloadButton onClick={handleDownload} isLoading={isDownloading} />
       </div>
     </header>
   );

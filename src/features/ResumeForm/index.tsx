@@ -1,6 +1,6 @@
 import { LOCAL_STORAGE_KEY } from '../../constants';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
@@ -10,21 +10,27 @@ import { FORM_STEPS, useActiveStep } from './formSteps';
 const ResumeForm: React.FC = () => {
   const navigate = useNavigate();
   const currentStep = useActiveStep();
+  const prevStepRef = useRef(currentStep);
+
+  const direction =
+    currentStep > prevStepRef.current
+      ? 'forward'
+      : currentStep < prevStepRef.current
+        ? 'backward'
+        : 'forward';
+
+  prevStepRef.current = currentStep;
 
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === FORM_STEPS.length - 1;
   const ActiveIcon = FORM_STEPS[currentStep].icon;
 
   const handleNext = () => {
-    if (!isLastStep) {
-      navigate('/' + FORM_STEPS[currentStep + 1].id);
-    }
+    if (!isLastStep) navigate('/' + FORM_STEPS[currentStep + 1].id);
   };
 
   const handlePrev = () => {
-    if (!isFirstStep) {
-      navigate('/' + FORM_STEPS[currentStep - 1].id);
-    }
+    if (!isFirstStep) navigate('/' + FORM_STEPS[currentStep - 1].id);
   };
 
   const handleReset = () => {
@@ -44,8 +50,7 @@ const ResumeForm: React.FC = () => {
         totalSteps={FORM_STEPS.length}
       />
 
-      {/* Injected Active Section */}
-      <div className="form-component-wrapper">
+      <div className="form-component-wrapper" data-direction={direction}>
         <Routes>
           <Route
             path="/"
@@ -57,7 +62,6 @@ const ResumeForm: React.FC = () => {
         </Routes>
       </div>
 
-      {/* Footer Navigation */}
       <footer className="form-navigation-buttons">
         <button
           onClick={handlePrev}

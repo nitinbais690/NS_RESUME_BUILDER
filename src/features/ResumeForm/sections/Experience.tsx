@@ -1,8 +1,11 @@
-import { ResumeField } from '../../../types';
+import { Briefcase } from 'lucide-react';
 
+import { ResumeField } from '../../../types';
+import { createExperience } from '../../../constants/factories';
 import { FormCardWrapper } from '../common/FormCardWrapper';
-import AddButton from '../common/AddButton';
+import { EmptyState } from '../common/EmptyState';
 import { TechTagInput } from '../common/TechTagInput';
+import AddButton from '../common/AddButton';
 import { useResumeStore } from '../../../store/useResumeStore';
 
 const Experience: React.FC = () => {
@@ -11,24 +14,19 @@ const Experience: React.FC = () => {
   const updateExperience = useResumeStore((s) => s.updateExperience);
   const removeExperience = useResumeStore((s) => s.removeExperience);
 
-  const onAdd = () =>
-    addExperience({
-      id: crypto.randomUUID(),
-      title: '',
-      company: '',
-      date: '',
-      desc: '',
-      technologies: [],
-    });
+  const onAdd = () => addExperience(createExperience());
 
   return (
     <section>
       <AddButton onAdd={onAdd} label="Add Experience" />
 
       {items.length === 0 ? (
-        <div className="form-empty-state">
-          No experience added yet. Click “Add Experience” to get started.
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          message="No experience added yet."
+          actionLabel="Add Experience"
+          onAction={onAdd}
+        />
       ) : (
         items.map((exp, i) => (
           <FormCardWrapper

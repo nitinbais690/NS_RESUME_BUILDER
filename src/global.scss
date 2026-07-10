@@ -121,6 +121,7 @@ $transition-base: 0.2s ease-in-out;
   --transition-base: #{$transition-base};
   --z-sidebar: 20;
   --z-sticky: 30;
+  --color-error: #dc2626;
 
   /* --- Effects --- */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);

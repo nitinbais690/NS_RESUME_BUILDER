@@ -21,19 +21,17 @@ interface ResumeState {
   layout: LayoutType;
   fontFamily: FontFamily;
 
-  // Actions
   setTheme: (theme: ThemeType) => void;
   setLayout: (layout: LayoutType) => void;
   setFontFamily: (fontFamily: FontFamily) => void;
 
   updateContactInfo: (info: Partial<ContactInfoType>) => void;
-
   updateAboutMe: (aboutMe: string) => void;
+  updateListField: (
+    field: ResumeField.KEY_IMPACT | ResumeField.SKILLS | ResumeField.TOOLS,
+    items: string[]
+  ) => void;
 
-  // Arrays of Strings (Key Impact, Skills, Tools)
-  updateListField: (field: ResumeField.KEY_IMPACT | ResumeField.SKILLS | ResumeField.TOOLS, items: string[]) => void;
-
-  // Complex Arrays
   addEducation: (education: EducationType) => void;
   removeEducation: (id: string) => void;
   updateEducation: (id: string, education: Partial<EducationType>) => void;
@@ -48,182 +46,100 @@ interface ResumeState {
 
   addCertification: (certification: CertificationType) => void;
   removeCertification: (id: string) => void;
-  updateCertification: (id: string, certification: Partial<CertificationType>) => void;
+  updateCertification: (
+    id: string,
+    certification: Partial<CertificationType>
+  ) => void;
 }
 
 export const useResumeStore = create<ResumeState>()(
   persist(
-    (set) => ({
-      resumeData: dummyResumeData,
-      theme: 'default',
-      layout: 'classic',
-      fontFamily: 'Inter, sans-serif',
-
-      setTheme: (theme) => set({ theme }),
-      setLayout: (layout) => set({ layout }),
-      setFontFamily: (fontFamily) => set({ fontFamily }),
-
-      updateContactInfo: (info) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.CONTACT]: {
-              ...state.resumeData[ResumeField.CONTACT],
-              ...info,
+    (set) => {
+      // Generates add/remove/update actions for any id-keyed array field
+      const entityActions = <T extends { id: string }>(field: ResumeField) => ({
+        add: (item: T) =>
+          set((s) => ({
+            resumeData: {
+              ...s.resumeData,
+              [field]: [...(s.resumeData[field] as unknown as T[]), item],
             },
-          },
-        })),
+          })),
+        remove: (id: string) =>
+          set((s) => ({
+            resumeData: {
+              ...s.resumeData,
+              [field]: (s.resumeData[field] as unknown as T[]).filter(
+                (i) => i.id !== id
+              ),
+            },
+          })),
+        update: (id: string, patch: Partial<T>) =>
+          set((s) => ({
+            resumeData: {
+              ...s.resumeData,
+              [field]: (s.resumeData[field] as unknown as T[]).map((i) =>
+                i.id === id ? { ...i, ...patch } : i
+              ),
+            },
+          })),
+      });
 
-      updateAboutMe: (aboutMe) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.ABOUT_ME]: aboutMe,
-          },
-        })),
+      const edu = entityActions<EducationType>(ResumeField.EDUCATION);
+      const exp = entityActions<ExperienceType>(ResumeField.EXPERIENCE);
+      const proj = entityActions<ProjectType>(ResumeField.PROJECTS);
+      const cert = entityActions<CertificationType>(ResumeField.CERTIFICATIONS);
 
-      updateListField: (field, items) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [field]: items,
-          },
-        })),
+      return {
+        resumeData: dummyResumeData,
+        theme: 'default',
+        layout: 'classic',
+        fontFamily: 'Inter, sans-serif',
 
-      addEducation: (education) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EDUCATION]: [
-              ...state.resumeData[ResumeField.EDUCATION],
-              education,
-            ],
-          },
-        })),
+        setTheme: (theme) => set({ theme }),
+        setLayout: (layout) => set({ layout }),
+        setFontFamily: (fontFamily) => set({ fontFamily }),
 
-      removeEducation: (id) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EDUCATION]: state.resumeData[
-              ResumeField.EDUCATION
-            ].filter((item) => item.id !== id),
-          },
-        })),
+        updateContactInfo: (info) =>
+          set((state) => ({
+            resumeData: {
+              ...state.resumeData,
+              [ResumeField.CONTACT]: {
+                ...state.resumeData[ResumeField.CONTACT],
+                ...info,
+              },
+            },
+          })),
 
-      updateEducation: (id, education) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EDUCATION]: state.resumeData[
-              ResumeField.EDUCATION
-            ].map((item) =>
-              item.id === id ? { ...item, ...education } : item
-            ),
-          },
-        })),
+        updateAboutMe: (aboutMe) =>
+          set((state) => ({
+            resumeData: {
+              ...state.resumeData,
+              [ResumeField.ABOUT_ME]: aboutMe,
+            },
+          })),
 
-      addExperience: (experience) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EXPERIENCE]: [
-              ...state.resumeData[ResumeField.EXPERIENCE],
-              experience,
-            ],
-          },
-        })),
+        updateListField: (field, items) =>
+          set((state) => ({
+            resumeData: { ...state.resumeData, [field]: items },
+          })),
 
-      removeExperience: (id) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EXPERIENCE]: state.resumeData[
-              ResumeField.EXPERIENCE
-            ].filter((item) => item.id !== id),
-          },
-        })),
+        addEducation: edu.add,
+        removeEducation: edu.remove,
+        updateEducation: edu.update,
 
-      updateExperience: (id, experience) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.EXPERIENCE]: state.resumeData[
-              ResumeField.EXPERIENCE
-            ].map((item) =>
-              item.id === id ? { ...item, ...experience } : item
-            ),
-          },
-        })),
+        addExperience: exp.add,
+        removeExperience: exp.remove,
+        updateExperience: exp.update,
 
-      addProject: (project) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.PROJECTS]: [
-              ...state.resumeData[ResumeField.PROJECTS],
-              project,
-            ],
-          },
-        })),
+        addProject: proj.add,
+        removeProject: proj.remove,
+        updateProject: proj.update,
 
-      removeProject: (id) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.PROJECTS]: state.resumeData[
-              ResumeField.PROJECTS
-            ].filter((item) => item.id !== id),
-          },
-        })),
-
-      updateProject: (id, project) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.PROJECTS]: state.resumeData[
-              ResumeField.PROJECTS
-            ].map((item) =>
-              item.id === id ? { ...item, ...project } : item
-            ),
-          },
-        })),
-
-      addCertification: (certification) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.CERTIFICATIONS]: [
-              ...state.resumeData[ResumeField.CERTIFICATIONS],
-              certification,
-            ],
-          },
-        })),
-
-      removeCertification: (id) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.CERTIFICATIONS]: state.resumeData[
-              ResumeField.CERTIFICATIONS
-            ].filter((item) => item.id !== id),
-          },
-        })),
-
-      updateCertification: (id, certification) =>
-        set((state) => ({
-          resumeData: {
-            ...state.resumeData,
-            [ResumeField.CERTIFICATIONS]: state.resumeData[
-              ResumeField.CERTIFICATIONS
-            ].map((item) =>
-              item.id === id ? { ...item, ...certification } : item
-            ),
-          },
-        })),
-    }),
-    {
-      name: LOCAL_STORAGE_KEY,
-    }
+        addCertification: cert.add,
+        removeCertification: cert.remove,
+        updateCertification: cert.update,
+      };
+    },
+    { name: LOCAL_STORAGE_KEY }
   )
 );
