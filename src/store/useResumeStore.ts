@@ -357,6 +357,47 @@ export const useResumeStore = create<ResumeState>()(
         // exports never show stale content after a reload.
         resumes: { ...state.resumes, [state.activeResumeId]: snapshot(state) },
       }),
+      // Repair whatever comes out of storage on every load (hand edits, partial
+      // writes, older builds), so bad saved data degrades gracefully instead of
+      // crashing the app. Same normalizers as JSON import.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<ResumeState>;
+        const style = normalizeStyle({ ...pickStyle(current), ...p });
+        const resumes: Record<string, SavedResume> = {};
+        for (const [id, r] of Object.entries(p.resumes ?? {})) {
+          if (!r || typeof r !== 'object') continue;
+          resumes[id] = {
+            id,
+            name: typeof r.name === 'string' && r.name.trim() ? r.name : 'Untitled resume',
+            updatedAt: Number(r.updatedAt) || Date.now(),
+            data: normalizeResumeData(r.data),
+            style: normalizeStyle(r.style),
+          };
+        }
+        const resumeData = normalizeResumeData(p.resumeData ?? current.resumeData);
+        const activeResumeId = typeof p.activeResumeId === 'string' ? p.activeResumeId : current.activeResumeId;
+        if (!resumes[activeResumeId]) {
+          resumes[activeResumeId] = {
+            id: activeResumeId,
+            name: 'My Resume',
+            updatedAt: Date.now(),
+            data: resumeData,
+            style,
+          };
+        }
+        return {
+          ...current,
+          ...style,
+          resumeData,
+          resumes,
+          activeResumeId,
+          editedAt: Number(p.editedAt) || current.editedAt,
+          colorScheme: ['system', 'light', 'dark'].includes(p.colorScheme as string)
+            ? (p.colorScheme as ColorScheme)
+            : current.colorScheme,
+          jobDescription: typeof p.jobDescription === 'string' ? p.jobDescription : '',
+        };
+      },
       // v0 (single resume, no `resumes` map) → v1. Existing work becomes the
       // first saved resume; nothing is lost.
       migrate: (persisted, version) => {

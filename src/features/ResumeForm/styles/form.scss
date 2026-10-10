@@ -3,87 +3,8 @@
    ========================================= */
 
 /* --- Layout Structure --- */
-.form-resume-form-layout {
-  display: flex;
-  height: var(--percent-full);
-  background-color: var(--color-bg-sidebar);
-  border-radius: var(--radius-md);
-  margin: var(--spacing-negative-sidebar);
-  overflow: hidden;
-}
 
 /* --- Sidebar Navigation --- */
-.form-nav-sidebar {
-  width: var(--sidebar-width);
-  background-color: var(--color-bg-white);
-  border-right: var(--border-thin) solid var(--color-border-light);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: var(--zero);
-
-  .form-nav-header {
-    padding: var(--spacing-xl);
-    border-bottom: var(--border-thin) solid var(--color-border-light);
-
-    h3 {
-      margin: var(--zero);
-      font-size: var(--font-size-md);
-      font-weight: var(--font-weight-bold);
-      color: var(--color-text-main);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-sm);
-    }
-  }
-
-  .form-nav-items {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-md);
-  }
-
-  .form-nav-item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border: var(--border-thin) solid var(--transparent);
-    background: var(--none);
-    text-align: left;
-    font-family: var(--font-family-base);
-    font-size: inherit;
-    cursor: pointer;
-    color: var(--color-text-light);
-    transition: all var(--transition-base);
-    border-radius: var(--radius-sm);
-
-    &:hover {
-      background-color: var(--color-border-alt);
-      color: var(--color-text-main);
-    }
-
-    &.completed {
-      color: var(--color-text-main);
-    }
-
-    &.active {
-      font-weight: var(--font-weight-bold);
-      background-color: var(--color-primary-soft);
-      color: var(--color-primary);
-      border-color: var(--color-primary-medium);
-    }
-  }
-
-  .form-active-indicator {
-    position: absolute;
-    right: var(--spacing-md);
-    width: var(--indicator-size);
-    height: var(--indicator-size);
-    border-radius: var(--percent-half);
-    background-color: var(--color-primary);
-  }
-}
 
 /* --- Main Content Area --- */
 .form-content-area {
@@ -134,16 +55,6 @@
     color: var(--color-text-light);
   }
 
-  .form-section-step {
-    flex-shrink: var(--zero);
-    padding: var(--spacing-xs) var(--spacing-md);
-    background-color: var(--color-bg-app);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-light);
-    white-space: nowrap;
-  }
 }
 
 .form-component-wrapper {
@@ -289,70 +200,15 @@
   }
 }
 
-.form-btn-add-new {
-  border: var(--none);
-  background: var(--none);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  cursor: pointer;
-  transition: opacity var(--transition-base);
-}
-
 /* =========================================
    FORM CONTAINER & HEADERS
    ========================================= */
-
-.form-resume-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-section);
-
-  .form-section-heading {
-    margin: var(--zero);
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-heavy);
-    letter-spacing: var(--letter-spacing-md);
-    text-transform: uppercase;
-    color: var(--color-text-main);
-  }
-
-  .form-header-main {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: var(--percent-full);
-    margin-bottom: var(--spacing-2xl);
-    padding-bottom: var(--spacing-lg);
-    border-bottom: var(--border-thin) solid var(--form-header-separator);
-
-    .form-header-center {
-      flex: var(--one);
-      text-align: center;
-    }
-    .form-header-right {
-      min-width: 100px;
-      text-align: right;
-    }
-  }
-
-  .form-step-text {
-    margin: var(--zero);
-    font-size: var(--step-text-size);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-light);
-  }
-}
 
 /* =========================================
    CARDS — elevated floating style
    ========================================= */
 
-.form-card,
-.form-skills-card {
+.form-card {
   position: relative;
   margin-bottom: var(--spacing-lg);
   background: var(--color-bg-white);
@@ -435,8 +291,7 @@
    LABELS
    ========================================= */
 
-.form-label,
-.form-skills-label {
+.form-label {
   display: block;
   margin-bottom: var(--spacing-xs);
   font-size: var(--font-size-xs);
@@ -535,9 +390,6 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
 }
-.form-input-meta {
-  font-size: var(--font-size-md);
-}
 .form-input-text {
   font-size: var(--font-size-lg);
 }
@@ -547,18 +399,10 @@
    ========================================= */
 
 .form-grid-2,
-.form-skills-grid,
 .form-personal-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-xl);
-}
-
-.form-skills-row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
 }
 
 .form-input-group {
@@ -780,12 +624,6 @@
 /* =========================================
    COMPACT CUSTOMIZER
    ========================================= */
-
-.sidebar-config-header {
-  padding: var(--nav-header-padding);
-  border-bottom: var(--border-thin) solid var(--color-border-alt);
-  background: var(--color-bg-white);
-}
 
 .cv-customizer.compact {
   display: flex;

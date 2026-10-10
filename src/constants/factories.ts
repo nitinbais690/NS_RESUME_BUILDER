@@ -1,4 +1,7 @@
 import {
+  AwardType,
+  LanguageType,
+  VolunteerType,
   ContactInfo,
   ResumeData,
   ResumeField,
@@ -34,6 +37,28 @@ export const createProject = (): ProjectType => ({
   technologies: [],
 });
 
+export const createLanguage = (): LanguageType => ({
+  id: crypto.randomUUID(),
+  name: '',
+  level: 'Professional',
+});
+
+export const createAward = (): AwardType => ({
+  id: crypto.randomUUID(),
+  title: '',
+  issuer: '',
+  date: '',
+  desc: '',
+});
+
+export const createVolunteer = (): VolunteerType => ({
+  id: crypto.randomUUID(),
+  role: '',
+  org: '',
+  date: '',
+  desc: '',
+});
+
 export const createCertification = (): CertificationType => ({
   id: crypto.randomUUID(),
   name: '',
@@ -49,6 +74,7 @@ export const DEFAULT_STYLE: ResumeStyle = {
   accentColor: null,
   fontScale: 1,
   qrTarget: 'none',
+  hiddenSections: [],
 };
 
 export const createEmptyResumeData = (): ResumeData => ({
@@ -69,4 +95,7 @@ export const createEmptyResumeData = (): ResumeData => ({
   [ResumeField.EXPERIENCE]: [],
   [ResumeField.PROJECTS]: [],
   [ResumeField.CERTIFICATIONS]: [],
+  [ResumeField.LANGUAGES]: [],
+  [ResumeField.AWARDS]: [],
+  [ResumeField.VOLUNTEERING]: [],
 });

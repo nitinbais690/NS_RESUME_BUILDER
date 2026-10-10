@@ -524,12 +524,6 @@
 }
 
 /* Legacy generic download button (still used by common/Button → AddButton) */
-.btn-download-container {
-  position: sticky;
-  top: var(--zero);
-  margin-bottom: var(--spacing-xl);
-  z-index: var(--z-sticky);
-}
 
 .btn-download {
   display: flex;
@@ -641,7 +635,6 @@
 }
 
 .form-grid-2,
-.form-skills-grid,
 .form-personal-details-grid {
   @include mobile {
     grid-template-columns: 1fr;
@@ -649,8 +642,7 @@
   }
 }
 
-.form-card,
-.form-skills-card {
+.form-card {
   @include mobile {
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);
@@ -674,13 +666,6 @@
   }
 }
 
-.form-skills-row {
-  @include mobile {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
-}
-
 /* Compact customizer inside the app-bar popover on small screens */
 .cv-customizer.compact {
   @include mobile {
@@ -699,17 +684,6 @@
     .mini-select {
       flex: 1 1 100%;
       width: var(--percent-full);
-    }
-
-    .segmented-control.mini {
-      width: var(--percent-full);
-      justify-content: center;
-
-      .segmented-btn {
-        flex: var(--one);
-        text-align: center;
-        padding: var(--spacing-sm) var(--spacing-md);
-      }
     }
 
     .swatch-grid {
@@ -931,32 +905,6 @@
 }
 
 /* --- Skills --- */
-.template-skill-item,
-.template-skills-item {
-  @include mobile {
-    gap: 6px;
-    margin-bottom: 4px;
-  }
-}
-
-.template-skill-name {
-  @include mobile {
-    font-size: var(--font-size-sm);
-  }
-}
-
-.template-skills-text {
-  @include mobile {
-    font-size: var(--font-size-sm);
-    padding: 3px 8px;
-  }
-}
-
-.template-skills-category-label {
-  @include mobile {
-    font-size: var(--font-size-xs);
-  }
-}
 
 /* --- Tech Chips --- */
 .template-tech-wrapper {
@@ -1033,8 +981,7 @@
       padding-top: 0;
     }
 
-    .template-section-title,
-    .template-skills-category-label {
+    .template-section-title {
       padding-left: 8px;
     }
   }
@@ -1141,10 +1088,6 @@
       padding: 3px 6px;
     }
 
-    .template-skills-text {
-      font-size: var(--font-size-sm);
-      padding: 3px 8px;
-    }
   }
 }
 
@@ -1167,8 +1110,7 @@
     padding: var(--spacing-sm);
   }
 
-  .form-card,
-  .form-skills-card {
+  .form-card {
     padding: var(--spacing-sm);
   }
 
@@ -1210,7 +1152,6 @@
   .pane-fab,
   .form-navigation-buttons,
   .btn-clear-storage,
-  .btn-download-container,
   .shell__editor-scroll {
     display: none !important;
   }
@@ -1261,11 +1202,26 @@
     box-shadow: none !important;
   }
 
-  /* Prevent page breaks inside items */
-  .timeline-item,
-  .edu-item,
-  .sidebar-section {
-    page-break-inside: avoid;
+  /* Keep each entry whole: never split a job, project, degree, certificate,
+     bullet or contact line across two pages. */
+  .template-timeline-item,
+  .template-credential-item,
+  .template-impact-item,
+  .template-item-header,
+  .template-resume-header {
+    break-inside: avoid;
+    page-break-inside: avoid; /* older engines */
+  }
+
+  /* Never leave a section heading alone at the bottom of a page. */
+  .template-section-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Short sidebar sections (skills, tools…) stay in one piece. */
+  .template-sidebar-section {
+    break-inside: avoid-page;
   }
 }
 

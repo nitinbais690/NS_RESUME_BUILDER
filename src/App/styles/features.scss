@@ -53,12 +53,6 @@
       color: var(--color-on-primary);
     }
   }
-
-  &--small {
-    min-height: 28px;
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-base);
-  }
 }
 
 /* Keyboard focus ring everywhere in the app chrome (a11y). */
@@ -1000,5 +994,51 @@
 @media screen and (max-width: 480px) {
   .appbar__logo {
     display: none;
+  }
+}
+
+/* =========================================
+   CRASH SCREEN (ErrorBoundary)
+   ========================================= */
+.crash {
+  max-width: 520px;
+  margin: 12vh auto 0;
+  padding: var(--spacing-3xl);
+  color: var(--color-text-main);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-relaxed);
+
+  h1 {
+    margin: 0 0 var(--spacing-md);
+    font-size: 1.5rem;
+    color: var(--color-text-black);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-2xl);
+  }
+
+  &__reset:hover:not(:disabled) {
+    border-color: var(--color-error);
+    color: var(--color-error);
+  }
+
+  &__details {
+    margin-top: var(--spacing-2xl);
+    font-size: var(--font-size-md);
+    color: var(--color-text-light);
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   }
 }

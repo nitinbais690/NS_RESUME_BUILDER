@@ -179,4 +179,33 @@ describe('persistence', () => {
     expect(Object.values(s.resumes)).toHaveLength(1);
     expect(s.resumes[s.activeResumeId].data[ResumeField.ABOUT_ME]).toBe('Old save');
   });
+
+  it('repairs corrupted saved data instead of crashing', async () => {
+    localStorage.setItem(
+      'ns_cv_resume_data',
+      JSON.stringify({
+        version: 1,
+        state: {
+          resumeData: null,
+          layout: 'not-a-layout',
+          fontScale: 'huge',
+          activeResumeId: 'gone',
+          resumes: { broken: null, ok: { name: '', data: { [ResumeField.SKILLS]: ['Go', 3] } } },
+        },
+      }),
+    );
+    await useResumeStore.persist.rehydrate();
+
+    const s = store();
+    // null resumeData falls back to a complete resume instead of crashing.
+    expect(Array.isArray(s.resumeData[ResumeField.EXPERIENCE])).toBe(true);
+    expect(typeof s.resumeData[ResumeField.ABOUT_ME]).toBe('string');
+    expect(s.layout).toBe('classic');
+    expect(s.fontScale).toBe(1);
+    expect(s.resumes.broken).toBeUndefined();
+    expect(s.resumes.ok.name).toBe('Untitled resume');
+    expect(s.resumes.ok.data[ResumeField.SKILLS]).toEqual(['Go']);
+    // The active id pointed nowhere, so an entry is recreated for it.
+    expect(s.resumes[s.activeResumeId]).toBeDefined();
+  });
 });
