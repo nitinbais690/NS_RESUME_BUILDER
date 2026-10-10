@@ -17,11 +17,15 @@ import {
   ListField,
   EntityField,
   QrTarget,
+  LanguageType,
+  AwardType,
+  VolunteerType,
 } from '../types';
 import dummyResumeData from '../data';
 import { LOCAL_STORAGE_KEY } from '../constants';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
 import { normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
+import { compareByRecency } from '../lib/dates';
 
 /** Moves one array item; returns the same array when the move is a no-op. */
 export const moveItem = <T,>(items: T[], from: number, to: number): T[] => {
@@ -78,6 +82,23 @@ interface ResumeState extends ResumeStyle {
   removeProject: (id: string) => void;
   updateProject: (id: string, project: Partial<ProjectType>) => void;
 
+  addLanguage: (item: LanguageType) => void;
+  removeLanguage: (id: string) => void;
+  updateLanguage: (id: string, patch: Partial<LanguageType>) => void;
+
+  addAward: (item: AwardType) => void;
+  removeAward: (id: string) => void;
+  updateAward: (id: string, patch: Partial<AwardType>) => void;
+
+  addVolunteer: (item: VolunteerType) => void;
+  removeVolunteer: (id: string) => void;
+  updateVolunteer: (id: string, patch: Partial<VolunteerType>) => void;
+
+  /** Orders dated entries newest first (ongoing first). Undoable. */
+  sortByDate: (field: ResumeField.EXPERIENCE | ResumeField.VOLUNTEERING) => void;
+  /** Shows or hides a section on the resume (content is kept). */
+  toggleSection: (field: ResumeField) => void;
+
   addCertification: (certification: CertificationType) => void;
   removeCertification: (id: string) => void;
   updateCertification: (
@@ -110,6 +131,7 @@ export const pickStyle = (s: ResumeStyle): ResumeStyle => ({
   accentColor: s.accentColor,
   fontScale: s.fontScale,
   qrTarget: s.qrTarget,
+  hiddenSections: s.hiddenSections,
 });
 
 const snapshot = (s: ResumeState): SavedResume => ({
@@ -176,6 +198,9 @@ export const useResumeStore = create<ResumeState>()(
       const exp = entityActions<ExperienceType>(ResumeField.EXPERIENCE);
       const proj = entityActions<ProjectType>(ResumeField.PROJECTS);
       const cert = entityActions<CertificationType>(ResumeField.CERTIFICATIONS);
+      const lang = entityActions<LanguageType>(ResumeField.LANGUAGES);
+      const award = entityActions<AwardType>(ResumeField.AWARDS);
+      const vol = entityActions<VolunteerType>(ResumeField.VOLUNTEERING);
 
       // Saves the active resume into the map and makes `next` active.
       const addAndSwitch = (next: SavedResume) =>
@@ -258,6 +283,33 @@ export const useResumeStore = create<ResumeState>()(
         addProject: proj.add,
         removeProject: proj.remove,
         updateProject: proj.update,
+
+        addLanguage: lang.add,
+        removeLanguage: lang.remove,
+        updateLanguage: lang.update,
+
+        addAward: award.add,
+        removeAward: award.remove,
+        updateAward: award.update,
+
+        addVolunteer: vol.add,
+        removeVolunteer: vol.remove,
+        updateVolunteer: vol.update,
+
+        sortByDate: (field) =>
+          set((s) => {
+            const items = s.resumeData[field] as Array<{ start?: string; end?: string }>;
+            const sorted = [...items].sort(compareByRecency);
+            if (sorted.every((item, i) => item === items[i])) return {};
+            return withHistory(s, { ...s.resumeData, [field]: sorted });
+          }),
+
+        toggleSection: (field) =>
+          set((s) => ({
+            hiddenSections: s.hiddenSections.includes(field)
+              ? s.hiddenSections.filter((f) => f !== field)
+              : [...s.hiddenSections, field],
+          })),
 
         addCertification: cert.add,
         removeCertification: cert.remove,

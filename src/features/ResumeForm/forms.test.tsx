@@ -17,7 +17,7 @@ describe('form accessibility', () => {
   it('links every Experience label to its input', () => {
     render(<Experience />);
     const count = useResumeStore.getState().resumeData[ResumeField.EXPERIENCE].length;
-    for (const label of ['Title', 'Date Range', 'Company', 'Technologies', 'Description']) {
+    for (const label of ['Title', 'Start', 'End', 'Company', 'Technologies', 'Description']) {
       expect(screen.getAllByLabelText(label)).toHaveLength(count);
     }
   });

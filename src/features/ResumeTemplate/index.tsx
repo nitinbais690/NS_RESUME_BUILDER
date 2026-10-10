@@ -137,6 +137,59 @@ const CertificationsSection = ({ data }: { data: ResumeData }) => (
   </div>
 );
 
+const LanguagesSection = ({ data }: { data: ResumeData }) => (
+  <section className="template-sidebar-section" data-jump={ResumeField.LANGUAGES}>
+    <h3 className="template-section-title">{ResumeField.LANGUAGES}</h3>
+    <ul className="template-language-list">
+      {data[ResumeField.LANGUAGES]
+        .filter((l) => l.name.trim())
+        .map((l) => (
+          <li key={l.id} className="template-language-item" data-jump-id={l.id}>
+            <span className="template-language-name">{l.name}</span>
+            <span className="template-language-level">{l.level}</span>
+          </li>
+        ))}
+    </ul>
+  </section>
+);
+
+const AwardsSection = ({ data }: { data: ResumeData }) => (
+  <div className="template-sidebar-section" data-jump={ResumeField.AWARDS}>
+    <h3 className="template-section-title">{ResumeField.AWARDS}</h3>
+    {data[ResumeField.AWARDS].map((a) => (
+      <div key={a.id} className="template-credential-item" data-jump-id={a.id}>
+        <div className="template-credential-header">
+          <span className="template-credential-title">{a.title}</span>
+          <span className="template-credential-date">{a.date}</span>
+        </div>
+        {a.issuer && <p className="template-credential-subtitle">{a.issuer}</p>}
+        {a.desc && <p className="template-credential-desc">{a.desc}</p>}
+      </div>
+    ))}
+  </div>
+);
+
+const VolunteeringSection = ({ data }: { data: ResumeData }) => (
+  <TimelineSection
+    title={ResumeField.VOLUNTEERING}
+    field={ResumeField.VOLUNTEERING}
+    items={data[ResumeField.VOLUNTEERING].map((v) => ({
+      id: v.id,
+      title: v.role,
+      subtitle: v.org,
+      date: v.date,
+      description: v.desc,
+    }))}
+  />
+);
+
+// Optional sections stay off the page entirely until they have content.
+const OPTIONAL_SECTIONS = new Set<ResumeField>([
+  ResumeField.LANGUAGES,
+  ResumeField.AWARDS,
+  ResumeField.VOLUNTEERING,
+]);
+
 // Registry: ResumeField → section component
 const sectionRegistry: Partial<
   Record<ResumeField, React.FC<{ data: ResumeData }>>
@@ -149,6 +202,9 @@ const sectionRegistry: Partial<
   [ResumeField.PROJECTS]: ProjectsSection,
   [ResumeField.EDUCATION]: EducationSection,
   [ResumeField.CERTIFICATIONS]: CertificationsSection,
+  [ResumeField.LANGUAGES]: LanguagesSection,
+  [ResumeField.AWARDS]: AwardsSection,
+  [ResumeField.VOLUNTEERING]: VolunteeringSection,
 };
 
 interface ResumeTemplateProps {
@@ -197,7 +253,10 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
 
   const renderSection = (field: ResumeField) => {
     const Section = sectionRegistry[field];
-    return Section ? <Section key={field} data={data} /> : null;
+    if (!Section || style.hiddenSections.includes(field)) return null;
+    const items = data[field];
+    if (OPTIONAL_SECTIONS.has(field) && Array.isArray(items) && items.length === 0) return null;
+    return <Section key={field} data={data} />;
   };
 
   return (

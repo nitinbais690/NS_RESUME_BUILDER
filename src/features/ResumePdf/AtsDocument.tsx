@@ -97,6 +97,9 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
   const impacts = data[ResumeField.KEY_IMPACT].filter((t) => t.trim());
   const skills = data[ResumeField.SKILLS].filter((t) => t.trim());
   const tools = data[ResumeField.TOOLS].filter((t) => t.trim());
+  const languages = data[ResumeField.LANGUAGES].filter((l) => l.name.trim());
+  // Sections switched off in the editor are left out of the PDF too.
+  const show = (field: ResumeField) => !style.hiddenSections.includes(field);
 
   return (
     <Document title={`${c[ContactInfo.NAME] || 'Resume'} — Resume`} author={c[ContactInfo.NAME]} creator="NS Studio">
@@ -106,19 +109,19 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
         {contact.length > 0 && <Text style={s.contact}>{contact.join('  |  ')}</Text>}
         <View style={s.rule} />
 
-        {!!data[ResumeField.ABOUT_ME].trim() && (
+        {show(ResumeField.ABOUT_ME) && !!data[ResumeField.ABOUT_ME].trim() && (
           <Section title="Summary" s={s}>
             <Text>{data[ResumeField.ABOUT_ME].trim()}</Text>
           </Section>
         )}
 
-        {impacts.length > 0 && (
+        {show(ResumeField.KEY_IMPACT) && impacts.length > 0 && (
           <Section title="Key Impact" s={s}>
             <Bullets items={impacts} s={s} />
           </Section>
         )}
 
-        {data[ResumeField.EXPERIENCE].length > 0 && (
+        {show(ResumeField.EXPERIENCE) && data[ResumeField.EXPERIENCE].length > 0 && (
           <Section title="Experience" s={s}>
             {data[ResumeField.EXPERIENCE].map((e) => (
               <View key={e.id} style={s.entry} wrap={false}>
@@ -136,7 +139,7 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
           </Section>
         )}
 
-        {data[ResumeField.PROJECTS].length > 0 && (
+        {show(ResumeField.PROJECTS) && data[ResumeField.PROJECTS].length > 0 && (
           <Section title="Projects" s={s}>
             {data[ResumeField.PROJECTS].map((p) => (
               <View key={p.id} style={s.entry} wrap={false}>
@@ -157,19 +160,34 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
           </Section>
         )}
 
-        {skills.length > 0 && (
+        {show(ResumeField.VOLUNTEERING) && data[ResumeField.VOLUNTEERING].length > 0 && (
+          <Section title="Volunteering" s={s}>
+            {data[ResumeField.VOLUNTEERING].map((v) => (
+              <View key={v.id} style={s.entry} wrap={false}>
+                <View style={s.entryHead}>
+                  <Text style={s.entryTitle}>{v.role}</Text>
+                  <Text style={s.entryDate}>{v.date}</Text>
+                </View>
+                {!!v.org && <Text style={s.entrySub}>{v.org}</Text>}
+                <Bullets items={lines(v.desc)} s={s} />
+              </View>
+            ))}
+          </Section>
+        )}
+
+        {show(ResumeField.SKILLS) && skills.length > 0 && (
           <Section title="Skills" s={s}>
             <Text>{skills.join(', ')}</Text>
           </Section>
         )}
 
-        {tools.length > 0 && (
+        {show(ResumeField.TOOLS) && tools.length > 0 && (
           <Section title="Tools" s={s}>
             <Text>{tools.join(', ')}</Text>
           </Section>
         )}
 
-        {data[ResumeField.EDUCATION].length > 0 && (
+        {show(ResumeField.EDUCATION) && data[ResumeField.EDUCATION].length > 0 && (
           <Section title="Education" s={s}>
             {data[ResumeField.EDUCATION].map((e) => (
               <View key={e.id} style={s.entry} wrap={false}>
@@ -185,7 +203,7 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
           </Section>
         )}
 
-        {data[ResumeField.CERTIFICATIONS].length > 0 && (
+        {show(ResumeField.CERTIFICATIONS) && data[ResumeField.CERTIFICATIONS].length > 0 && (
           <Section title="Certifications" s={s}>
             {data[ResumeField.CERTIFICATIONS].map((x) => (
               <View key={x.id} style={s.entry} wrap={false}>
@@ -196,6 +214,26 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
                 {!!x.issuer && <Text style={s.entrySub}>{x.issuer}</Text>}
               </View>
             ))}
+          </Section>
+        )}
+        {show(ResumeField.AWARDS) && data[ResumeField.AWARDS].length > 0 && (
+          <Section title="Awards" s={s}>
+            {data[ResumeField.AWARDS].map((a) => (
+              <View key={a.id} style={s.entry} wrap={false}>
+                <View style={s.entryHead}>
+                  <Text style={s.entryTitle}>{a.title}</Text>
+                  <Text style={s.entryDate}>{a.date}</Text>
+                </View>
+                {!!a.issuer && <Text style={s.entrySub}>{a.issuer}</Text>}
+                {!!a.desc && <Text>{a.desc}</Text>}
+              </View>
+            ))}
+          </Section>
+        )}
+
+        {show(ResumeField.LANGUAGES) && languages.length > 0 && (
+          <Section title="Languages" s={s}>
+            <Text>{languages.map((l) => `${l.name} (${l.level})`).join(', ')}</Text>
           </Section>
         )}
       </Page>

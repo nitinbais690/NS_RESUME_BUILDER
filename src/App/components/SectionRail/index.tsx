@@ -5,6 +5,7 @@ import {
   FORM_STEPS,
   useActiveStep,
 } from '../../../features/ResumeForm/formSteps';
+import { useResumeStore } from '../../../store/useResumeStore';
 
 /**
  * Section navigation. Desktop: compact vertical icon rail with hover labels.
@@ -14,6 +15,7 @@ import {
 const SectionRail: React.FC = () => {
   const navRef = useRef<HTMLElement>(null);
   const activeStep = useActiveStep();
+  const hiddenSections = useResumeStore((s) => s.hiddenSections);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -36,7 +38,9 @@ const SectionRail: React.FC = () => {
             to={'/' + step.id}
             title={step.title}
             className={({ isActive }) =>
-              `rail__item ${isActive ? 'is-active' : ''}`
+              `rail__item ${isActive ? 'is-active' : ''} ${
+                step.field && hiddenSections.includes(step.field) ? 'is-section-hidden' : ''
+              }`
             }
           >
             <span className="rail__icon">

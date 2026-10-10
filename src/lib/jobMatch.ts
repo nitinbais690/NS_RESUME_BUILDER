@@ -100,6 +100,9 @@ export const resumeText = (data: ResumeData): string => {
     ...data[ResumeField.PROJECTS].flatMap((p) => [p.name, p.desc, ...p.technologies]),
     ...data[ResumeField.EDUCATION].flatMap((e) => [e.degree, e.school]),
     ...data[ResumeField.CERTIFICATIONS].flatMap((x) => [x.name, x.issuer]),
+    ...data[ResumeField.LANGUAGES].map((l) => l.name),
+    ...data[ResumeField.AWARDS].flatMap((a) => [a.title, a.issuer, a.desc]),
+    ...data[ResumeField.VOLUNTEERING].flatMap((v) => [v.role, v.org, v.desc]),
   ].join('\n');
 };
 

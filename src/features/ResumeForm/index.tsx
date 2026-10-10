@@ -48,6 +48,7 @@ const ResumeForm: React.FC = () => {
         description={FORM_STEPS[currentStep].description}
         currentStep={currentStep + 1}
         totalSteps={FORM_STEPS.length}
+        field={FORM_STEPS[currentStep].field}
       />
 
       <div className="form-component-wrapper" data-direction={direction}>

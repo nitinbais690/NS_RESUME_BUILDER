@@ -11,6 +11,27 @@ import {
 } from '../types';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
 import { fontFamilies, layouts } from '../constants/themes';
+import { PRESENT, formatRange, isMonth, parseLegacyRange } from './dates';
+import { LanguageLevel } from '../types';
+
+const LEVELS: LanguageLevel[] = ['Native', 'Fluent', 'Professional', 'Intermediate', 'Basic'];
+
+/**
+ * Structured dates for a ranged entry. Valid start/end are kept; otherwise we
+ * try to parse the legacy free-text `date` ("Jan 2022 – Present"). The display
+ * string is re-derived when structured dates exist, else the text is kept.
+ */
+const dateRange = (e: Obj) => {
+  let start = isMonth(e.start) ? e.start : undefined;
+  let end = isMonth(e.end) || e.end === PRESENT ? (e.end as string) : undefined;
+  if (!start && !end) ({ start, end } = parseLegacyRange(str(e.date)));
+  const range: { date: string; start?: string; end?: string } = {
+    date: start ? formatRange(start, end) : str(e.date),
+  };
+  if (start) range.start = start;
+  if (end) range.end = end;
+  return range;
+};
 
 /** File format marker so we can reject random JSON and migrate later. */
 export const FILE_APP = 'ns-studio-resume';
@@ -58,7 +79,7 @@ export const normalizeResumeData = (input: unknown): ResumeData => {
       id: id(e.id),
       title: str(e.title),
       company: str(e.company),
-      date: str(e.date),
+      ...dateRange(e),
       desc: str(e.desc),
       technologies: strList(e.technologies),
     })),
@@ -78,6 +99,25 @@ export const normalizeResumeData = (input: unknown): ResumeData => {
         link: str(c.link),
       }),
     ),
+    [ResumeField.LANGUAGES]: list(input[ResumeField.LANGUAGES]).map((l) => ({
+      id: id(l.id),
+      name: str(l.name),
+      level: LEVELS.includes(l.level as LanguageLevel) ? (l.level as LanguageLevel) : 'Professional',
+    })),
+    [ResumeField.AWARDS]: list(input[ResumeField.AWARDS]).map((a) => ({
+      id: id(a.id),
+      title: str(a.title),
+      issuer: str(a.issuer),
+      date: str(a.date),
+      desc: str(a.desc),
+    })),
+    [ResumeField.VOLUNTEERING]: list(input[ResumeField.VOLUNTEERING]).map((v) => ({
+      id: id(v.id),
+      role: str(v.role),
+      org: str(v.org),
+      ...dateRange(v),
+      desc: str(v.desc),
+    })),
   };
 };
 
@@ -104,6 +144,11 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
     qrTarget: ['linkedin', 'github'].includes(input.qrTarget as QrTarget)
       ? (input.qrTarget as QrTarget)
       : 'none',
+    hiddenSections: Array.isArray(input.hiddenSections)
+      ? [...new Set(input.hiddenSections)].filter((f): f is ResumeField =>
+          (Object.values(ResumeField) as unknown[]).includes(f) && f !== ResumeField.CONTACT,
+        )
+      : [],
   };
 };
 

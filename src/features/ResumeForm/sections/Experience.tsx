@@ -5,6 +5,8 @@ import { createExperience } from '../../../constants/factories';
 import { FormCardWrapper } from '../common/FormCardWrapper';
 import { SortableList } from '../common/Sortable';
 import BulletHints from '../common/BulletHints';
+import DateRangeField from '../common/DateRangeField';
+import SortByDateButton from '../common/SortByDateButton';
 import { EmptyState } from '../common/EmptyState';
 import { TechTagInput } from '../common/TechTagInput';
 import AddButton from '../common/AddButton';
@@ -23,6 +25,7 @@ const Experience: React.FC = () => {
   return (
     <section>
       <AddButton onAdd={onAdd} label="Add Experience" />
+      <SortByDateButton field={ResumeField.EXPERIENCE} />
 
       {items.length === 0 ? (
         <EmptyState
@@ -44,32 +47,24 @@ const Experience: React.FC = () => {
               index={i + 1}
               onRemove={() => removeExperience(exp.id)}
             >
-              <div className="form-grid-2">
-                <div className="form-input-group">
-                  <label className="form-label" htmlFor={`${exp.id}-title`}>Title</label>
-                  <input
-                    id={`${exp.id}-title`}
-                    placeholder="e.g. Senior Engineer"
-                    className="form-input"
-                    value={exp.title}
-                    onChange={(e) =>
-                      updateExperience(exp.id, { title: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="form-input-group">
-                  <label className="form-label" htmlFor={`${exp.id}-date-range`}>Date Range</label>
-                  <input
-                    id={`${exp.id}-date-range`}
-                    placeholder="e.g. 2021 – Present"
-                    className="form-input"
-                    value={exp.date}
-                    onChange={(e) =>
-                      updateExperience(exp.id, { date: e.target.value })
-                    }
-                  />
-                </div>
+              <div className="form-input-group">
+                <label className="form-label" htmlFor={`${exp.id}-title`}>Title</label>
+                <input
+                  id={`${exp.id}-title`}
+                  placeholder="e.g. Senior Engineer"
+                  className="form-input"
+                  value={exp.title}
+                  onChange={(e) => updateExperience(exp.id, { title: e.target.value })}
+                />
               </div>
+
+              <DateRangeField
+                idPrefix={exp.id}
+                start={exp.start}
+                end={exp.end}
+                legacyText={exp.start ? undefined : exp.date}
+                onChange={(range) => updateExperience(exp.id, range)}
+              />
 
               <div className="form-input-group">
                 <label className="form-label" htmlFor={`${exp.id}-company`}>Company</label>

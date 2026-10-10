@@ -44,6 +44,8 @@ const dummyResumeData: ResumeData = {
       title: 'Senior Mobile Engineer',
       company: 'TechNova Labs',
       date: 'Jan 2022 – Present',
+      start: '2022-01',
+      end: 'present',
       technologies: ['React Native', 'TypeScript', 'Zustand', 'JSI'],
       desc:
         '• Designed a modular mobile platform supporting multiple product verticals within a single Super App.\n' +
@@ -56,6 +58,8 @@ const dummyResumeData: ResumeData = {
       title: 'Mobile Engineer',
       company: 'PixelCraft Solutions',
       date: 'Jun 2019 – Dec 2021',
+      start: '2019-06',
+      end: '2021-12',
       technologies: ['React Native', 'Redux', 'JavaScript'],
       desc:
         '• Built cross-platform mobile applications with shared business logic and reusable UI components.\n' +
@@ -106,6 +110,15 @@ const dummyResumeData: ResumeData = {
       date: '2022',
     },
   ],
+
+  [ResumeField.LANGUAGES]: [
+    { id: 'lang-1', name: 'English', level: 'Fluent' },
+    { id: 'lang-2', name: 'Hindi', level: 'Native' },
+  ],
+
+  // Empty sections stay off the resume until they have content.
+  [ResumeField.AWARDS]: [],
+  [ResumeField.VOLUNTEERING]: [],
 };
 
 export default dummyResumeData;

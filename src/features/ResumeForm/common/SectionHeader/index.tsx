@@ -1,4 +1,8 @@
 import React from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+
+import { ResumeField } from '../../../../types';
+import { useResumeStore } from '../../../../store/useResumeStore';
 
 interface SectionHeaderProps {
   icon: React.ElementType;
@@ -6,6 +10,8 @@ interface SectionHeaderProps {
   description?: string;
   currentStep: number;
   totalSteps: number;
+  /** When set, shows a toggle to hide this section on the resume. */
+  field?: ResumeField;
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -14,7 +20,11 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   description,
   currentStep,
   totalSteps,
+  field,
 }) => {
+  const hidden = useResumeStore((s) => !!field && s.hiddenSections.includes(field));
+  const toggleSection = useResumeStore((s) => s.toggleSection);
+
   return (
     <div className="form-section-header">
       <div className="form-section-icon-wrapper">
@@ -27,6 +37,19 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
           <p className="form-section-description">{description}</p>
         )}
       </div>
+
+      {field && (
+        <button
+          type="button"
+          className={`section-visibility ${hidden ? 'is-hidden' : ''}`}
+          aria-pressed={!hidden}
+          onClick={() => toggleSection(field)}
+          title={hidden ? 'Hidden from the resume. Click to show.' : 'Shown on the resume. Click to hide.'}
+        >
+          {hidden ? <EyeOff size={14} /> : <Eye size={14} />}
+          <span>{hidden ? 'Hidden' : 'Shown'}</span>
+        </button>
+      )}
 
       <div
         className="form-step-dots"
