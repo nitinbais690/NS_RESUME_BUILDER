@@ -316,6 +316,14 @@
     }
   }
 
+  /* compact-divider is only styled inside the customizer; without this the
+     browser's default inset <hr> shows as a bright line in dark mode. */
+  .compact-divider {
+    margin: var(--spacing-md) 0;
+    border: none;
+    border-top: var(--border-thin) solid var(--color-border-light);
+  }
+
   &__error {
     margin: var(--spacing-md) 0 0;
     font-size: var(--font-size-md);

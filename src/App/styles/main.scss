@@ -1407,6 +1407,9 @@
 
     &__label {
       position: static;
+      /* The desktop flyout's z-index still applies to a static flex item and
+         would paint the chips over popovers (e.g. the resume menu). */
+      z-index: auto;
       transform: none;
       padding: 0;
       background: none;
