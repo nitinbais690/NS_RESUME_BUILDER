@@ -6,6 +6,7 @@ import DownloadButton from '../../sections/DownloadButton';
 import CompletenessBar from '../CompletenessBar';
 import ColorSchemeToggle from '../ColorSchemeToggle';
 import ResumeMenu from '../ResumeMenu';
+import SaveIndicator from '../SaveIndicator';
 import JobMatchDialog from '../JobMatchDialog';
 import { usePopover } from '../../hooks/usePopover';
 import { useCompleteness } from '../../hooks/useCompleteness';
@@ -53,6 +54,7 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
           NS<span>Studio</span>
         </h1>
         <ResumeMenu />
+        <SaveIndicator />
       </div>
 
       <div className="appbar__actions">

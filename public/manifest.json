@@ -1,6 +1,6 @@
 {
   "short_name": "NS Studio",
-  "name": "NS Studio — Resume Builder",
+  "name": "NS Studio \u2014 Resume Builder",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +10,21 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#7a1b1b",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "id": "/",
+  "scope": "/",
+  "description": "Build a polished resume in your browser. Works offline; your data stays on your device."
 }

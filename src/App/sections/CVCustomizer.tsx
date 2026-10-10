@@ -9,6 +9,7 @@ import {
   ChevronDown,
   QrCode,
   Pipette,
+  MoveVertical,
 } from 'lucide-react';
 import themes, { fontFamilies, layouts, layoutLabels } from '../../constants/themes';
 
@@ -25,6 +26,8 @@ const CVCustomizer: React.FC = () => {
   const setAccentColor = useResumeStore((s) => s.setAccentColor);
   const fontScale = useResumeStore((s) => s.fontScale);
   const setFontScale = useResumeStore((s) => s.setFontScale);
+  const spacingScale = useResumeStore((s) => s.spacingScale);
+  const setSpacingScale = useResumeStore((s) => s.setSpacingScale);
   const qrTarget = useResumeStore((s) => s.qrTarget);
   const setQrTarget = useResumeStore((s) => s.setQrTarget);
   const themeColor = (themes.find((t) => t.name === currentTheme) ?? themes[0]).color;
@@ -105,6 +108,33 @@ const CVCustomizer: React.FC = () => {
             title="Reset to 100%"
           >
             {Math.round(fontScale * 100)}%
+          </button>
+        </div>
+      </div>
+
+      <div className="compact-row">
+        <label className="control-label-wrapper" htmlFor="spacing-scale">
+          <MoveVertical size={12} />
+          <span className="control-label">Spacing</span>
+        </label>
+        <div className="range-control">
+          <input
+            id="spacing-scale"
+            type="range"
+            min={0.7}
+            max={1.4}
+            step={0.05}
+            value={spacingScale}
+            onChange={(e) => setSpacingScale(Number(e.target.value))}
+            aria-valuetext={`${Math.round(spacingScale * 100)}%`}
+          />
+          <button
+            type="button"
+            className="range-control__value"
+            onClick={() => setSpacingScale(1)}
+            title="Reset to 100%"
+          >
+            {Math.round(spacingScale * 100)}%
           </button>
         </div>
       </div>

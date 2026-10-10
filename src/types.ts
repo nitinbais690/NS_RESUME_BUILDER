@@ -134,6 +134,8 @@ export interface ResumeStyle {
   accentColor: string | null;
   /** Multiplier for every resume font size, e.g. 0.9 – 1.15. */
   fontScale: number;
+  /** Multiplier for gaps, margins and padding on the resume (0.7 – 1.4). */
+  spacingScale: number;
   /** Which profile link the QR code in the resume header opens, if any. */
   qrTarget: QrTarget;
   /** Sections the user switched off; their content is kept, just not shown. */

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import {
   ResumeData,
   ResumeField,
@@ -26,6 +26,7 @@ import { LOCAL_STORAGE_KEY } from '../constants';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
 import { normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
 import { compareByRecency } from '../lib/dates';
+import { reportingStorage } from './saveStatus';
 
 /** Moves one array item; returns the same array when the move is a no-op. */
 export const moveItem = <T,>(items: T[], from: number, to: number): T[] => {
@@ -61,6 +62,7 @@ interface ResumeState extends ResumeStyle {
   setFontFamily: (fontFamily: FontFamily) => void;
   setAccentColor: (accentColor: string | null) => void;
   setFontScale: (fontScale: number) => void;
+  setSpacingScale: (spacingScale: number) => void;
   setQrTarget: (qrTarget: QrTarget) => void;
   setColorScheme: (colorScheme: ColorScheme) => void;
 
@@ -130,6 +132,7 @@ export const pickStyle = (s: ResumeStyle): ResumeStyle => ({
   fontFamily: s.fontFamily,
   accentColor: s.accentColor,
   fontScale: s.fontScale,
+  spacingScale: s.spacingScale,
   qrTarget: s.qrTarget,
   hiddenSections: s.hiddenSections,
 });
@@ -237,6 +240,8 @@ export const useResumeStore = create<ResumeState>()(
         setAccentColor: (accentColor) => set({ accentColor }),
         setFontScale: (fontScale) =>
           set({ fontScale: Math.min(Math.max(fontScale, 0.8), 1.25) }),
+        setSpacingScale: (spacingScale) =>
+          set({ spacingScale: Math.round(Math.min(Math.max(spacingScale, 0.7), 1.4) * 100) / 100 }),
         setQrTarget: (qrTarget) => set({ qrTarget }),
         setColorScheme: (colorScheme) => set({ colorScheme }),
 
@@ -398,6 +403,7 @@ export const useResumeStore = create<ResumeState>()(
     {
       name: LOCAL_STORAGE_KEY,
       version: 1,
+      storage: createJSONStorage(() => reportingStorage),
       partialize: (state) => ({
         resumeData: state.resumeData,
         ...pickStyle(state),

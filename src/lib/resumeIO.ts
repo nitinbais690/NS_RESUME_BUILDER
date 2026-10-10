@@ -124,6 +124,7 @@ export const normalizeResumeData = (input: unknown): ResumeData => {
 export const normalizeStyle = (input: unknown): ResumeStyle => {
   if (!isObj(input)) return { ...DEFAULT_STYLE };
   const scale = Number(input.fontScale);
+  const spacing = Number(input.spacingScale);
   return {
     theme: THEMES.includes(input.theme as ThemeType)
       ? (input.theme as ThemeType)
@@ -141,6 +142,7 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
     fontScale: Number.isFinite(scale)
       ? Math.min(Math.max(scale, 0.8), 1.25)
       : 1,
+    spacingScale: Number.isFinite(spacing) ? Math.min(Math.max(spacing, 0.7), 1.4) : 1,
     qrTarget: ['linkedin', 'github'].includes(input.qrTarget as QrTarget)
       ? (input.qrTarget as QrTarget)
       : 'none',

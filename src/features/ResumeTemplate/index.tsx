@@ -216,6 +216,7 @@ interface ResumeTemplateProps {
 const styleVars = (style: ResumeStyle): React.CSSProperties => {
   const vars: Record<string, string> = {
     '--resume-font-scale': String(style.fontScale),
+    '--resume-spacing-scale': String(style.spacingScale),
   };
   if (style.accentColor) {
     const c = style.accentColor;

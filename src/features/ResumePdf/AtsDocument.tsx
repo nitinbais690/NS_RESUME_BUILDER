@@ -9,12 +9,13 @@ import { stripBulletMarker } from '../../lib/bulletLint';
  * Helvetica, single column, and entries that never split across pages.
  * Mirrors LAYOUT_CONFIG.ats section order.
  */
-const makeStyles = (scale: number) => {
+const makeStyles = (scale: number, spacing: number) => {
   const fs = (n: number) => n * scale;
+  const sp = (n: number) => n * spacing;
   return StyleSheet.create({
     page: {
-      paddingVertical: 30,
-      paddingHorizontal: 38,
+      paddingVertical: sp(30),
+      paddingHorizontal: sp(38),
       fontFamily: 'Helvetica',
       fontSize: fs(9.5),
       lineHeight: 1.3,
@@ -22,11 +23,11 @@ const makeStyles = (scale: number) => {
     },
     name: { fontSize: fs(19), fontFamily: 'Helvetica-Bold', lineHeight: 1.2 },
     position: { fontSize: fs(11.5), lineHeight: 1.3, marginTop: 4 },
-    contact: { marginTop: 6, fontSize: fs(9.5), color: '#333333' },
-    rule: { borderBottomWidth: 1, borderBottomColor: '#111111', marginTop: 8 },
+    contact: { marginTop: sp(6), fontSize: fs(9.5), color: '#333333' },
+    rule: { borderBottomWidth: 1, borderBottomColor: '#111111', marginTop: sp(8) },
     sectionTitle: {
-      marginTop: 10,
-      marginBottom: 4,
+      marginTop: sp(10),
+      marginBottom: sp(4),
       paddingBottom: 2,
       fontSize: fs(11),
       fontFamily: 'Helvetica-Bold',
@@ -35,12 +36,12 @@ const makeStyles = (scale: number) => {
       borderBottomWidth: 0.75,
       borderBottomColor: '#111111',
     },
-    entry: { marginBottom: 6 },
+    entry: { marginBottom: sp(6) },
     entryHead: { flexDirection: 'row', justifyContent: 'space-between' },
     entryTitle: { fontFamily: 'Helvetica-Bold', flexShrink: 1, paddingRight: 8 },
     entryDate: { color: '#333333' },
     entrySub: { color: '#333333' },
-    bullet: { flexDirection: 'row', marginTop: 1 },
+    bullet: { flexDirection: 'row', marginTop: sp(1) },
     bulletDot: { width: 10 },
     bulletText: { flex: 1 },
     tech: { marginTop: 2, color: '#333333' },
@@ -85,7 +86,7 @@ const Section: React.FC<{ title: string; s: Styles; children: React.ReactNode }>
 };
 
 export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = ({ data, style }) => {
-  const s = makeStyles(style.fontScale);
+  const s = makeStyles(style.fontScale, style.spacingScale);
   const c = data[ResumeField.CONTACT];
   const contact = [
     c[ContactInfo.EMAIL],

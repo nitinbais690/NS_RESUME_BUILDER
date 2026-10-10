@@ -8,6 +8,8 @@ import { useResumeStore } from '../../../store/useResumeStore';
 const PageFitBadge: React.FC<{ fit: PageFit }> = ({ fit }) => {
   const fontScale = useResumeStore((s) => s.fontScale);
   const setFontScale = useResumeStore((s) => s.setFontScale);
+  const spacingScale = useResumeStore((s) => s.spacingScale);
+  const setSpacingScale = useResumeStore((s) => s.setSpacingScale);
 
   if (fit.fitsOnePage) {
     return (
@@ -19,6 +21,7 @@ const PageFitBadge: React.FC<{ fit: PageFit }> = ({ fit }) => {
 
   const percentOver = Math.max(1, Math.round(fit.overflow * 100));
   const canShrink = fontScale > 0.85;
+  const canTighten = spacingScale > 0.75;
 
   return (
     <div
@@ -39,6 +42,16 @@ const PageFitBadge: React.FC<{ fit: PageFit }> = ({ fit }) => {
           title="Reduce font size by 5%"
         >
           Shrink text
+        </button>
+      )}
+      {canTighten && (
+        <button
+          type="button"
+          className="page-fit__fix"
+          onClick={() => setSpacingScale(spacingScale - 0.1)}
+          title="Reduce spacing by 10%"
+        >
+          Tighten spacing
         </button>
       )}
     </div>

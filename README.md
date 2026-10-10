@@ -2,7 +2,7 @@
 
 **Live demo → [ns-resume-builder.vercel.app](https://ns-resume-builder.vercel.app)**
 
-Build a polished, professional resume in minutes, right in your browser. NS Studio gives you a live preview, six layouts, writing tips, a job-description matcher, real PDF export and shareable links. Everything is stored on your device, so your resume never touches a server.
+Build a polished, professional resume in minutes, right in your browser. NS Studio gives you a live preview, six layouts, writing tips, a job-description matcher, real PDF export and shareable links. Everything is stored on your device, so your resume never touches a server. After the first visit it even works offline.
 
 ---
 
@@ -31,6 +31,7 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 - **Smooth editing.** Drag to reorder, click the preview to jump to a field, and fast keyboard shortcuts.
 - **Several resumes.** Keep tailored versions, back them up as JSON, and share a read-only link.
 - **Works everywhere.** Phone and tablet layouts, dark mode, and accessible, labelled form fields.
+- **Works offline.** Install it like an app; edit and export PDFs with no connection. A "Saved" indicator confirms every change.
 
 ---
 
@@ -48,9 +49,17 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 | **ATS-safe** | Plain single column that applicant tracking systems parse reliably |
 
 - **Themes.** Burgundy, Blue, Teal and Purple, plus a **custom accent color** picker.
-- **Fonts.** Inter, Roboto or Arial, with a **font size** slider from 80% to 125%.
+- **Fonts.** Inter, Roboto or Arial (bundled with the app, so they work for everyone and offline), with a **font size** slider from 80% to 125%.
+- **Spacing.** A slider from 70% to 140% that tightens or loosens the gaps, margins and padding on the resume, including the PDF.
 - **QR code (optional).** A small code in the header that links to your LinkedIn or GitHub.
 - **Dark mode** for the editor: System, Light or Dark. The resume itself always stays white, because that's what gets printed.
+
+### Sections
+
+- **Core sections:** Personal details, Summary, Key Impact, Experience, Projects, Skills, Tools, Education and Certifications.
+- **Optional sections:** Languages (with proficiency level), Awards and Volunteering. They appear on the resume only once they have content.
+- **Show / hide** any section with the **Shown / Hidden** toggle in its header. Hidden sections keep their content and are left out of the preview and the PDF. Each resume remembers its own choices.
+- **Dates.** Experience and Volunteering use month/year pickers with an "I currently work here" option, and a **Sort newest first** button orders entries by date (undo with ⌘Z). Older text dates like "Jan 2022 – Present" are converted automatically.
 
 ### Writing help
 
@@ -60,7 +69,7 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 
 ### Editing
 
-- **Drag to reorder** Key Impact, Skills, Tools, Experience, Projects, Education and Certifications, by mouse, touch or keyboard.
+- **Drag to reorder** Key Impact, Skills, Tools, Experience, Projects, Education, Certifications, Languages, Awards and Volunteering, by mouse, touch or keyboard.
 - **Click to edit.** Click any part of the preview to open that section and focus the exact field.
 - **Undo / redo** for every content change.
 - **Section navigation.** An icon rail on desktop; a swipeable row of section buttons on phones and tablets.
@@ -70,10 +79,18 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 - **Download PDF.**
   - The *ATS-safe* layout is rendered by **react-pdf**: real text, standard Helvetica, and entries that never split across pages.
   - The styled layouts use the browser's print dialog ("Save as PDF"), which keeps the exact on-screen design.
-- **One-page check.** A badge shows whether the resume fits on one A4 page. It draws dashed lines where pages break and offers a one-click **Shrink text**.
+- **One-page check.** A badge shows whether the resume fits on one A4 page. It draws dashed lines where pages break and offers one-click **Shrink text** and **Tighten spacing** fixes.
 - **Multiple resumes.** Keep versions like "Mobile Lead" and "Frontend". You can create blank, duplicate, rename and delete them from the resume menu in the top bar.
 - **Export / import JSON** to back up a resume or move it to another browser.
 - **Read-only share link.** The whole resume is packed into the link itself (see [Privacy & data](#privacy--data)). People who open it can download a PDF or make their own editable copy.
+
+### Offline & saving
+
+- **Works offline.** After the first visit, the whole app (including fonts and ATS PDF export) is cached by a service worker, so it opens and works with no connection.
+- **Installable.** Use your browser's "Install app" / "Add to Home Screen" to open NS Studio like a native app.
+- **Updates on your terms.** When a new version is deployed, a "New version available — Reload" message appears. Nothing reloads while you're typing.
+- **Saved indicator.** "Saved" appears next to the resume name after every change (hover for the time). Offline it reads "Offline · saved". If the browser refuses to store data (storage full or blocked), it shows a red **Not saved** warning so you can export a backup.
+- **Crash recovery.** If something ever goes wrong, a recovery screen lets you download your saved data or start fresh, instead of showing a blank page. Damaged saved data is repaired automatically on load.
 
 ### Responsive
 
@@ -102,6 +119,7 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 - **Nothing is uploaded.** Your resumes, settings and the last job ad you pasted are saved in your browser's `localStorage` under the key `ns_cv_resume_data`.
 - **Job match runs locally.** It's keyword analysis in the browser; no AI service or API is called.
 - **Share links carry the data themselves.** The resume is compressed into the part of the link after `#`, and browsers never send that part to the server. Anyone who has the link can read the resume, so share it like you'd share the PDF. A link is a snapshot: after you edit, create a new link.
+- **Offline cache.** The service worker only stores the app's own files (code, styles, fonts, icons). Your resumes stay in `localStorage`.
 - **Clearing your browser data deletes your resumes.** Use **Export as JSON** from the resume menu to keep a backup.
 
 ---
@@ -118,9 +136,11 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 | PDF | `@react-pdf/renderer` (ATS layout, lazy-loaded) · `react-to-print` (styled layouts) |
 | Drag & drop | `@dnd-kit` |
 | Sharing | `lz-string` (link compression) · `qrcode` |
+| Offline | `vite-plugin-pwa` (Workbox service worker) |
+| Fonts | `@fontsource/inter`, `@fontsource/roboto` (self-hosted) |
 | Icons | `lucide-react` |
 | Tooling | Vite · Vitest + Testing Library · ESLint · Prettier |
-| Hosting | Vercel (static) |
+| Hosting | Vercel (static + service worker) |
 
 ---
 
@@ -164,6 +184,7 @@ The app is a static Vite build. [`vercel.json`](vercel.json) already sets:
 - the build command (`yarn build`)
 - the output folder (`build/`)
 - a rewrite rule so links like `/view` and `/impact` work when opened directly
+- `no-cache` headers for `sw.js` and `manifest.json`, so new deploys reach users
 
 ### One-time setup
 
@@ -218,8 +239,8 @@ In **Project → Settings → Git**, connect `nitinbais690/NS_RESUME_BUILDER`. F
 .
 ├── index.html              # Vite entry; applies the saved color scheme before first paint
 ├── vite.config.ts          # Vite + Vitest config (output folder: build/)
-├── vercel.json             # Vercel build settings + SPA rewrite
-├── public/                 # Favicons, manifest, robots.txt
+├── vercel.json             # Vercel build settings, SPA rewrite, service-worker headers
+├── public/                 # Favicons, manifest.json (PWA), robots.txt
 └── src/
     ├── main.tsx            # React root + global styles
     ├── App/
@@ -234,7 +255,7 @@ In **Project → Settings → Git**, connect `nitinbais690/NS_RESUME_BUILDER`. F
     │   └── ResumePdf/      # react-pdf ATS document + export (loaded only when needed)
     ├── lib/                # Pure, tested logic: resumeIO, share, bulletLint, jobMatch,
     │                       # completeness, pageFit
-    ├── store/              # Zustand store: resumes, style, undo history, persistence
+    ├── store/              # Zustand store (resumes, style, undo history) + save status
     ├── constants/          # Themes, fonts, layouts, factories, storage key
     ├── data/               # Sample resume shown on first visit
     ├── global.scss         # Design tokens, light/dark palettes, base styles
@@ -251,9 +272,14 @@ In **Project → Settings → Git**, connect `nitinbais690/NS_RESUME_BUILDER`. F
 - All saved versions live in a `resumes` map. Switching resumes swaps the active one in and out, and clears the undo history.
 - The store is saved to `localStorage` with a schema `version`. Older single-resume saves are migrated automatically into the first resume.
 
+**Offline.** `vite-plugin-pwa` generates a Workbox service worker at build time that precaches the app shell, fonts and the react-pdf chunk, and serves `index.html` for every route. It's registered in "prompt" mode: `UpdateToast` tells the user when the app is ready offline or when an update is waiting. The service worker is disabled in `yarn start`; use `yarn build && yarn preview` to test offline locally.
+
+**Saving.** The store writes through a small storage wrapper (`src/store/saveStatus.ts`) that catches quota or permission errors and records the result of each write. `SaveIndicator` displays it.
+
 **Styling.** SCSS with CSS custom properties.
 
 - Dark mode overrides the color tokens under `html[data-color-scheme="dark"]`.
+- Font size and spacing are two multipliers (`--resume-font-scale`, `--resume-spacing-scale`) that every size and spacing token on the resume is calculated from.
 - The resume sheet is pinned back to the light palette, so the preview and printouts always look right.
 
 **PDF.**
@@ -273,7 +299,7 @@ In **Project → Settings → Git**, connect `nitinbais690/NS_RESUME_BUILDER`. F
   "app": "ns-studio-resume",
   "version": 1,
   "name": "Mobile Lead",
-  "style": { "theme": "default", "layout": "classic", "fontFamily": "Inter, sans-serif", "accentColor": null, "fontScale": 1, "qrTarget": "none" },
+  "style": { "theme": "default", "layout": "classic", "fontFamily": "Inter, sans-serif", "accentColor": null, "fontScale": 1, "spacingScale": 1, "qrTarget": "none", "hiddenSections": [] },
   "data": { "Contact": { "Name": "…" }, "About Me": "…", "Key Impact": ["…"], "Experience": [] }
 }
 ```
@@ -292,9 +318,10 @@ yarn test:run
 
 They cover:
 
-- the store: editing, undo/redo, reordering, multiple resumes, and migrating old saves
+- the store: editing, undo/redo, reordering, multiple resumes, spacing limits, migrating old saves and repairing corrupted ones
 - JSON import/export and share-link round trips
-- bullet tips, job matching, the completeness checklist and the page-fit math
+- bullet tips, job matching, the completeness checklist, date parsing/sorting and the page-fit math
+- every layout placing each section exactly once
 - form accessibility (labels linked to fields) and the keyboard flow
 - react-pdf output (a valid A4 PDF that breaks long content onto more pages)
 
@@ -310,6 +337,9 @@ They cover:
 | Refreshing `/view` or a form step shows a 404 | Make sure `vercel.json`, with its `rewrites` rule, is committed. |
 | A share link says it has no resume | The link was cut off when it was copied. Copy it again with the dialog's **Copy** button. |
 | The resume spills onto page 2 | Use **Shrink text** on the badge, lower **Size** in Customize, or tighten long bullets. |
+| I deployed but still see the old version | Click **Reload** on the "New version available" message, or close all tabs of the app and reopen it. |
+| Offline mode doesn't work locally | The service worker is off in `yarn start`. Run `yarn build && yarn preview`, open the app once, then go offline. |
+| "Not saved" warning | The browser is blocking or out of storage. Export a JSON backup from the resume menu, then free up space or leave private browsing. |
 | My resumes disappeared | `localStorage` was cleared (private window, cleared site data, or another browser). Import your JSON backup. |
 
 ---

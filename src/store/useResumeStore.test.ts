@@ -61,6 +61,13 @@ describe('editing and history', () => {
     expect(store().resumeData[ResumeField.EXPERIENCE].some((e) => e.id === exp.id)).toBe(false);
   });
 
+  it('clamps spacing scale to 70–140%', () => {
+    store().setSpacingScale(5);
+    expect(store().spacingScale).toBe(1.4);
+    store().setSpacingScale(0.1);
+    expect(store().spacingScale).toBe(0.7);
+  });
+
   it('clamps font scale and clears the custom accent when a theme is picked', () => {
     store().setFontScale(3);
     expect(store().fontScale).toBe(1.25);

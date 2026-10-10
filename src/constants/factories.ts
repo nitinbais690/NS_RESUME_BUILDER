@@ -73,6 +73,7 @@ export const DEFAULT_STYLE: ResumeStyle = {
   fontFamily: 'Inter, sans-serif',
   accentColor: null,
   fontScale: 1,
+  spacingScale: 1,
   qrTarget: 'none',
   hiddenSections: [],
 };
