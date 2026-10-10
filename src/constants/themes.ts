@@ -12,7 +12,18 @@ export const layouts: Array<LayoutType> = [
   'minimalist',
   'executive',
   'creative',
+  'ats',
 ];
+
+/** Short display names; 'ats' reads better as "ATS-safe". */
+export const layoutLabels: Record<LayoutType, string> = {
+  classic: 'Classic',
+  modern: 'Modern',
+  minimalist: 'Minimalist',
+  executive: 'Executive',
+  creative: 'Creative',
+  ats: 'ATS-safe',
+};
 
 const themes = [
   {

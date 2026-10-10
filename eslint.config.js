@@ -5,6 +5,7 @@ import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
+  { ignores: ['build/**', 'dist/**', 'node_modules/**'] },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -14,8 +15,6 @@ export default [
       ...pluginReactConfig.languageOptions,
       globals: {
         ...globals.browser,
-        module: 'readonly',
-        process: 'readonly',
       },
     },
     settings: {

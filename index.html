@@ -2,18 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="%PUBLIC_URL%/favicon32.png"
+      href="/favicon32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="%PUBLIC_URL%/favicon16.png"
+      href="/favicon16.png"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#7a1b1b" />
@@ -21,8 +21,8 @@
       name="description"
       content="NS Studio — build a polished, professional resume in minutes."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
     <title>NS Studio — Resume Builder</title>
     <script>
       // Apply the saved color scheme before first paint (no light flash in dark
@@ -45,27 +45,6 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
-  <script>
-    function updateMobileScale() {
-      const vw = window.innerWidth;
-      if (vw < 768) {
-        const available = vw - 24;
-        const scale = Math.min(available / 793, 0.55);
-        document.documentElement.style.setProperty(
-          '--scale-mobile',
-          scale.toFixed(4),
-        );
-      } else {
-        document.documentElement.style.removeProperty('--scale-mobile');
-      }
-    }
-
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateMobileScale, 100);
-    });
-    updateMobileScale();
-  </script>
 </html>

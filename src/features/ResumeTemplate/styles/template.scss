@@ -8,6 +8,18 @@ $modern-accent-border: 4px;
 
 /* --- Outer Wrapper & Page --- */
 .template-resume-outer-wrapper {
+  /* Font size control: every resume size token scales with one multiplier
+     (set inline from the store's fontScale). */
+  --font-size-xs: calc(9px * var(--resume-font-scale, 1));
+  --font-size-sm: calc(10px * var(--resume-font-scale, 1));
+  --font-size-base: calc(11px * var(--resume-font-scale, 1));
+  --font-size-md: calc(12px * var(--resume-font-scale, 1));
+  --font-size-lg: calc(13px * var(--resume-font-scale, 1));
+  --font-size-xl: calc(14px * var(--resume-font-scale, 1));
+  --font-size-2xl: calc(18px * var(--resume-font-scale, 1));
+  --font-size-3xl: calc(30px * var(--resume-font-scale, 1));
+  --font-size-4xl: calc(32px * var(--resume-font-scale, 1));
+
   display: flex;
   justify-content: center;
   background-color: var(--color-bg-preview);
@@ -921,5 +933,138 @@ $modern-accent-border: 4px;
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     text-align: left;
+  }
+}
+
+/* QR code (Customize → QR code) */
+.template-header-qr {
+  flex-shrink: 0;
+  align-self: center;
+  width: 56px;
+  height: 56px;
+  margin-left: var(--spacing-xl);
+  image-rendering: pixelated;
+}
+
+/* =========================================
+   ATS-SAFE LAYOUT
+   Plain single column: black text, no color bands, timeline graphics or pills,
+   so applicant tracking systems read it top-to-bottom without surprises. The
+   "Download PDF" button exports this layout through react-pdf (real text).
+   ========================================= */
+[data-layout='ats'] {
+  /* Type sizes match the react-pdf export (pt → px at 96dpi), so what you see
+     here — and the one-page check — matches the downloaded PDF. */
+  --font-size-xs: calc(12.6px * var(--resume-font-scale, 1)); /* 9.5pt body */
+  --font-size-sm: calc(12.6px * var(--resume-font-scale, 1));
+  --font-size-base: calc(12.6px * var(--resume-font-scale, 1));
+  --font-size-md: calc(14.6px * var(--resume-font-scale, 1)); /* 11pt headings */
+  --font-size-lg: calc(15.3px * var(--resume-font-scale, 1)); /* 11.5pt title */
+  --font-size-3xl: calc(25.3px * var(--resume-font-scale, 1)); /* 19pt name */
+  --spacing-page-padding: 50px; /* 38pt margins */
+  line-height: 1.3;
+  --color-primary: #111111;
+  --color-text-main: #111111;
+  --color-text-muted: #333333;
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  .template-resume-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-3xl) var(--spacing-page-padding) var(--spacing-md);
+    border-top: none;
+    border-bottom: 1px solid #111111;
+  }
+
+  .template-header-name {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .template-header-position {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: var(--font-weight-normal);
+  }
+
+  .template-header-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0;
+    text-align: left;
+  }
+
+  .template-contact-item {
+    justify-content: flex-start;
+    color: #111111;
+
+    svg {
+      display: none;
+    }
+
+    &:not(:last-child)::after {
+      content: '|';
+      margin: 0 var(--spacing-sm);
+      color: #777777;
+    }
+  }
+
+  .template-left-column {
+    display: none;
+  }
+
+  .template-right-column {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-page-padding) var(--spacing-page-padding);
+  }
+
+  .template-section-title {
+    margin-top: var(--spacing-lg);
+    border-bottom: 1px solid #111111;
+    color: #111111;
+    letter-spacing: 0.5px;
+  }
+
+  .template-timeline-track {
+    padding-left: 0;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .template-timeline-marker {
+    display: none;
+  }
+
+  .template-item-subtitle,
+  .template-item-date {
+    color: #333333;
+  }
+
+  .template-item-tech {
+    padding: 0;
+    border: none;
+    background: none;
+    color: #111111;
+    font-size: inherit;
+
+    &:not(:last-child)::after {
+      content: ',';
+    }
+  }
+
+  .template-tech-wrapper {
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+  }
+
+  .template-tech-label {
+    font-size: inherit;
+  }
+
+  .template-header-qr {
+    display: none; /* images are noise to ATS parsers */
   }
 }

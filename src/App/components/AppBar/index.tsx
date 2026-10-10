@@ -1,54 +1,42 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SlidersHorizontal, Undo2, Redo2 } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
+import { SlidersHorizontal, Undo2, Redo2, Target } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
 import DownloadButton from '../../sections/DownloadButton';
 import CompletenessBar from '../CompletenessBar';
 import ColorSchemeToggle from '../ColorSchemeToggle';
+import ResumeMenu from '../ResumeMenu';
+import JobMatchDialog from '../JobMatchDialog';
+import { usePopover } from '../../hooks/usePopover';
 import { useCompleteness } from '../../hooks/useCompleteness';
 import { useResumeStore } from '../../../store/useResumeStore';
 
 interface AppBarProps {
-  onDownload: () => void;
+  onDownload: () => void | Promise<void>;
 }
 
 const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
-  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const customize = usePopover();
   const [isDownloading, setIsDownloading] = useState(false);
-  const customizeRef = useRef<HTMLDivElement>(null);
+  const [jobMatchOpen, setJobMatchOpen] = useState(false);
 
   const undo = useResumeStore((s) => s.undo);
   const redo = useResumeStore((s) => s.redo);
   const canUndo = useResumeStore((s) => s._past.length > 0);
   const canRedo = useResumeStore((s) => s._future.length > 0);
-  const score = useCompleteness();
+  const { score, items } = useCompleteness();
 
-  useEffect(() => {
-    if (!customizeOpen) return;
-    const onPointerDown = (e: MouseEvent) => {
-      if (
-        customizeRef.current &&
-        !customizeRef.current.contains(e.target as Node)
-      ) {
-        setCustomizeOpen(false);
-      }
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setCustomizeOpen(false);
-    };
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [customizeOpen]);
-
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     setIsDownloading(true);
-    onDownload();
-    const timer = setTimeout(() => setIsDownloading(false), 1500);
-    return () => clearTimeout(timer);
+    try {
+      await onDownload();
+    } catch (err) {
+      console.error(err);
+      window.alert('Sorry, the PDF could not be created. Please try again.');
+    } finally {
+      // Print dialogs return immediately; keep the spinner briefly for feedback.
+      setTimeout(() => setIsDownloading(false), 600);
+    }
   }, [onDownload]);
 
   return (
@@ -56,7 +44,7 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
       <div className="appbar__brand">
         <img
           className="appbar__logo"
-          src={`${process.env.PUBLIC_URL}/apple-touch-icon.png`}
+          src={`${import.meta.env.BASE_URL}apple-touch-icon.png`}
           alt="NS Studio"
           width={36}
           height={36}
@@ -64,6 +52,7 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
         <h1 className="appbar__title">
           NS<span>Studio</span>
         </h1>
+        <ResumeMenu />
       </div>
 
       <div className="appbar__actions">
@@ -93,20 +82,31 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
 
         <div className="appbar__actions-separator" aria-hidden="true" />
 
-        <CompletenessBar score={score} />
+        <CompletenessBar score={score} items={items} />
 
-        <div className="appbar__customize" ref={customizeRef}>
+        <button
+          type="button"
+          className="appbar__customize-trigger"
+          onClick={() => setJobMatchOpen(true)}
+          title="Compare your resume with a job description"
+        >
+          <Target size={16} />
+          <span>Job match</span>
+        </button>
+        <JobMatchDialog open={jobMatchOpen} onClose={() => setJobMatchOpen(false)} />
+
+        <div className="appbar__customize" ref={customize.ref}>
           <button
             type="button"
-            className={`appbar__customize-trigger ${customizeOpen ? 'is-open' : ''}`}
-            aria-expanded={customizeOpen}
+            className={`appbar__customize-trigger ${customize.open ? 'is-open' : ''}`}
+            aria-expanded={customize.open}
             aria-haspopup="dialog"
-            onClick={() => setCustomizeOpen((o) => !o)}
+            onClick={() => customize.setOpen((o) => !o)}
           >
             <SlidersHorizontal size={16} />
             <span>Customize</span>
           </button>
-          {customizeOpen && (
+          {customize.open && (
             <div
               className="appbar__popover"
               role="dialog"

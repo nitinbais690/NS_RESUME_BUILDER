@@ -6,10 +6,11 @@ import './global.scss';
 import './App/styles/main.scss';
 import './features/ResumeForm/styles/form.scss';
 import './features/ResumeTemplate/styles/template.scss';
+import './App/styles/features.scss';
 
-import App from './App/index.tsx';
+import App from './App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
   <React.StrictMode>

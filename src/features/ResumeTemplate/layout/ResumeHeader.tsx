@@ -1,17 +1,33 @@
 import { ContactInfo, ContactInfoType } from '../../../types';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Mail, Phone, Linkedin, MapPin, GithubIcon } from 'lucide-react';
-import themes from '../../../constants/themes';
+import QRCode from 'qrcode';
 import { ContactItem } from '../common/ContactItem';
 
-type ResumeHeaderProps = ContactInfoType & { currentTheme: string };
+type ResumeHeaderProps = ContactInfoType & {
+  accentColor: string;
+  /** When set, a small QR code linking here is shown in the header. */
+  qrUrl?: string;
+};
 
 const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
-  const iconColor = useMemo(() => {
-    const themeObj = themes.find((t) => t.name === props.currentTheme);
-    return themeObj ? themeObj.color : themes[0].color;
-  }, [props.currentTheme]);
+  const iconColor = props.accentColor;
+  const [qr, setQr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!props.qrUrl) {
+      setQr(null);
+      return;
+    }
+    let cancelled = false;
+    QRCode.toDataURL(props.qrUrl, { margin: 0, width: 160 })
+      .then((url) => !cancelled && setQr(url))
+      .catch(() => !cancelled && setQr(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [props.qrUrl]);
 
   const contactFields = useMemo(
     () => [
@@ -43,7 +59,7 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
   );
 
   return (
-    <header className="template-resume-header">
+    <header className="template-resume-header" data-jump="Contact">
       <div className="template-header-left">
         <h1 className="template-header-name">{props[ContactInfo.NAME]}</h1>
         <p className="template-header-position">
@@ -61,6 +77,15 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
           />
         ))}
       </div>
+      {qr && (
+        <img
+          className="template-header-qr"
+          src={qr}
+          alt={`QR code: ${props.qrUrl}`}
+          width={56}
+          height={56}
+        />
+      )}
     </header>
   );
 };

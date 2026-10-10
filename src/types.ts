@@ -4,7 +4,8 @@ export type LayoutType =
   | 'modern'
   | 'minimalist'
   | 'executive'
-  | 'creative';
+  | 'creative'
+  | 'ats';
 export type FontFamily = 'Inter, sans-serif' | 'Roboto, sans-serif' | 'Arial';
 /** App chrome appearance. The resume sheet itself always renders light. */
 export type ColorScheme = 'system' | 'light' | 'dark';
@@ -85,3 +86,40 @@ export interface ResumeData {
   [ResumeField.CERTIFICATIONS]: Array<CertificationType>;
   [ResumeField.KEY_IMPACT]: string[];
 }
+
+/** Everything about how a resume looks (not what it says). */
+export interface ResumeStyle {
+  theme: ThemeType;
+  layout: LayoutType;
+  fontFamily: FontFamily;
+  /** Custom brand color (#rrggbb). Overrides the theme's color when set. */
+  accentColor: string | null;
+  /** Multiplier for every resume font size, e.g. 0.9 – 1.15. */
+  fontScale: number;
+  /** Which profile link the QR code in the resume header opens, if any. */
+  qrTarget: QrTarget;
+}
+
+export type QrTarget = 'none' | 'linkedin' | 'github';
+
+/** One named resume version, e.g. "Mobile Lead" vs "Frontend". */
+export interface SavedResume {
+  id: string;
+  name: string;
+  updatedAt: number;
+  data: ResumeData;
+  style: ResumeStyle;
+}
+
+/** List-of-string fields that the form edits row by row. */
+export type ListField =
+  | ResumeField.KEY_IMPACT
+  | ResumeField.SKILLS
+  | ResumeField.TOOLS;
+
+/** Id-keyed entity fields rendered as cards. */
+export type EntityField =
+  | ResumeField.EXPERIENCE
+  | ResumeField.PROJECTS
+  | ResumeField.EDUCATION
+  | ResumeField.CERTIFICATIONS;

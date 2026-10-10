@@ -328,8 +328,9 @@ $accent-themes: (
     @include accent(map.get($c, dark), map.get($c, dark-dark), 0.14, 0.22);
   }
 
-  /* Resume sheet: always the light, print-accurate palette. */
-  #{$sel} .resume-print-container {
+  /* Resume sheet: always the light, print-accurate palette. Keyed off the
+     sheet's own data-theme so it also works in the share view and in print. */
+  .template-resume-outer-wrapper[data-theme='#{$name}'] {
     @include accent(map.get($c, light), map.get($c, light-dark));
   }
 }

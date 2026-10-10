@@ -78,4 +78,20 @@ export const LAYOUT_CONFIG: Record<
       ResumeField.EDUCATION,
     ],
   },
+
+  // ATS-safe: one column, standard section order, no sidebars or graphics so
+  // applicant tracking systems parse it in reading order.
+  ats: {
+    left: [],
+    right: [
+      ResumeField.ABOUT_ME,
+      ResumeField.KEY_IMPACT,
+      ResumeField.EXPERIENCE,
+      ResumeField.PROJECTS,
+      ResumeField.SKILLS,
+      ResumeField.TOOLS,
+      ResumeField.EDUCATION,
+      ResumeField.CERTIFICATIONS,
+    ],
+  },
 };

@@ -1,36 +1,50 @@
-import { ProjectType, ResumeData, ResumeField } from '../../types';
+import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import {
+  ContactInfo,
+  ProjectType,
+  ResumeData,
+  ResumeField,
+  ResumeStyle,
+} from '../../types';
 import ResumeHeader from './layout/ResumeHeader';
 import { LAYOUT_CONFIG } from './layoutConfig';
 import TimelineSection from './layout/TimeLine';
-import { useResumeStore } from '../../store/useResumeStore';
+import { pickStyle, useResumeStore } from '../../store/useResumeStore';
+import themes from '../../constants/themes';
 
 // Section renderers — one per ResumeField variant
 const AboutMeSection = ({ data }: { data: ResumeData }) => (
-  <section className="template-main-section">
+  <section className="template-main-section" data-jump={ResumeField.ABOUT_ME}>
     <h3 className="template-section-title">{ResumeField.ABOUT_ME}</h3>
     <p className="template-about-text">{data[ResumeField.ABOUT_ME]}</p>
   </section>
 );
 
 const KeyImpactSection = ({ data }: { data: ResumeData }) => (
-  <section className="template-main-section">
+  <section className="template-main-section" data-jump={ResumeField.KEY_IMPACT}>
     <h3 className="template-section-title">{ResumeField.KEY_IMPACT}</h3>
     <ul className="template-impact-list">
-      {data[ResumeField.KEY_IMPACT].filter(Boolean).map((impact, i) => (
-        <li key={i} className="template-impact-item">
-          {impact}
-        </li>
-      ))}
+      {data[ResumeField.KEY_IMPACT].map((impact, i) =>
+        impact ? (
+          // data-jump-index keeps the original index so click-to-edit
+          // lands on the right row even when empty rows are skipped.
+          <li key={i} className="template-impact-item" data-jump-index={i}>
+            {impact}
+          </li>
+        ) : null,
+      )}
     </ul>
   </section>
 );
 
 const ToolsSection = ({ data }: { data: ResumeData }) => (
-  <section className="template-sidebar-section">
+  <section className="template-sidebar-section" data-jump={ResumeField.TOOLS}>
     <h3 className="template-section-title">{ResumeField.TOOLS}</h3>
     <div className="template-tech-wrapper">
-      {data[ResumeField.TOOLS].map((tool) => (
-        <span key={tool} className="template-item-tech">
+      {data[ResumeField.TOOLS].map((tool, i) => (
+        <span key={`${tool}-${i}`} className="template-item-tech" data-jump-index={i}>
           {tool}
         </span>
       ))}
@@ -39,11 +53,11 @@ const ToolsSection = ({ data }: { data: ResumeData }) => (
 );
 
 const SkillsSection = ({ data }: { data: ResumeData }) => (
-  <section className="template-sidebar-section">
+  <section className="template-sidebar-section" data-jump={ResumeField.SKILLS}>
     <h3 className="template-section-title">{ResumeField.SKILLS}</h3>
     <div className="template-tech-wrapper">
-      {data[ResumeField.SKILLS].map((skill) => (
-        <span key={skill} className="template-item-tech">
+      {data[ResumeField.SKILLS].map((skill, i) => (
+        <span key={`${skill}-${i}`} className="template-item-tech" data-jump-index={i}>
           {skill}
         </span>
       ))}
@@ -54,6 +68,7 @@ const SkillsSection = ({ data }: { data: ResumeData }) => (
 const ExperienceSection = ({ data }: { data: ResumeData }) => (
   <TimelineSection
     title="Experience"
+    field={ResumeField.EXPERIENCE}
     items={data[ResumeField.EXPERIENCE].map((exp) => ({
       ...exp,
       subtitle: exp.company,
@@ -65,6 +80,7 @@ const ExperienceSection = ({ data }: { data: ResumeData }) => (
 const ProjectsSection = ({ data }: { data: ResumeData }) => (
   <TimelineSection
     title={ResumeField.PROJECTS}
+    field={ResumeField.PROJECTS}
     items={data[ResumeField.PROJECTS].map((proj: ProjectType) => ({
       ...proj,
       id: proj.id.toString(),
@@ -75,10 +91,10 @@ const ProjectsSection = ({ data }: { data: ResumeData }) => (
 );
 
 const EducationSection = ({ data }: { data: ResumeData }) => (
-  <div className="template-sidebar-section">
+  <div className="template-sidebar-section" data-jump={ResumeField.EDUCATION}>
     <h3 className="template-section-title">{ResumeField.EDUCATION}</h3>
     {data[ResumeField.EDUCATION].map((edu) => (
-      <div key={edu.id} className="template-credential-item">
+      <div key={edu.id} className="template-credential-item" data-jump-id={edu.id}>
         <div className="template-credential-header">
           <span className="template-credential-title">{edu.degree}</span>
           <div className="template-credential-meta-wrapper">
@@ -95,10 +111,10 @@ const EducationSection = ({ data }: { data: ResumeData }) => (
 );
 
 const CertificationsSection = ({ data }: { data: ResumeData }) => (
-  <div className="template-sidebar-section">
+  <div className="template-sidebar-section" data-jump={ResumeField.CERTIFICATIONS}>
     <h3 className="template-section-title">{ResumeField.CERTIFICATIONS}</h3>
     {data[ResumeField.CERTIFICATIONS].map((cer) => (
-      <div key={cer.id} className="template-credential-item">
+      <div key={cer.id} className="template-credential-item" data-jump-id={cer.id}>
         <div className="template-credential-header">
           <span className="template-credential-title">{cer.name}</span>
           <span className="template-credential-date">{cer.date}</span>
@@ -135,12 +151,49 @@ const sectionRegistry: Partial<
   [ResumeField.CERTIFICATIONS]: CertificationsSection,
 };
 
-const ResumeTemplate: React.FC = () => {
-  const data = useResumeStore((s) => s.resumeData);
-  const layout = useResumeStore((s) => s.layout);
-  const theme = useResumeStore((s) => s.theme);
-  const fontFamily = useResumeStore((s) => s.fontFamily);
+interface ResumeTemplateProps {
+  /** Render this resume instead of the store's active one (share view, tests). */
+  resume?: { data: ResumeData; style: ResumeStyle };
+}
+
+/** Inline CSS variables for a custom accent color and font scale. */
+const styleVars = (style: ResumeStyle): React.CSSProperties => {
+  const vars: Record<string, string> = {
+    '--resume-font-scale': String(style.fontScale),
+  };
+  if (style.accentColor) {
+    const c = style.accentColor;
+    vars['--color-primary'] = c;
+    vars['--color-primary-dark'] = `color-mix(in srgb, ${c} 85%, black)`;
+    vars['--color-primary-soft'] = `color-mix(in srgb, ${c} 5%, transparent)`;
+    vars['--color-primary-medium'] = `color-mix(in srgb, ${c} 10%, transparent)`;
+    vars['--color-link'] = c;
+  }
+  return vars as React.CSSProperties;
+};
+
+const qrUrlFor = (data: ResumeData, target: ResumeStyle['qrTarget']) => {
+  const contact = data[ResumeField.CONTACT];
+  const raw =
+    target === 'linkedin'
+      ? contact[ContactInfo.LINKEDIN]
+      : target === 'github'
+        ? contact[ContactInfo.GITHUB]
+        : '';
+  if (!raw?.trim()) return undefined;
+  return /^https?:\/\//i.test(raw) ? raw.trim() : `https://${raw.trim()}`;
+};
+
+const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
+  const storeData = useResumeStore((s) => s.resumeData);
+  const storeStyle = useResumeStore(useShallow(pickStyle));
+  const data = resume?.data ?? storeData;
+  const style = resume?.style ?? storeStyle;
+  const { layout, theme, fontFamily } = style;
   const config = LAYOUT_CONFIG[layout];
+  const accent =
+    style.accentColor ??
+    (themes.find((t) => t.name === theme) ?? themes[0]).color;
 
   const renderSection = (field: ResumeField) => {
     const Section = sectionRegistry[field];
@@ -150,12 +203,16 @@ const ResumeTemplate: React.FC = () => {
   return (
     <div
       className="template-resume-outer-wrapper"
-      style={{ fontFamily }}
+      style={{ fontFamily, ...styleVars(style) }}
       data-layout={layout}
       data-theme={theme}
     >
       <div className="template-resume-page">
-        <ResumeHeader {...data[ResumeField.CONTACT]} currentTheme={theme} />
+        <ResumeHeader
+          {...data[ResumeField.CONTACT]}
+          accentColor={accent}
+          qrUrl={qrUrlFor(data, style.qrTarget)}
+        />
 
         <div key={layout} className="template-resume-body">
           <aside className="template-left-column">

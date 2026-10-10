@@ -1,5 +1,5 @@
 // components/common/FormFields.tsx
-import { useLayoutEffect, useRef } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 
 interface InputFieldProps {
   label?: string;
@@ -27,16 +27,24 @@ export const FormField = ({
   type = 'text',
   className,
   ...props
-}: InputFieldProps) => (
-  <div className="form-input-group">
-    {label && <label className="form-label">{label}</label>}
-    <input
-      {...props}
-      type={type}
-      className={`form-input ${className || ''}`}
-    />
-  </div>
-);
+}: InputFieldProps) => {
+  const id = useId();
+  return (
+    <div className="form-input-group">
+      {label && (
+        <label className="form-label" htmlFor={id}>
+          {label}
+        </label>
+      )}
+      <input
+        {...props}
+        id={id}
+        type={type}
+        className={`form-input ${className || ''}`}
+      />
+    </div>
+  );
+};
 
 /**
  * Textarea that grows to fit its content, so long bullets never hide behind an
@@ -45,9 +53,12 @@ export const FormField = ({
 export const AutoGrowTextarea = ({
   className,
   value,
+  ref: externalRef,
   ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
-  const ref = useRef<HTMLTextAreaElement>(null);
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  ref?: React.Ref<HTMLTextAreaElement>;
+}) => {
+  const ref = useRef<HTMLTextAreaElement | null>(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -60,19 +71,42 @@ export const AutoGrowTextarea = ({
   return (
     <textarea
       {...props}
-      ref={ref}
+      ref={(el) => {
+        ref.current = el;
+        if (typeof externalRef === 'function') externalRef(el);
+        else if (externalRef) externalRef.current = el;
+      }}
       value={value}
       className={`form-textarea form-textarea--auto ${className || ''}`}
     />
   );
 };
 
-export const TextAreaField = ({ label, maxChars, value, ...props }: TextAreaProps) => (
-  <div className="form-input-group full-width">
-    {label && <label className="form-label">{label}</label>}
-    <AutoGrowTextarea {...props} value={value} className="form-textarea--tall" />
-    {maxChars && (
-      <span className="form-char-count">{value?.length ?? 0} / {maxChars}</span>
-    )}
-  </div>
-);
+export const TextAreaField = ({
+  label,
+  maxChars,
+  value,
+  ...props
+}: TextAreaProps) => {
+  const id = useId();
+  return (
+    <div className="form-input-group full-width">
+      {label && (
+        <label className="form-label" htmlFor={id}>
+          {label}
+        </label>
+      )}
+      <AutoGrowTextarea
+        {...props}
+        id={id}
+        value={value}
+        className="form-textarea--tall"
+      />
+      {maxChars && (
+        <span className="form-char-count">
+          {value?.length ?? 0} / {maxChars}
+        </span>
+      )}
+    </div>
+  );
+};

@@ -3,9 +3,11 @@ import { X } from 'lucide-react';
 interface TechTagProps {
   tags: string[];
   onChange: (newTags: string[]) => void;
+  /** id for the text input, so a <label htmlFor> can point at it. */
+  id?: string;
 }
 
-export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
+export const TechTagInput = ({ tags = [], onChange, id }: TechTagProps) => (
   <div className="tech-tags">
     {tags.length > 0 && (
       <div className="tech-tags-container">
@@ -25,6 +27,7 @@ export const TechTagInput = ({ tags = [], onChange }: TechTagProps) => (
       </div>
     )}
     <input
+      id={id}
       type="text"
       placeholder="Add technology (press Enter)"
       className="form-input form-input-text"

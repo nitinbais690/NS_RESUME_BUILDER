@@ -8,6 +8,8 @@ import SectionRail from '../SectionRail';
 import PreviewPane from '../PreviewPane';
 import MobileTabBar from '../MobileTabBar';
 import { usePaneMode } from '../../hooks/usePaneMode';
+import { useResumeStore } from '../../../store/useResumeStore';
+import { exportAtsPdf } from '../../../features/ResumePdf/exportPdf';
 
 /**
  * Responsive app shell:
@@ -24,9 +26,21 @@ const AppShell: React.FC = () => {
     documentTitle: 'NS_Studio_Resume',
   });
 
+  // ATS layout → real react-pdf file (selectable text, clean page breaks).
+  // Styled layouts → browser print, which preserves the exact on-screen design.
+  const handleDownload = async () => {
+    const { layout, getActiveResume } = useResumeStore.getState();
+    if (layout === 'ats') {
+      const { data, style } = getActiveResume();
+      await exportAtsPdf(data, style);
+    } else {
+      handlePrint();
+    }
+  };
+
   return (
     <div className="shell" data-pane={pane}>
-      <AppBar onDownload={handlePrint} />
+      <AppBar onDownload={handleDownload} />
 
       <div className="shell__body">
         {/* EDITOR PANE */}

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import AppShell from './components/AppShell';
+import SharedView from './components/SharedView';
 import { useResumeStore } from '../store/useResumeStore';
 import { useUndoRedo } from './hooks/useUndoRedo';
 import { useColorScheme } from './hooks/useColorScheme';
@@ -20,7 +22,12 @@ const App: React.FC = () => {
     }
   }, [theme]);
 
-  return <AppShell />;
+  return (
+    <Routes>
+      <Route path="/view" element={<SharedView />} />
+      <Route path="/*" element={<AppShell />} />
+    </Routes>
+  );
 };
 
 export default App;

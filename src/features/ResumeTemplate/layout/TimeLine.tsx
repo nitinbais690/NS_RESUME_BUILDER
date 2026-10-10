@@ -10,10 +10,13 @@ interface TimelineSectionItemProps {
 
 interface TimelineSectionProps {
   title: string;
+  /** ResumeField this section renders; enables click-to-edit in the preview. */
+  field?: string;
   items: Array<TimelineSectionItemProps>;
 }
 
 const TimelineItem: React.FC<TimelineSectionItemProps> = ({
+  id,
   title,
   date,
   subtitle,
@@ -21,7 +24,7 @@ const TimelineItem: React.FC<TimelineSectionItemProps> = ({
   link,
   technologies,
 }) => (
-  <div className="template-timeline-item">
+  <div className="template-timeline-item" data-jump-id={id}>
     <div className="template-timeline-marker" />
     <div className="template-item-header">
       <h2 className="template-item-title">{title}</h2>
@@ -55,9 +58,10 @@ const TimelineItem: React.FC<TimelineSectionItemProps> = ({
 
 export const TimelineSection: React.FC<TimelineSectionProps> = ({
   title,
+  field,
   items,
 }) => (
-  <div className="template-timeline-section">
+  <div className="template-timeline-section" data-jump={field}>
     <h3 className="template-section-title">{title}</h3>
     <div className="template-timeline-track">
       {items.map((item: TimelineSectionItemProps) => (
