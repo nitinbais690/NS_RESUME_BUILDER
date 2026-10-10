@@ -6,6 +6,8 @@ export type LayoutType =
   | 'executive'
   | 'creative';
 export type FontFamily = 'Inter, sans-serif' | 'Roboto, sans-serif' | 'Arial';
+/** App chrome appearance. The resume sheet itself always renders light. */
+export type ColorScheme = 'system' | 'light' | 'dark';
 
 export interface EducationType {
   id: string;

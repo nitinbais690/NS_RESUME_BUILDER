@@ -278,7 +278,7 @@
   &.form-btn-next,
   &.form-btn-finish {
     background-color: var(--color-primary);
-    color: var(--color-bg-white);
+    color: var(--color-on-primary);
     box-shadow: var(--shadow-sm);
 
     &:hover:not(:disabled) {
@@ -506,6 +506,11 @@
   }
   &--short {
     min-height: 90px;
+  }
+  /* Height is driven by AutoGrowTextarea; manual resize would just be undone. */
+  &--auto {
+    resize: none;
+    overflow: hidden;
   }
 }
 
@@ -963,7 +968,9 @@
   }
 
   .form-content-area {
-    padding: var(--spacing-xl);
+    /* Bottom room so the last fields scroll clear of the floating Preview FAB. */
+    padding: var(--spacing-xl) var(--spacing-xl)
+      calc(120px + env(safe-area-inset-bottom, 0px));
   }
 }
 

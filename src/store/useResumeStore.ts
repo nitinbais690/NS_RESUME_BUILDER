@@ -11,6 +11,7 @@ import {
   ThemeType,
   LayoutType,
   FontFamily,
+  ColorScheme,
 } from '../types';
 import dummyResumeData from '../data';
 import { LOCAL_STORAGE_KEY } from '../constants';
@@ -20,12 +21,14 @@ interface ResumeState {
   theme: ThemeType;
   layout: LayoutType;
   fontFamily: FontFamily;
+  colorScheme: ColorScheme;
   _past: ResumeData[];
   _future: ResumeData[];
 
   setTheme: (theme: ThemeType) => void;
   setLayout: (layout: LayoutType) => void;
   setFontFamily: (fontFamily: FontFamily) => void;
+  setColorScheme: (colorScheme: ColorScheme) => void;
 
   updateContactInfo: (info: Partial<ContactInfoType>) => void;
   updateAboutMe: (aboutMe: string) => void;
@@ -109,12 +112,14 @@ export const useResumeStore = create<ResumeState>()(
         theme: 'default',
         layout: 'classic',
         fontFamily: 'Inter, sans-serif',
+        colorScheme: 'system',
         _past: [],
         _future: [],
 
         setTheme: (theme) => set({ theme }),
         setLayout: (layout) => set({ layout }),
         setFontFamily: (fontFamily) => set({ fontFamily }),
+        setColorScheme: (colorScheme) => set({ colorScheme }),
 
         updateContactInfo: (info) =>
           set((s) =>
@@ -189,6 +194,7 @@ export const useResumeStore = create<ResumeState>()(
         theme: state.theme,
         layout: state.layout,
         fontFamily: state.fontFamily,
+        colorScheme: state.colorScheme,
       }),
     }
   )

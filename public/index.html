@@ -24,6 +24,23 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>NS Studio — Resume Builder</title>
+    <script>
+      // Apply the saved color scheme before first paint (no light flash in dark
+      // mode). Kept in sync with useColorScheme + the zustand persist key.
+      (function () {
+        var pref = 'system';
+        try {
+          var saved = JSON.parse(localStorage.getItem('ns_cv_resume_data'));
+          pref = (saved && saved.state && saved.state.colorScheme) || 'system';
+        } catch (e) {}
+        if (pref === 'system') {
+          pref = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.setAttribute('data-color-scheme', pref);
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

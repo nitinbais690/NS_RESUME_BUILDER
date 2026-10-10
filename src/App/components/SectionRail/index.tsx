@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import { FORM_STEPS } from '../../../features/ResumeForm/formSteps';
+import {
+  FORM_STEPS,
+  useActiveStep,
+} from '../../../features/ResumeForm/formSteps';
 
 /**
- * Compact vertical icon rail for desktop section navigation. Icons are always
- * visible; the label expands on hover / active (see .rail styles). Hidden below
- * 1024px, where the bottom tab bar + form stepper take over.
+ * Section navigation. Desktop: compact vertical icon rail with hover labels.
+ * Below 1024px: a horizontal, swipeable chip strip above the form (see .rail
+ * styles), with the active chip kept scrolled into view.
  */
 const SectionRail: React.FC = () => {
+  const navRef = useRef<HTMLElement>(null);
+  const activeStep = useActiveStep();
+
+  useEffect(() => {
+    const nav = navRef.current;
+    const active = nav?.querySelector<HTMLElement>('.rail__item.is-active');
+    if (!nav || !active || nav.scrollWidth <= nav.clientWidth) return;
+    // Scroll the strip itself (not scrollIntoView) so the page never jumps.
+    nav.scrollTo({
+      left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2,
+      behavior: 'smooth',
+    });
+  }, [activeStep]);
+
   return (
-    <nav className="rail" aria-label="Resume sections">
+    <nav className="rail" aria-label="Resume sections" ref={navRef}>
       {FORM_STEPS.map((step) => {
         const Icon = step.icon;
         return (

@@ -6,6 +6,7 @@ import { FormCardWrapper } from '../common/FormCardWrapper';
 import { EmptyState } from '../common/EmptyState';
 import { TechTagInput } from '../common/TechTagInput';
 import AddButton from '../common/AddButton';
+import { AutoGrowTextarea } from '../common/FormFields';
 import { useResumeStore } from '../../../store/useResumeStore';
 
 const Project: React.FC = () => {
@@ -71,9 +72,9 @@ const Project: React.FC = () => {
 
             <div className="form-input-group">
               <label className="form-label">Details</label>
-              <textarea
+              <AutoGrowTextarea
                 placeholder="What the project does"
-                className="form-textarea form-textarea--short"
+                className="form-textarea--short"
                 value={proj.desc}
                 onChange={(e) =>
                   updateProject(proj.id, { desc: e.target.value })

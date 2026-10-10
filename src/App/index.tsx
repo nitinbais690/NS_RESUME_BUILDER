@@ -3,11 +3,13 @@ import React, { useEffect } from 'react';
 import AppShell from './components/AppShell';
 import { useResumeStore } from '../store/useResumeStore';
 import { useUndoRedo } from './hooks/useUndoRedo';
+import { useColorScheme } from './hooks/useColorScheme';
 
 const App: React.FC = () => {
   const theme = useResumeStore((state) => state.theme);
 
   useUndoRedo();
+  useColorScheme();
 
   useEffect(() => {
     const root = document.documentElement;

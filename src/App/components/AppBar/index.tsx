@@ -4,6 +4,7 @@ import { SlidersHorizontal, Undo2, Redo2 } from 'lucide-react';
 import CVCustomizer from '../../sections/CVCustomizer';
 import DownloadButton from '../../sections/DownloadButton';
 import CompletenessBar from '../CompletenessBar';
+import ColorSchemeToggle from '../ColorSchemeToggle';
 import { useCompleteness } from '../../hooks/useCompleteness';
 import { useResumeStore } from '../../../store/useResumeStore';
 
@@ -87,6 +88,7 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
           >
             <Redo2 size={15} />
           </button>
+          <ColorSchemeToggle />
         </div>
 
         <div className="appbar__actions-separator" aria-hidden="true" />

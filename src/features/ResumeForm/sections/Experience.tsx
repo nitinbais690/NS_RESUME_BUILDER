@@ -6,6 +6,7 @@ import { FormCardWrapper } from '../common/FormCardWrapper';
 import { EmptyState } from '../common/EmptyState';
 import { TechTagInput } from '../common/TechTagInput';
 import AddButton from '../common/AddButton';
+import { AutoGrowTextarea } from '../common/FormFields';
 import { useResumeStore } from '../../../store/useResumeStore';
 
 const Experience: React.FC = () => {
@@ -84,9 +85,9 @@ const Experience: React.FC = () => {
 
             <div className="form-input-group">
               <label className="form-label">Description</label>
-              <textarea
+              <AutoGrowTextarea
                 placeholder="What you did and achieved"
-                className="form-textarea form-textarea--short"
+                className="form-textarea--short"
                 value={exp.desc}
                 onChange={(e) =>
                   updateExperience(exp.id, { desc: e.target.value })

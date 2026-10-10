@@ -1,4 +1,5 @@
 // components/common/FormFields.tsx
+import { useLayoutEffect, useRef } from 'react';
 
 interface InputFieldProps {
   label?: string;
@@ -37,10 +38,39 @@ export const FormField = ({
   </div>
 );
 
+/**
+ * Textarea that grows to fit its content, so long bullets never hide behind an
+ * inner scrollbar (especially painful on phones). CSS min-height still applies.
+ */
+export const AutoGrowTextarea = ({
+  className,
+  value,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    // scrollHeight excludes borders; add them back for border-box sizing.
+    el.style.height = `${el.scrollHeight + el.offsetHeight - el.clientHeight}px`;
+  }, [value]);
+
+  return (
+    <textarea
+      {...props}
+      ref={ref}
+      value={value}
+      className={`form-textarea form-textarea--auto ${className || ''}`}
+    />
+  );
+};
+
 export const TextAreaField = ({ label, maxChars, value, ...props }: TextAreaProps) => (
   <div className="form-input-group full-width">
     {label && <label className="form-label">{label}</label>}
-    <textarea {...props} value={value} className="form-textarea form-textarea--tall" />
+    <AutoGrowTextarea {...props} value={value} className="form-textarea--tall" />
     {maxChars && (
       <span className="form-char-count">{value?.length ?? 0} / {maxChars}</span>
     )}

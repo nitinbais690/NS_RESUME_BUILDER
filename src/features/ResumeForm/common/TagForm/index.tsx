@@ -3,6 +3,7 @@ import { Trash2, Sparkles, Wrench, TrendingUp, type LucideIcon } from 'lucide-re
 import AddButton from '../AddButton';
 import { useResumeStore } from '../../../../store/useResumeStore';
 import { EmptyState } from '../EmptyState';
+import { AutoGrowTextarea } from '../FormFields';
 
 type ListField = ResumeField.KEY_IMPACT | ResumeField.SKILLS | ResumeField.TOOLS;
 
@@ -62,9 +63,8 @@ export const ToolForm: React.FC<{ name: ListField }> = ({ name }) => {
               // every keystroke and drops focus.
               <div key={`${name}-${i}`} className="form-skill-row">
                 {multiline ? (
-                  <textarea
-                    className="form-textarea"
-                    rows={2}
+                  <AutoGrowTextarea
+                    rows={1}
                     placeholder={placeholder}
                     value={item}
                     onChange={(e) => onChange(i, e.target.value)}
