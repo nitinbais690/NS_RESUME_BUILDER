@@ -92,6 +92,54 @@ yarn format
 
 ---
 
+## Deploying to Vercel
+
+The app is a static Vite build. `vercel.json` already sets the build command (`yarn build`), the output folder (`build/`) and the SPA rewrite so routes like `/view` and `/impact` work when opened directly. The Node version comes from `engines` in `package.json` (Vite needs Node 20.19+).
+
+### One-time setup
+
+```bash
+# install the CLI (skip if `vercel --version` works)
+npm i -g vercel
+
+# log in (opens the browser)
+vercel login
+
+# link this folder to the existing project (creates .vercel/, already git-ignored)
+vercel link
+```
+
+In the Vercel dashboard → **Project → Settings → Build & Deployment**, set **Framework Preset** to **Vite** (or **Other**). `vercel.json` overrides the build command and output folder either way.
+
+### Every release
+
+```bash
+# 1. make sure it builds and tests pass locally
+yarn test:run
+yarn build
+
+# 2. deploy a preview (gets its own URL to check first)
+vercel
+
+# 3. promote to production (ns-resume-builder.vercel.app)
+vercel --prod
+```
+
+### Optional: auto-deploy on push
+
+In the dashboard → **Project → Settings → Git**, connect `nitinbais690/NS_RESUME_BUILDER`. After that, every push to `main` deploys to production and every other branch or PR gets a preview URL, so the CLI steps above are only needed for manual deploys.
+
+### Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| `The specified token is not valid` | Run `vercel login` again. |
+| Build fails with a Node/Vite version error | Check **Settings → Build & Deployment → Node.js Version** is 22.x (or remove the override so `engines` applies). |
+| Refreshing `/view` or a form step shows 404 | Make sure `vercel.json` (with the `rewrites` rule) is committed. |
+| Old version still showing | Hard-refresh; the HTML isn't cached, but the browser may hold the old tab. |
+
+---
+
 ## Project Structure
 
 ```
