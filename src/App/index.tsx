@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 
 import AppShell from './components/AppShell';
 import { useResumeStore } from '../store/useResumeStore';
+import { useUndoRedo } from './hooks/useUndoRedo';
 
 const App: React.FC = () => {
-  // Mirror the selected theme onto the document root for CSS variable overrides.
   const theme = useResumeStore((state) => state.theme);
+
+  useUndoRedo();
 
   useEffect(() => {
     const root = document.documentElement;

@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Undo2, Redo2 } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
 import DownloadButton from '../../sections/DownloadButton';
+import CompletenessBar from '../CompletenessBar';
+import { useCompleteness } from '../../hooks/useCompleteness';
+import { useResumeStore } from '../../../store/useResumeStore';
 
 interface AppBarProps {
   onDownload: () => void;
@@ -12,6 +15,12 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const customizeRef = useRef<HTMLDivElement>(null);
+
+  const undo = useResumeStore((s) => s.undo);
+  const redo = useResumeStore((s) => s.redo);
+  const canUndo = useResumeStore((s) => s._past.length > 0);
+  const canRedo = useResumeStore((s) => s._future.length > 0);
+  const score = useCompleteness();
 
   useEffect(() => {
     if (!customizeOpen) return;
@@ -57,6 +66,33 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
       </div>
 
       <div className="appbar__actions">
+        <div className="appbar__history">
+          <button
+            type="button"
+            className="appbar__history-btn"
+            onClick={undo}
+            disabled={!canUndo}
+            title="Undo (Ctrl+Z)"
+            aria-label="Undo"
+          >
+            <Undo2 size={15} />
+          </button>
+          <button
+            type="button"
+            className="appbar__history-btn"
+            onClick={redo}
+            disabled={!canRedo}
+            title="Redo (Ctrl+Shift+Z)"
+            aria-label="Redo"
+          >
+            <Redo2 size={15} />
+          </button>
+        </div>
+
+        <div className="appbar__actions-separator" aria-hidden="true" />
+
+        <CompletenessBar score={score} />
+
         <div className="appbar__customize" ref={customizeRef}>
           <button
             type="button"

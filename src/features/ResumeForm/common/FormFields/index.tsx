@@ -18,6 +18,7 @@ interface TextAreaProps {
   value?: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; // Exact match
   placeholder?: string;
+  maxChars?: number;
 }
 
 export const FormField = ({
@@ -36,9 +37,12 @@ export const FormField = ({
   </div>
 );
 
-export const TextAreaField = ({ label, ...props }: TextAreaProps) => (
+export const TextAreaField = ({ label, maxChars, value, ...props }: TextAreaProps) => (
   <div className="form-input-group full-width">
     {label && <label className="form-label">{label}</label>}
-    <textarea {...props} className="form-textarea form-textarea--tall" />
+    <textarea {...props} value={value} className="form-textarea form-textarea--tall" />
+    {maxChars && (
+      <span className="form-char-count">{value?.length ?? 0} / {maxChars}</span>
+    )}
   </div>
 );

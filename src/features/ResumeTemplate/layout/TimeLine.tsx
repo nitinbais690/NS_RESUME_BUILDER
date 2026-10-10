@@ -34,8 +34,9 @@ const TimelineItem: React.FC<TimelineSectionItemProps> = ({
         target="_blank"
         rel="noopener noreferrer"
         className="template-project-link"
+        aria-label={`View project: ${title}`}
       >
-        {link}
+        View Project ↗
       </a>
     )}
     <div className="template-item-desc">{description}</div>

@@ -1,4 +1,35 @@
 /* =========================================
+   CSS @property — enables smooth theme color transitions in Chrome/Edge/Safari
+   ========================================= */
+@supports (syntax: "<color>") {
+  @property --color-primary {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #7a1b1b;
+  }
+  @property --color-primary-dark {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #681616;
+  }
+  @property --color-primary-soft {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(122, 27, 27, 0.05);
+  }
+  @property --color-primary-medium {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(122, 27, 27, 0.1);
+  }
+  @property --color-primary-shadow {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(122, 27, 27, 0.3);
+  }
+}
+
+/* =========================================
    1. GLOBAL VARIABLES & THEME
    ========================================= */
 
@@ -6,6 +37,12 @@
 $transition-base: 0.2s ease-in-out;
 
 :root {
+  transition:
+    --color-primary 0.35s ease,
+    --color-primary-dark 0.35s ease,
+    --color-primary-soft 0.35s ease,
+    --color-primary-medium 0.35s ease;
+
   /* --- Functional Constants --- */
   --zero: 0;
   --one: 1;

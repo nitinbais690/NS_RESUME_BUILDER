@@ -13,25 +13,34 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
     return themeObj ? themeObj.color : themes[0].color;
   }, [props.currentTheme]);
 
-  const contactFields = [
-    { value: props[ContactInfo.EMAIL], Icon: Mail, type: 'email' as const },
-    { value: props[ContactInfo.PHONE], Icon: Phone, type: 'phone' as const },
-    {
-      value: props[ContactInfo.LINKEDIN],
-      Icon: Linkedin,
-      type: 'linkedin' as const,
-    },
-    {
-      value: props[ContactInfo.GITHUB],
-      Icon: GithubIcon,
-      type: 'github' as const,
-    },
-    {
-      value: props[ContactInfo.LOCATION],
-      Icon: MapPin,
-      type: 'location' as const,
-    },
-  ];
+  const contactFields = useMemo(
+    () => [
+      { value: props[ContactInfo.EMAIL], Icon: Mail, type: 'email' as const },
+      { value: props[ContactInfo.PHONE], Icon: Phone, type: 'phone' as const },
+      {
+        value: props[ContactInfo.LINKEDIN],
+        Icon: Linkedin,
+        type: 'linkedin' as const,
+      },
+      {
+        value: props[ContactInfo.GITHUB],
+        Icon: GithubIcon,
+        type: 'github' as const,
+      },
+      {
+        value: props[ContactInfo.LOCATION],
+        Icon: MapPin,
+        type: 'location' as const,
+      },
+    ],
+    [
+      props[ContactInfo.EMAIL],
+      props[ContactInfo.PHONE],
+      props[ContactInfo.LINKEDIN],
+      props[ContactInfo.GITHUB],
+      props[ContactInfo.LOCATION],
+    ],
+  );
 
   return (
     <header className="template-resume-header">

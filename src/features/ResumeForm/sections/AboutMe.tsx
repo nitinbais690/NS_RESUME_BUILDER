@@ -10,8 +10,11 @@ const AboutMe: React.FC = () => {
   return (
     <section>
       <TextAreaField
+        label="Professional Summary"
+        placeholder="Write a short paragraph about your background, skills, and what makes you stand out…"
         value={aboutMe}
         onChange={(e) => updateAboutMe(e.target.value)}
+        maxChars={600}
       />
     </section>
   );

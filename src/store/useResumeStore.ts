@@ -20,6 +20,8 @@ interface ResumeState {
   theme: ThemeType;
   layout: LayoutType;
   fontFamily: FontFamily;
+  _past: ResumeData[];
+  _future: ResumeData[];
 
   setTheme: (theme: ThemeType) => void;
   setLayout: (layout: LayoutType) => void;
@@ -50,38 +52,51 @@ interface ResumeState {
     id: string,
     certification: Partial<CertificationType>
   ) => void;
+
+  undo: () => void;
+  redo: () => void;
+
+  paneMode: 'edit' | 'preview';
+  setPaneMode: (mode: 'edit' | 'preview') => void;
 }
 
 export const useResumeStore = create<ResumeState>()(
   persist(
     (set) => {
+      // Snapshot current resumeData into _past, clear _future, apply newResumeData
+      const withHistory = (s: ResumeState, newResumeData: ResumeData): Partial<ResumeState> => ({
+        resumeData: newResumeData,
+        _past: [...s._past, s.resumeData].slice(-50),
+        _future: [],
+      });
+
       // Generates add/remove/update actions for any id-keyed array field
       const entityActions = <T extends { id: string }>(field: ResumeField) => ({
         add: (item: T) =>
-          set((s) => ({
-            resumeData: {
+          set((s) =>
+            withHistory(s, {
               ...s.resumeData,
               [field]: [...(s.resumeData[field] as unknown as T[]), item],
-            },
-          })),
+            })
+          ),
         remove: (id: string) =>
-          set((s) => ({
-            resumeData: {
+          set((s) =>
+            withHistory(s, {
               ...s.resumeData,
               [field]: (s.resumeData[field] as unknown as T[]).filter(
                 (i) => i.id !== id
               ),
-            },
-          })),
+            })
+          ),
         update: (id: string, patch: Partial<T>) =>
-          set((s) => ({
-            resumeData: {
+          set((s) =>
+            withHistory(s, {
               ...s.resumeData,
               [field]: (s.resumeData[field] as unknown as T[]).map((i) =>
                 i.id === id ? { ...i, ...patch } : i
               ),
-            },
-          })),
+            })
+          ),
       });
 
       const edu = entityActions<EducationType>(ResumeField.EDUCATION);
@@ -94,34 +109,36 @@ export const useResumeStore = create<ResumeState>()(
         theme: 'default',
         layout: 'classic',
         fontFamily: 'Inter, sans-serif',
+        _past: [],
+        _future: [],
 
         setTheme: (theme) => set({ theme }),
         setLayout: (layout) => set({ layout }),
         setFontFamily: (fontFamily) => set({ fontFamily }),
 
         updateContactInfo: (info) =>
-          set((state) => ({
-            resumeData: {
-              ...state.resumeData,
+          set((s) =>
+            withHistory(s, {
+              ...s.resumeData,
               [ResumeField.CONTACT]: {
-                ...state.resumeData[ResumeField.CONTACT],
+                ...s.resumeData[ResumeField.CONTACT],
                 ...info,
               },
-            },
-          })),
+            })
+          ),
 
         updateAboutMe: (aboutMe) =>
-          set((state) => ({
-            resumeData: {
-              ...state.resumeData,
+          set((s) =>
+            withHistory(s, {
+              ...s.resumeData,
               [ResumeField.ABOUT_ME]: aboutMe,
-            },
-          })),
+            })
+          ),
 
         updateListField: (field, items) =>
-          set((state) => ({
-            resumeData: { ...state.resumeData, [field]: items },
-          })),
+          set((s) =>
+            withHistory(s, { ...s.resumeData, [field]: items })
+          ),
 
         addEducation: edu.add,
         removeEducation: edu.remove,
@@ -138,8 +155,41 @@ export const useResumeStore = create<ResumeState>()(
         addCertification: cert.add,
         removeCertification: cert.remove,
         updateCertification: cert.update,
+
+        undo: () =>
+          set((s) => {
+            if (s._past.length === 0) return {};
+            const previous = s._past[s._past.length - 1];
+            return {
+              resumeData: previous,
+              _past: s._past.slice(0, -1),
+              _future: [s.resumeData, ...s._future].slice(0, 50),
+            };
+          }),
+
+        redo: () =>
+          set((s) => {
+            if (s._future.length === 0) return {};
+            const next = s._future[0];
+            return {
+              resumeData: next,
+              _past: [...s._past, s.resumeData].slice(-50),
+              _future: s._future.slice(1),
+            };
+          }),
+
+        paneMode: 'edit',
+        setPaneMode: (mode) => set({ paneMode: mode }),
       };
     },
-    { name: LOCAL_STORAGE_KEY }
+    {
+      name: LOCAL_STORAGE_KEY,
+      partialize: (state) => ({
+        resumeData: state.resumeData,
+        theme: state.theme,
+        layout: state.layout,
+        fontFamily: state.fontFamily,
+      }),
+    }
   )
 );

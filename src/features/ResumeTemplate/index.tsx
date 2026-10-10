@@ -16,8 +16,8 @@ const KeyImpactSection = ({ data }: { data: ResumeData }) => (
   <section className="template-main-section">
     <h3 className="template-section-title">{ResumeField.KEY_IMPACT}</h3>
     <ul className="template-impact-list">
-      {data[ResumeField.KEY_IMPACT].map((impact) => (
-        <li key={impact} className="template-impact-item">
+      {data[ResumeField.KEY_IMPACT].filter(Boolean).map((impact, i) => (
+        <li key={i} className="template-impact-item">
           {impact}
         </li>
       ))}
@@ -157,7 +157,7 @@ const ResumeTemplate: React.FC = () => {
       <div className="template-resume-page">
         <ResumeHeader {...data[ResumeField.CONTACT]} currentTheme={theme} />
 
-        <div className="template-resume-body">
+        <div key={layout} className="template-resume-body">
           <aside className="template-left-column">
             {config.left?.map((field) => renderSection(field))}
           </aside>

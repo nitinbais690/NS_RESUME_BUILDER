@@ -28,9 +28,23 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
         )}
       </div>
 
-      <span className="form-section-step">
-        Step {currentStep} of {totalSteps}
-      </span>
+      <div
+        className="form-step-dots"
+        aria-label={`Step ${currentStep} of ${totalSteps}`}
+      >
+        {Array.from({ length: totalSteps }, (_, i) => (
+          <span
+            key={i}
+            className={[
+              'form-step-dot',
+              i < currentStep - 1 ? 'is-done' : '',
+              i === currentStep - 1 ? 'is-current' : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          />
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-@import 'mixins';
+@use 'mixins' as *;
 
 /* =========================================
    APP SHELL — global layout
@@ -96,6 +96,65 @@
     color: var(--color-text-muted);
     padding-bottom: var(--spacing-sm);
     border-bottom: var(--border-thin) solid var(--color-border-light);
+  }
+
+  /* Undo / Redo history buttons */
+  &__history {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__history-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: var(--border-thin) solid var(--transparent);
+    border-radius: var(--radius-sm);
+    background: var(--none);
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: all var(--transition-base);
+
+    &:hover:not(:disabled) {
+      background: var(--color-border-alt);
+      color: var(--color-text-main);
+      border-color: var(--color-border-medium);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.93);
+    }
+
+    &:disabled {
+      opacity: var(--opacity-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  /* Resume completeness ring */
+  .completeness-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: default;
+    user-select: none;
+
+    &__label {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-bold);
+      min-width: 30px;
+      text-align: left;
+    }
+
+    @include mobile {
+      &__label {
+        display: none;
+      }
+    }
   }
 
   &__customize {
@@ -303,7 +362,9 @@
   flex: var(--one);
   min-width: 0;
   overflow: auto;
-  padding: var(--spacing-4xl);
+  /* padding-bottom omitted intentionally: flex + overflow:auto drops padding-bottom
+     from the scroll area. Bottom breathing room lives on __frame's margin-bottom. */
+  padding: var(--spacing-4xl) var(--spacing-4xl) 0;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -319,6 +380,9 @@
   &__frame {
     position: relative;
     width: var(--percent-full);
+    /* margin-bottom provides reliable bottom breathing room (unlike padding-bottom
+       on a flex scroll container, margin on an in-flow item IS included). */
+    margin-bottom: var(--spacing-4xl);
   }
 
   /* Scale is applied inline via JS (usePreviewScale). Absolute-positioned +
@@ -329,6 +393,10 @@
     left: var(--percent-half);
     margin-left: calc(var(--a4-width) / -2);
     transform-origin: top center;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform 0.2s ease;
+    }
   }
 
   &__measure {
@@ -342,58 +410,95 @@
   box-shadow: var(--shadow-print);
 }
 
-/* --- Bottom tab bar (mobile / tablet-portrait) --- */
-.tabbar {
-  display: none; /* shown at <1024 */
+/* --- Floating pane-toggle FAB with progress ring (mobile / tablet-portrait) --- */
+.pane-fab {
+  display: none; /* shown at <1024 via media query */
   position: fixed;
-  left: var(--zero);
-  right: var(--zero);
-  bottom: var(--zero);
-  height: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-  background: var(--color-bg-white);
-  border-top: var(--border-thin) solid var(--color-border-medium);
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: var(--z-sticky);
+  bottom: calc(var(--spacing-3xl) + env(safe-area-inset-bottom, 0px));
+  right: var(--spacing-3xl);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  z-index: calc(var(--z-sticky) + 10);
 
-  /* Form progress bar — sits at top of tabbar */
-  &__progress {
+  /* Wrapper that the ring SVG + button both live inside */
+  &__circle {
+    position: relative;
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Progress ring SVG — sits behind the button */
+  &__ring {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 2px;
-    background: var(--color-primary);
-    border-radius: 0 2px 2px 0;
-    transition:
-      width 0.3s ease,
-      background-color var(--transition-base);
+    inset: 0;
+    width: 60px;
+    height: 60px;
+    transform: rotate(-90deg); /* start arc from the top */
     pointer-events: none;
   }
 
-  &__tab {
-    flex: var(--one);
+  &__ring-track {
+    fill: none;
+    stroke: var(--color-primary-shadow);
+    stroke-width: 3;
+  }
+
+  &__ring-fill {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease, stroke 0.35s ease;
+  }
+
+  /* Circular icon button inside the ring */
+  &__btn {
+    position: absolute;
+    inset: 4px; /* 4px inset gives the ring its stroke room */
+    width: auto;
+    height: auto;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-primary);
+    color: var(--color-bg-white);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-tiny);
-    border: var(--none);
-    background: var(--none);
     cursor: pointer;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-light);
-    transition: color var(--transition-base);
-    min-height: 44px; /* accessible touch target */
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.2),
+      0 2px 6px var(--color-primary-shadow);
+    transition:
+      background-color var(--transition-base),
+      box-shadow var(--transition-base),
+      transform 0.15s ease;
 
-    &.is-active {
-      color: var(--color-primary);
+    &:hover {
+      background: var(--color-primary-dark);
+      box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.25),
+        0 2px 8px var(--color-primary-shadow);
+      transform: scale(1.06);
     }
 
     &:active {
-      transform: scale(0.95);
+      transform: scale(0.93) !important;
     }
+  }
+
+  /* Text label below the ring */
+  &__label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    letter-spacing: var(--letter-spacing-sm);
+    text-transform: uppercase;
+    background: var(--color-bg-white);
+    padding: 2px 8px;
+    border-radius: 999px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    pointer-events: none;
   }
 }
 
@@ -459,9 +564,6 @@
   .rail {
     display: flex;
   }
-  .tabbar {
-    display: none;
-  }
   .shell__pane {
     flex: 1 1 50%;
   }
@@ -471,11 +573,8 @@
   .rail {
     display: none;
   }
-  .tabbar {
+  .pane-fab {
     display: flex;
-  }
-  .shell__body {
-    padding-bottom: var(--tabbar-height);
   }
   .shell__pane {
     flex: 1 1 100%;
@@ -525,7 +624,8 @@
 /* Form content area tweaks on small screens */
 .form-content-area {
   @include mobile {
-    padding: var(--spacing-md);
+    /* Extra bottom padding so the floating pane-fab never covers nav buttons */
+    padding: var(--spacing-md) var(--spacing-md) 80px;
 
     .form-section-header {
       flex-wrap: wrap;
@@ -626,7 +726,13 @@
 
 .preview {
   @include mobile {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-md) 0;
+  }
+}
+
+.preview__frame {
+  @include mobile {
+    margin-bottom: 80px; /* clear the floating pane-fab */
   }
 }
 
@@ -1101,7 +1207,7 @@
   /* Hide all chrome */
   .appbar,
   .rail,
-  .tabbar,
+  .pane-fab,
   .form-navigation-buttons,
   .btn-clear-storage,
   .btn-download-container,
@@ -1130,6 +1236,15 @@
     position: static !important;
     transform: none !important;
     margin-left: 0 !important;
+    transition: none !important;
+  }
+
+  /* Kill entrance animations in print */
+  .template-main-section,
+  .template-sidebar-section,
+  .template-timeline-item,
+  .template-resume-body {
+    animation: none !important;
   }
 
   .preview__measure {
@@ -1160,7 +1275,8 @@
 @media (prefers-reduced-motion: reduce) {
   .rail__item,
   .rail__label,
-  .tabbar__tab,
+  .pane-fab__btn,
+  .pane-fab__ring-fill,
   .form-btn-nav,
   .btn-download,
   .btn-download--appbar,
@@ -1194,8 +1310,8 @@
     padding-top: var(--spacing-md);
   }
 
-  .tabbar {
-    padding-right: env(safe-area-inset-right, 0px);
+  .pane-fab {
+    right: calc(var(--spacing-2xl) + env(safe-area-inset-right, 0px));
   }
 }
 
@@ -1217,10 +1333,14 @@
    HIGH CONTRAST
    ========================================= */
 @media (prefers-contrast: high) {
-  .rail__item.is-active,
-  .tabbar__tab.is-active {
+  .rail__item.is-active {
     outline: 2px solid var(--color-primary);
     outline-offset: -2px;
+  }
+
+  .pane-fab {
+    outline: 2px solid var(--color-bg-white);
+    outline-offset: -3px;
   }
 
   .form-btn-nav {

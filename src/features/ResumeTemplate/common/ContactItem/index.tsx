@@ -46,6 +46,7 @@ export const ContactItem: React.FC<ContactItemProps> = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`${type}: ${value}`}
         {...containerProps}
       >
         {content}

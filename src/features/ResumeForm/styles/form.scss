@@ -509,6 +509,15 @@
   }
 }
 
+.form-char-count {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-md);
+  text-align: right;
+  color: var(--color-text-placeholder);
+  transition: color var(--transition-base);
+}
+
 /* --- Input variants --- */
 .form-input-name {
   font-size: var(--font-size-2xl);
@@ -635,6 +644,42 @@
       background: var(--color-primary-medium);
       transform: translateY(-1px);
     }
+  }
+}
+
+/* =========================================
+   STEP PROGRESS DOTS
+   ========================================= */
+
+.form-step-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: var(--spacing-xs);
+}
+
+.form-step-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-border-medium);
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+
+  &.is-done {
+    background-color: var(--color-primary);
+    opacity: 0.45;
+  }
+
+  &.is-current {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-primary);
+    opacity: 1;
   }
 }
 

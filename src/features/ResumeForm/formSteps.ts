@@ -7,6 +7,7 @@ import {
   Briefcase,
   FolderCode,
   Sparkles,
+  TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -15,6 +16,7 @@ import { ResumeField } from '../../types';
 
 import PersonalDetails from './sections/PersonalDetails';
 import AboutMe from './sections/AboutMe';
+import KeyImpact from './sections/KeyImpact';
 import Education from './sections/Education';
 import Certification from './sections/Certification';
 import Skill from './sections/Skill';
@@ -44,6 +46,13 @@ export const FORM_STEPS: FormStep[] = [
     description: 'A short professional summary.',
     icon: FileText,
     component: AboutMe,
+  },
+  {
+    id: 'impact',
+    title: ResumeField.KEY_IMPACT,
+    description: 'Your top measurable wins, one per line.',
+    icon: TrendingUp,
+    component: KeyImpact,
   },
   {
     id: 'education',
