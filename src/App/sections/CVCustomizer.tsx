@@ -1,6 +1,6 @@
-import { FontFamily, QrTarget } from '../../types';
+import { FontFamily, GapKey, QrTarget } from '../../types';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Check,
   Type,
@@ -10,10 +10,63 @@ import {
   QrCode,
   Pipette,
   MoveVertical,
+  Bookmark,
+  Plus,
+  X,
 } from 'lucide-react';
-import themes, { fontFamilies, layouts, layoutLabels } from '../../constants/themes';
+import themes, {
+  ATS_LAYOUTS,
+  fontFamilies,
+  layoutHints,
+  layoutLabels,
+  layouts,
+} from '../../constants/themes';
 
 import { useResumeStore } from '../../store/useResumeStore';
+import { GAP_MAX, GAP_MIN } from '../../lib/resumeIO';
+
+const GAP_ROWS: Array<{ key: GapKey; label: string; hint: string }> = [
+  { key: 'section', label: 'Sections', hint: 'Space between one section and the next' },
+  { key: 'heading', label: 'Headings', hint: 'Space between a section heading and its content' },
+  { key: 'entry', label: 'Entries', hint: 'Space between jobs, projects, degrees and other entries' },
+];
+
+interface RangeRowProps {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  title?: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+  resetTitle: string;
+}
+
+/** Labelled slider with a percentage button that resets it to 100%. */
+const RangeRow: React.FC<RangeRowProps> = ({ id, label, icon, title, min, max, value, onChange, resetTitle }) => (
+  <div className="compact-row" title={title}>
+    <label className="control-label-wrapper" htmlFor={id}>
+      {icon}
+      <span className="control-label">{label}</span>
+    </label>
+    <div className="range-control">
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={0.05}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        aria-valuetext={`${Math.round(value * 100)}%`}
+      />
+      <button type="button" className="range-control__value" onClick={() => onChange(1)} title={resetTitle}>
+        {Math.round(value * 100)}%
+      </button>
+    </div>
+  </div>
+);
 
 const CVCustomizer: React.FC = () => {
   const currentLayout = useResumeStore((s) => s.layout);
@@ -28,34 +81,125 @@ const CVCustomizer: React.FC = () => {
   const setFontScale = useResumeStore((s) => s.setFontScale);
   const spacingScale = useResumeStore((s) => s.spacingScale);
   const setSpacingScale = useResumeStore((s) => s.setSpacingScale);
+  const gaps = useResumeStore((s) => s.gaps);
+  const setGap = useResumeStore((s) => s.setGap);
+  const resetGaps = useResumeStore((s) => s.resetGaps);
   const qrTarget = useResumeStore((s) => s.qrTarget);
   const setQrTarget = useResumeStore((s) => s.setQrTarget);
   const themeColor = (themes.find((t) => t.name === currentTheme) ?? themes[0]).color;
+  const customTemplates = useResumeStore((s) => s.customTemplates);
+  const saveTemplate = useResumeStore((s) => s.saveTemplate);
+  const applyTemplate = useResumeStore((s) => s.applyTemplate);
+  const deleteTemplate = useResumeStore((s) => s.deleteTemplate);
+  const [naming, setNaming] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+
+  const commitTemplate = () => {
+    saveTemplate(templateName || `${layoutLabels[currentLayout]} (custom)`);
+    setTemplateName('');
+    setNaming(false);
+  };
+
+  const layoutGroups = [
+    { label: 'ATS-friendly', items: layouts.filter((l) => ATS_LAYOUTS.has(l)) },
+    { label: 'Designed', items: layouts.filter((l) => !ATS_LAYOUTS.has(l)) },
+  ];
 
   return (
     <div className="cv-customizer compact">
-      {/* Layout Row — card grid replaces overflow-prone segmented control */}
-      <div className="compact-row">
+      {/* Layout Row — ATS-friendly layouts first, designed ones after */}
+      <div className="compact-row compact-row--top">
         <div className="control-label-wrapper">
           <LayoutIcon size={12} />
           <span className="control-label">Layout</span>
         </div>
-        <div className="layout-card-grid">
-          {layouts.map((layout) => (
-            <button
-              key={layout}
-              onClick={() => setLayout(layout)}
-              className={`layout-card-btn ${currentLayout === layout ? 'active' : ''}`}
-              aria-pressed={currentLayout === layout}
-              title={
-                layout === 'ats'
-                  ? 'Plain single column that applicant tracking systems read reliably'
-                  : layoutLabels[layout]
-              }
-            >
-              {layoutLabels[layout]}
-            </button>
+        <div className="layout-picker">
+          {layoutGroups.map((group) => (
+            <div key={group.label} role="group" aria-label={group.label}>
+              <p className="layout-picker__group">{group.label}</p>
+              <div className="layout-card-grid">
+                {group.items.map((layout) => (
+                  <button
+                    key={layout}
+                    onClick={() => setLayout(layout)}
+                    className={`layout-card-btn ${currentLayout === layout ? 'active' : ''}`}
+                    aria-pressed={currentLayout === layout}
+                    title={layoutHints[layout]}
+                  >
+                    {layoutLabels[layout]}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
+          <p className="layout-picker__hint">{layoutHints[currentLayout]}</p>
+        </div>
+      </div>
+
+      {/* My templates — save the current look by name, reapply anywhere */}
+      <div className="compact-row compact-row--top">
+        <div className="control-label-wrapper">
+          <Bookmark size={12} />
+          <span className="control-label">Mine</span>
+        </div>
+        <div className="my-templates">
+          {customTemplates.map((t) => (
+            <span key={t.id} className="my-templates__chip">
+              <button
+                type="button"
+                className="my-templates__apply"
+                onClick={() => applyTemplate(t.id)}
+                title={`Apply "${t.name}" (${layoutLabels[t.style.layout]})`}
+              >
+                {t.name}
+              </button>
+              <button
+                type="button"
+                className="my-templates__delete"
+                onClick={() => deleteTemplate(t.id)}
+                aria-label={`Delete template ${t.name}`}
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+          {naming ? (
+            <form
+              className="my-templates__form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                commitTemplate();
+              }}
+            >
+              <input
+                className="form-input"
+                aria-label="Template name"
+                placeholder={`${layoutLabels[currentLayout]} (custom)`}
+                value={templateName}
+                autoFocus
+                maxLength={40}
+                onChange={(e) => setTemplateName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    e.stopPropagation();
+                    setNaming(false);
+                  }
+                }}
+              />
+              <button type="submit" className="layout-card-btn active">
+                Save
+              </button>
+            </form>
+          ) : (
+            <button
+              type="button"
+              className="layout-card-btn my-templates__add"
+              onClick={() => setNaming(true)}
+              title="Save layout, font, size, spacing, color and hidden sections as your own template"
+            >
+              <Plus size={12} /> Save current style
+            </button>
+          )}
         </div>
       </div>
 
@@ -85,58 +229,54 @@ const CVCustomizer: React.FC = () => {
         </div>
       </div>
 
-      <div className="compact-row">
-        <label className="control-label-wrapper" htmlFor="font-scale">
-          <Type size={12} />
-          <span className="control-label">Size</span>
-        </label>
-        <div className="range-control">
-          <input
-            id="font-scale"
-            type="range"
-            min={0.8}
-            max={1.25}
-            step={0.05}
-            value={fontScale}
-            onChange={(e) => setFontScale(Number(e.target.value))}
-            aria-valuetext={`${Math.round(fontScale * 100)}%`}
-          />
-          <button
-            type="button"
-            className="range-control__value"
-            onClick={() => setFontScale(1)}
-            title="Reset to 100%"
-          >
-            {Math.round(fontScale * 100)}%
-          </button>
-        </div>
-      </div>
+      <RangeRow
+        id="font-scale"
+        icon={<Type size={12} />}
+        label="Size"
+        min={0.8}
+        max={1.25}
+        value={fontScale}
+        onChange={setFontScale}
+        resetTitle="Reset to 100%"
+      />
 
-      <div className="compact-row">
-        <label className="control-label-wrapper" htmlFor="spacing-scale">
-          <MoveVertical size={12} />
-          <span className="control-label">Spacing</span>
-        </label>
-        <div className="range-control">
-          <input
-            id="spacing-scale"
-            type="range"
-            min={0.7}
-            max={1.4}
-            step={0.05}
-            value={spacingScale}
-            onChange={(e) => setSpacingScale(Number(e.target.value))}
-            aria-valuetext={`${Math.round(spacingScale * 100)}%`}
-          />
+      <RangeRow
+        id="spacing-scale"
+        icon={<MoveVertical size={12} />}
+        label="Spacing"
+        min={0.7}
+        max={1.4}
+        value={spacingScale}
+        onChange={setSpacingScale}
+        resetTitle="Reset to 100%"
+      />
+
+      {/* Section spacing — each gap on its own slider, 0% (none) to 200% */}
+      <div className="section-spacing">
+        <div className="section-spacing__head">
+          <span className="control-label">Section spacing</span>
           <button
             type="button"
-            className="range-control__value"
-            onClick={() => setSpacingScale(1)}
-            title="Reset to 100%"
+            className="section-spacing__reset"
+            onClick={resetGaps}
+            disabled={GAP_ROWS.every((r) => gaps[r.key] === 1)}
           >
-            {Math.round(spacingScale * 100)}%
+            Reset
           </button>
         </div>
+        {GAP_ROWS.map((row) => (
+          <RangeRow
+            key={row.key}
+            id={`gap-${row.key}`}
+            label={row.label}
+            title={row.hint}
+            min={GAP_MIN}
+            max={GAP_MAX}
+            value={gaps[row.key]}
+            onChange={(v) => setGap(row.key, v)}
+            resetTitle="Reset to layout default"
+          />
+        ))}
       </div>
 
       <hr className="compact-divider" />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle, X } from 'lucide-react';
 
 import { usePopover } from '../../hooks/usePopover';
 import { usePaneMode } from '../../hooks/usePaneMode';
@@ -66,9 +66,19 @@ const CompletenessBar: React.FC<CompletenessBarProps> = ({ score, items }) => {
 
       {open && (
         <div className="completeness__popover" role="dialog" aria-label="Completeness checklist">
-          <p className="appbar__popover-title">
-            {todo.length === 0 ? 'All done. Nice work!' : 'Next steps'}
-          </p>
+          <div className="appbar__popover-head">
+            <p className="appbar__popover-title">
+              {todo.length === 0 ? 'All done. Nice work!' : 'Next steps'}
+            </p>
+            <button
+              type="button"
+              className="appbar__popover-close"
+              onClick={() => setOpen(false)}
+              aria-label="Close checklist"
+            >
+              <X size={16} />
+            </button>
+          </div>
           <ul className="checklist">
             {todo.map((item) => (
               <li key={item.id}>

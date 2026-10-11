@@ -2,7 +2,7 @@
 
 **Live demo → [ns-resume-builder.vercel.app](https://ns-resume-builder.vercel.app)**
 
-Build a polished, professional resume in minutes, right in your browser. NS Studio gives you a live preview, six layouts, writing tips, a job-description matcher, real PDF export and shareable links. Everything is stored on your device, so your resume never touches a server. After the first visit it even works offline.
+Build a polished, professional resume in minutes, right in your browser. NS Studio gives you a live preview, ten layouts (seven built for ATS), writing tips, a job-description matcher, real PDF export and shareable links. Everything is stored on your device, so your resume never touches a server. After the first visit it even works offline.
 
 ---
 
@@ -26,7 +26,8 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 ## Highlights
 
 - **Live preview.** The A4 resume updates as you type and scales to fit any screen.
-- **Six layouts, including ATS-safe.** The ATS layout downloads as a true PDF with selectable text.
+- **Ten layouts, seven of them ATS-first.** Compact, Tech, Harvard, Professional, Elegant, Sidebar and ATS-safe follow ATS parsing rules; ATS-safe downloads as a true PDF with selectable text.
+- **My templates.** Save your layout, font, size, spacing, color and hidden sections under a name and reapply it to any resume.
 - **Writing help.** Tips on every bullet, a job-description match score and a completeness checklist.
 - **Smooth editing.** Drag to reorder, click the preview to jump to a field, and fast keyboard shortcuts.
 - **Several resumes.** Keep tailored versions, back them up as JSON, and share a read-only link.
@@ -41,12 +42,18 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
 
 | Layout | Best for |
 | --- | --- |
-| **Classic** | Sidebar + main column; traditional roles |
-| **Modern** | Single column with bold section separators |
-| **Minimalist** | High whitespace, content first |
+| **Compact** (default) | Densest single column; fits the most on one page with a high ATS score |
+| **Tech** | After Jake's Resume: serif, small-caps headings, one column; engineering roles |
+| **Harvard** | Career-office classic: bold organization over italic title, serif, one column; students, finance, consulting |
+| **Professional** | Name and links left, labelled email/phone right; centered headings between rules, TITLE \| COMPANY lines |
+| **Elegant** | Centered serif name with a double rule, headings set between lines, skills as a grid |
+| **Sidebar** | Contact and credentials in a left column; summary, skills and experience on the right |
+| **ATS-safe** | Plain Arial single column, downloads as a real text PDF; safest for upload portals |
+| **Classic** | Sidebar + main column; best sent directly to people |
+| **Modern** | Single column with accent colors and bold separators |
 | **Executive** | Main content left, sidebar right; formal and dense |
-| **Creative** | Asymmetric grid with visual flair |
-| **ATS-safe** | Plain single column that applicant tracking systems parse reliably |
+
+The ATS-first layouts use standard headings ("Summary", "Work Experience"), plain-text contact details, no icons or graphics, and Skills/Tools as labelled comma lists. Old saves using the removed Minimalist and Creative layouts open in Harvard and Classic.
 
 - **Themes.** Burgundy, Blue, Teal and Purple, plus a **custom accent color** picker.
 - **Fonts.** Inter, Roboto or Arial (bundled with the app, so they work for everyone and offline), with a **font size** slider from 80% to 125%.
@@ -81,7 +88,7 @@ Build a polished, professional resume in minutes, right in your browser. NS Stud
   - The styled layouts use the browser's print dialog ("Save as PDF"), which keeps the exact on-screen design.
 - **One-page check.** A badge shows whether the resume fits on one A4 page. It draws dashed lines where pages break and offers one-click **Shrink text** and **Tighten spacing** fixes.
 - **Multiple resumes.** Keep versions like "Mobile Lead" and "Frontend". You can create blank, duplicate, rename and delete them from the resume menu in the top bar.
-- **Export / import JSON** to back up a resume or move it to another browser.
+- **Export / import JSON** to back up a resume or move it to another browser. The import dialog explains the format, offers a sample file, and also accepts pasted JSON or a hand-written file that holds just the resume data.
 - **Read-only share link.** The whole resume is packed into the link itself (see [Privacy & data](#privacy--data)). People who open it can download a PDF or make their own editable copy.
 
 ### Offline & saving

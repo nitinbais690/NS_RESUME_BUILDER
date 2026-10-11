@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ChevronDown,
   Copy,
@@ -10,17 +10,14 @@ import {
   Trash2,
   Upload,
   Check,
+  X,
 } from 'lucide-react';
 
 import { useResumeStore } from '../../../store/useResumeStore';
 import { usePopover } from '../../hooks/usePopover';
-import {
-  downloadText,
-  parseResumeFile,
-  slugify,
-  toResumeFile,
-} from '../../../lib/resumeIO';
+import { downloadText, slugify, toResumeFile } from '../../../lib/resumeIO';
 import ShareDialog from '../ShareDialog';
+import ImportDialog from '../ImportDialog';
 
 const timeAgo = (ts: number) => {
   const mins = Math.round((Date.now() - ts) / 60000);
@@ -40,8 +37,7 @@ const ResumeMenu: React.FC = () => {
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
-  const [importError, setImportError] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [importOpen, setImportOpen] = useState(false);
 
   const resumes = useResumeStore((s) => s.resumes);
   const activeId = useResumeStore((s) => s.activeResumeId);
@@ -51,7 +47,6 @@ const ResumeMenu: React.FC = () => {
     createResume,
     renameResume,
     deleteResume,
-    importResume,
     getActiveResume,
   } = useResumeStore.getState();
 
@@ -92,19 +87,6 @@ const ResumeMenu: React.FC = () => {
     setOpen(false);
   };
 
-  const onImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = ''; // allow re-importing the same file
-    if (!file) return;
-    try {
-      importResume(parseResumeFile(await file.text()));
-      setImportError(null);
-      setOpen(false);
-    } catch (err) {
-      setImportError(err instanceof Error ? err.message : 'Import failed.');
-    }
-  };
-
   return (
     <div className="resume-menu" ref={ref}>
       <button
@@ -122,7 +104,17 @@ const ResumeMenu: React.FC = () => {
 
       {open && (
         <div className="resume-menu__popover" role="menu" aria-label="Resumes">
-          <p className="appbar__popover-title">Your resumes</p>
+          <div className="appbar__popover-head">
+            <p className="appbar__popover-title">Your resumes</p>
+            <button
+              type="button"
+              className="appbar__popover-close"
+              onClick={() => setOpen(false)}
+              aria-label="Close resume menu"
+            >
+              <X size={16} />
+            </button>
+          </div>
 
           <ul className="resume-menu__list">
             {list.map((r) => {
@@ -211,7 +203,14 @@ const ResumeMenu: React.FC = () => {
           <hr className="compact-divider" />
 
           <div className="resume-menu__actions resume-menu__actions--stack">
-            <button type="button" role="menuitem" onClick={() => fileRef.current?.click()}>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setImportOpen(true);
+                setOpen(false);
+              }}
+            >
               <Upload size={15} /> Import from JSON…
             </button>
             <button type="button" role="menuitem" onClick={onExport}>
@@ -228,22 +227,10 @@ const ResumeMenu: React.FC = () => {
               <Link2 size={15} /> Share read-only link…
             </button>
           </div>
-
-          {importError && (
-            <p className="resume-menu__error" role="alert">
-              {importError}
-            </p>
-          )}
         </div>
       )}
 
-      <input
-        ref={fileRef}
-        type="file"
-        accept="application/json,.json"
-        hidden
-        onChange={onImportFile}
-      />
+      <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} />
       <ShareDialog open={shareOpen} onClose={() => setShareOpen(false)} />
     </div>
   );

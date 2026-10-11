@@ -1,11 +1,15 @@
 export type ThemeType = 'default' | 'blue' | 'teal' | 'purple';
 export type LayoutType =
+  | 'compact'
+  | 'tech'
+  | 'harvard'
+  | 'professional'
+  | 'elegant'
+  | 'sidebar'
+  | 'ats'
   | 'classic'
   | 'modern'
-  | 'minimalist'
-  | 'executive'
-  | 'creative'
-  | 'ats';
+  | 'executive';
 export type FontFamily = 'Inter, sans-serif' | 'Roboto, sans-serif' | 'Arial';
 /** App chrome appearance. The resume sheet itself always renders light. */
 export type ColorScheme = 'system' | 'light' | 'dark';
@@ -136,6 +140,8 @@ export interface ResumeStyle {
   fontScale: number;
   /** Multiplier for gaps, margins and padding on the resume (0.7 – 1.4). */
   spacingScale: number;
+  /** Fine-grained spacing multipliers (0 – 2) on top of the layout's defaults. */
+  gaps: SpacingGaps;
   /** Which profile link the QR code in the resume header opens, if any. */
   qrTarget: QrTarget;
   /** Sections the user switched off; their content is kept, just not shown. */
@@ -143,6 +149,25 @@ export interface ResumeStyle {
 }
 
 export type QrTarget = 'none' | 'linkedin' | 'github';
+
+/** Spacing the user can tune separately (Customize → Section spacing). */
+export interface SpacingGaps {
+  /** Space between one section and the next. */
+  section: number;
+  /** Space between a section heading and its content. */
+  heading: number;
+  /** Space between entries inside a section (jobs, projects, degrees). */
+  entry: number;
+}
+
+export type GapKey = keyof SpacingGaps;
+
+/** A look the user saved under a name, to reapply to any resume. */
+export interface CustomTemplate {
+  id: string;
+  name: string;
+  style: ResumeStyle;
+}
 
 /** One named resume version, e.g. "Mobile Lead" vs "Frontend". */
 export interface SavedResume {

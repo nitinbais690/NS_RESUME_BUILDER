@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { moveItem, useResumeStore } from './useResumeStore';
 import { ResumeField } from '../types';
-import { createExperience } from '../constants/factories';
+import { DEFAULT_STYLE, createExperience } from '../constants/factories';
 
 const store = () => useResumeStore.getState();
 
@@ -114,11 +114,37 @@ describe('multiple resumes', () => {
     expect(store()._past).toHaveLength(0);
   });
 
+  it('saves a style as a template and applies it to another resume', () => {
+    store().setLayout('tech');
+    store().setFontScale(0.9);
+    const id = store().saveTemplate('  Dense tech  ');
+    expect(store().customTemplates).toEqual([
+      expect.objectContaining({ id, name: 'Dense tech' }),
+    ]);
+
+    store().createResume('B', 'blank');
+    expect(store().layout).toBe(DEFAULT_STYLE.layout);
+    store().applyTemplate(id);
+    expect(store().layout).toBe('tech');
+    expect(store().fontScale).toBe(0.9);
+
+    store().deleteTemplate(id);
+    expect(store().customTemplates).toEqual([]);
+  });
+
+  it('sets, clamps and resets section spacing', () => {
+    store().setGap('section', 0.5);
+    store().setGap('entry', 7);
+    expect(store().gaps).toEqual({ section: 0.5, heading: 1, entry: 2 });
+    store().resetGaps();
+    expect(store().gaps).toEqual(DEFAULT_STYLE.gaps);
+  });
+
   it('keeps style per resume', () => {
     const firstId = store().activeResumeId;
     store().setLayout('executive');
     store().createResume('B', 'blank');
-    expect(store().layout).toBe('classic');
+    expect(store().layout).toBe(DEFAULT_STYLE.layout);
     store().switchResume(firstId);
     expect(store().layout).toBe('executive');
   });
@@ -207,7 +233,7 @@ describe('persistence', () => {
     // null resumeData falls back to a complete resume instead of crashing.
     expect(Array.isArray(s.resumeData[ResumeField.EXPERIENCE])).toBe(true);
     expect(typeof s.resumeData[ResumeField.ABOUT_ME]).toBe('string');
-    expect(s.layout).toBe('classic');
+    expect(s.layout).toBe(DEFAULT_STYLE.layout);
     expect(s.fontScale).toBe(1);
     expect(s.resumes.broken).toBeUndefined();
     expect(s.resumes.ok.name).toBe('Untitled resume');

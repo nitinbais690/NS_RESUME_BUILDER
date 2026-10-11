@@ -7,10 +7,11 @@ import {
   ResumeField,
   ResumeStyle,
   SavedResume,
+  SpacingGaps,
   ThemeType,
 } from '../types';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
-import { fontFamilies, layouts } from '../constants/themes';
+import { LEGACY_LAYOUTS, fontFamilies, layouts } from '../constants/themes';
 import { PRESENT, formatRange, isMonth, parseLegacyRange } from './dates';
 import { LanguageLevel } from '../types';
 
@@ -121,6 +122,20 @@ export const normalizeResumeData = (input: unknown): ResumeData => {
   };
 };
 
+export const GAP_MIN = 0;
+export const GAP_MAX = 2;
+
+/** Clamps one gap multiplier; anything unusable falls back to 1 (layout default). */
+export const clampGap = (v: unknown) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.round(Math.min(Math.max(n, GAP_MIN), GAP_MAX) * 100) / 100 : 1;
+};
+
+const normalizeGaps = (input: unknown): SpacingGaps => {
+  const g = isObj(input) ? input : {};
+  return { section: clampGap(g.section), heading: clampGap(g.heading), entry: clampGap(g.entry) };
+};
+
 export const normalizeStyle = (input: unknown): ResumeStyle => {
   if (!isObj(input)) return { ...DEFAULT_STYLE };
   const scale = Number(input.fontScale);
@@ -131,7 +146,7 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
       : DEFAULT_STYLE.theme,
     layout: layouts.includes(input.layout as LayoutType)
       ? (input.layout as LayoutType)
-      : DEFAULT_STYLE.layout,
+      : (LEGACY_LAYOUTS[str(input.layout)] ?? DEFAULT_STYLE.layout),
     fontFamily: fontFamilies.includes(input.fontFamily as FontFamily)
       ? (input.fontFamily as FontFamily)
       : DEFAULT_STYLE.fontFamily,
@@ -143,6 +158,7 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
       ? Math.min(Math.max(scale, 0.8), 1.25)
       : 1,
     spacingScale: Number.isFinite(spacing) ? Math.min(Math.max(spacing, 0.7), 1.4) : 1,
+    gaps: normalizeGaps(input.gaps),
     qrTarget: ['linkedin', 'github'].includes(input.qrTarget as QrTarget)
       ? (input.qrTarget as QrTarget)
       : 'none',
@@ -170,9 +186,14 @@ export const toResumeFile = (resume: SavedResume): ResumeFile => ({
   data: resume.data,
 });
 
+/** True when an object carries at least one resume section key ("Contact", "Experience"…). */
+const looksLikeResumeData = (v: Obj) =>
+  Object.values(ResumeField).some((field) => field in v);
+
 /**
- * Parses an exported .json file. Throws a user-readable Error for anything that
- * isn't one of our files; otherwise returns normalized content.
+ * Parses an exported .json file. Also accepts a bare resume-data object (just
+ * the `data` part), which is what people tend to write by hand. Throws a
+ * user-readable Error for anything else; otherwise returns normalized content.
  */
 export const parseResumeFile = (
   text: string,
@@ -181,10 +202,19 @@ export const parseResumeFile = (
   try {
     parsed = JSON.parse(text);
   } catch {
-    throw new Error('That file is not valid JSON.');
+    throw new Error('That file is not valid JSON. Check for missing commas or quotes.');
+  }
+  if (isObj(parsed) && parsed.app !== FILE_APP && looksLikeResumeData(parsed)) {
+    return {
+      name: 'Imported resume',
+      data: normalizeResumeData(parsed),
+      style: { ...DEFAULT_STYLE },
+    };
   }
   if (!isObj(parsed) || parsed.app !== FILE_APP) {
-    throw new Error('That file was not exported from NS Studio.');
+    throw new Error(
+      "That file doesn't look like a resume. Download the sample file to see the expected format.",
+    );
   }
   if (typeof parsed.version !== 'number' || parsed.version > FILE_VERSION) {
     throw new Error('That file is from a newer version of NS Studio.');

@@ -45,6 +45,20 @@ describe('normalizeStyle', () => {
     ).toEqual(DEFAULT_STYLE);
   });
 
+  it('clamps section spacing gaps and defaults missing ones to 1', () => {
+    expect(normalizeStyle({ gaps: { section: 9, heading: -1, entry: 'x' } }).gaps).toEqual({
+      section: 2,
+      heading: 0,
+      entry: 1,
+    });
+    expect(normalizeStyle({}).gaps).toEqual({ section: 1, heading: 1, entry: 1 });
+  });
+
+  it('maps removed layouts to their closest replacement', () => {
+    expect(normalizeStyle({ layout: 'minimalist' }).layout).toBe('harvard');
+    expect(normalizeStyle({ layout: 'creative' }).layout).toBe('classic');
+  });
+
   it('keeps valid values and clamps the scale', () => {
     const style = normalizeStyle({ layout: 'ats', accentColor: '#AA00ff', fontScale: 9 });
     expect(style.layout).toBe('ats');
@@ -68,9 +82,19 @@ describe('parseResumeFile', () => {
     expect(parsed.data[ResumeField.ABOUT_ME]).toBe(dummyResumeData[ResumeField.ABOUT_ME]);
   });
 
+  it('accepts bare resume data written by hand', () => {
+    const parsed = parseResumeFile(
+      JSON.stringify({ Contact: { Name: 'Priya' }, Skills: ['Go', 7] }),
+    );
+    expect(parsed.name).toBe('Imported resume');
+    expect(parsed.data[ResumeField.CONTACT].Name).toBe('Priya');
+    expect(parsed.data[ResumeField.SKILLS]).toEqual(['Go']);
+    expect(parsed.style).toEqual(DEFAULT_STYLE);
+  });
+
   it('rejects invalid JSON, foreign files and newer versions with readable errors', () => {
     expect(() => parseResumeFile('{')).toThrow(/not valid JSON/);
-    expect(() => parseResumeFile('{"hello":1}')).toThrow(/not exported from NS Studio/);
+    expect(() => parseResumeFile('{"hello":1}')).toThrow(/doesn't look like a resume/);
     expect(() =>
       parseResumeFile(JSON.stringify({ ...file, app: FILE_APP, version: 99 })),
     ).toThrow(/newer version/);

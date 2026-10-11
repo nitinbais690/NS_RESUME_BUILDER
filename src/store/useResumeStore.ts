@@ -20,11 +20,13 @@ import {
   LanguageType,
   AwardType,
   VolunteerType,
+  CustomTemplate,
+  GapKey,
 } from '../types';
 import dummyResumeData from '../data';
 import { LOCAL_STORAGE_KEY } from '../constants';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
-import { normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
+import { clampGap, normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
 import { compareByRecency } from '../lib/dates';
 import { reportingStorage } from './saveStatus';
 
@@ -63,8 +65,20 @@ interface ResumeState extends ResumeStyle {
   setAccentColor: (accentColor: string | null) => void;
   setFontScale: (fontScale: number) => void;
   setSpacingScale: (spacingScale: number) => void;
+  /** Sets one fine-grained spacing multiplier (Customize → Section spacing). */
+  setGap: (key: GapKey, value: number) => void;
+  /** Puts all fine-grained spacing back to the layout's defaults. */
+  resetGaps: () => void;
   setQrTarget: (qrTarget: QrTarget) => void;
   setColorScheme: (colorScheme: ColorScheme) => void;
+
+  /** Styles the user saved by name ("My templates"), shared by all resumes. */
+  customTemplates: CustomTemplate[];
+  /** Saves the active resume's current style as a template; returns its id. */
+  saveTemplate: (name: string) => string;
+  /** Applies a saved template's style to the active resume. */
+  applyTemplate: (id: string) => void;
+  deleteTemplate: (id: string) => void;
 
   updateContactInfo: (info: Partial<ContactInfoType>) => void;
   updateAboutMe: (aboutMe: string) => void;
@@ -133,6 +147,7 @@ export const pickStyle = (s: ResumeStyle): ResumeStyle => ({
   accentColor: s.accentColor,
   fontScale: s.fontScale,
   spacingScale: s.spacingScale,
+  gaps: s.gaps,
   qrTarget: s.qrTarget,
   hiddenSections: s.hiddenSections,
 });
@@ -242,8 +257,29 @@ export const useResumeStore = create<ResumeState>()(
           set({ fontScale: Math.min(Math.max(fontScale, 0.8), 1.25) }),
         setSpacingScale: (spacingScale) =>
           set({ spacingScale: Math.round(Math.min(Math.max(spacingScale, 0.7), 1.4) * 100) / 100 }),
+        setGap: (key, value) => set((s) => ({ gaps: { ...s.gaps, [key]: clampGap(value) } })),
+        resetGaps: () => set({ gaps: { ...DEFAULT_STYLE.gaps } }),
         setQrTarget: (qrTarget) => set({ qrTarget }),
         setColorScheme: (colorScheme) => set({ colorScheme }),
+
+        customTemplates: [],
+        saveTemplate: (name) => {
+          const id = crypto.randomUUID();
+          set((s) => ({
+            customTemplates: [
+              ...s.customTemplates,
+              { id, name: name.trim() || 'My template', style: pickStyle(s) },
+            ],
+          }));
+          return id;
+        },
+        applyTemplate: (id) =>
+          set((s) => {
+            const template = s.customTemplates.find((t) => t.id === id);
+            return template ? { ...pickStyle(template.style), editedAt: Date.now() } : {};
+          }),
+        deleteTemplate: (id) =>
+          set((s) => ({ customTemplates: s.customTemplates.filter((t) => t.id !== id) })),
 
         updateContactInfo: (info) =>
           set((s) =>
@@ -409,6 +445,7 @@ export const useResumeStore = create<ResumeState>()(
         ...pickStyle(state),
         colorScheme: state.colorScheme,
         jobDescription: state.jobDescription,
+        customTemplates: state.customTemplates,
         activeResumeId: state.activeResumeId,
         editedAt: state.editedAt,
         // Keep the stored copy of the active resume current, so the list and
@@ -454,6 +491,13 @@ export const useResumeStore = create<ResumeState>()(
             ? (p.colorScheme as ColorScheme)
             : current.colorScheme,
           jobDescription: typeof p.jobDescription === 'string' ? p.jobDescription : '',
+          customTemplates: (Array.isArray(p.customTemplates) ? p.customTemplates : [])
+            .filter((t) => t && typeof t === 'object' && typeof t.id === 'string')
+            .map((t) => ({
+              id: t.id,
+              name: typeof t.name === 'string' && t.name.trim() ? t.name : 'My template',
+              style: normalizeStyle(t.style),
+            })),
         };
       },
       // v0 (single resume, no `resumes` map) → v1. Existing work becomes the

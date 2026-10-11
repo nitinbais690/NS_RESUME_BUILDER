@@ -318,12 +318,6 @@
     border-top: var(--border-thin) solid var(--color-border-light);
   }
 
-  &__error {
-    margin: var(--spacing-md) 0 0;
-    font-size: var(--font-size-md);
-    color: var(--color-error);
-  }
-
   @include mobile {
     &__trigger {
       max-width: 120px;
@@ -391,6 +385,97 @@
     background: var(--color-border-alt);
     font-size: var(--font-size-md);
     color: var(--color-text-muted);
+  }
+}
+
+/* =========================================
+   IMPORT DIALOG
+   ========================================= */
+.import {
+  &__intro {
+    margin: 0 0 var(--spacing-xl);
+    color: var(--color-text-muted);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  &__error {
+    margin: var(--spacing-md) 0 0;
+    font-size: var(--font-size-md);
+    color: var(--color-error);
+  }
+
+  &__details {
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-md);
+    border-top: var(--border-thin) solid var(--color-border-light);
+
+    summary {
+      font-weight: var(--font-weight-bold);
+      cursor: pointer;
+    }
+
+    &[open] summary {
+      margin-bottom: var(--spacing-md);
+    }
+  }
+
+  &__paste {
+    width: 100%;
+    min-height: 160px;
+    margin-bottom: var(--spacing-sm);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: var(--font-size-md);
+  }
+
+  &__hint {
+    margin: 0 0 var(--spacing-md);
+    font-size: var(--font-size-md);
+    color: var(--color-text-muted);
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--spacing-xs) var(--spacing-lg);
+    margin: 0 0 var(--spacing-md);
+    font-size: var(--font-size-md);
+
+    dt {
+      font-weight: var(--font-weight-bold);
+    }
+
+    dd {
+      margin: 0;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @include mobile {
+      grid-template-columns: 1fr;
+
+      dd {
+        margin-bottom: var(--spacing-sm);
+      }
+    }
+  }
+
+  code,
+  &__code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: var(--font-size-md);
+  }
+
+  &__code {
+    margin: 0;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: var(--color-border-alt);
+    overflow-x: auto;
   }
 }
 
@@ -493,6 +578,46 @@
     font-size: var(--font-size-md);
     font-variant-numeric: tabular-nums;
     cursor: pointer;
+  }
+}
+
+/* Section spacing group: a sub-heading + three indented sliders. */
+.section-spacing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  background: var(--color-border-alt);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .control-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-sm);
+      color: var(--color-text-light);
+    }
+  }
+
+  &__reset {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+
+    &:disabled {
+      color: var(--color-text-light);
+      opacity: var(--opacity-disabled);
+      cursor: default;
+    }
   }
 }
 
@@ -963,7 +1088,10 @@
   }
 }
 
-/* Phone app bar: everything must fit in ~360px without overlapping. */
+/* Phone app bar: everything must fit in ~340px without overlapping. Android
+   "Display size" settings shrink the CSS width well below the device's 412px,
+   and an overflowing actions row used to slide over the resume menu trigger,
+   hiding it behind Undo/Redo. */
 @include mobile {
   .resume-menu {
     flex-shrink: 0;
@@ -974,25 +1102,84 @@
 
     &__trigger {
       max-width: none;
+      min-height: 36px;
+      padding: 0 var(--spacing-sm);
+    }
+
+    /* Long resume lists scroll inside the sheet rather than off-screen. */
+    &__popover {
+      max-height: calc(100dvh - 72px);
+      overflow-y: auto;
     }
   }
 
   .appbar {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    /* Above the floating preview button (z-sticky + 10), so open sheets
+       aren't covered by it; the update toast (+20) still sits on top. */
+    z-index: calc(var(--z-sticky) + 15);
+
+    /* The brand never shrinks, so nothing can paint over the menu trigger. */
+    &__brand {
+      flex-shrink: 0;
+      gap: var(--spacing-sm);
+    }
+
+    &__actions {
+      min-width: 0;
+      justify-content: flex-end;
+      gap: var(--spacing-xs);
+    }
 
     &__history {
       gap: 0;
     }
 
     &__history-btn {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 36px;
     }
+
+    /* Customize sheet: scrolls inside itself; the ✕ header stays on top. */
+    &__popover {
+      max-height: calc(100dvh - 72px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    &__popover-head {
+      position: sticky;
+      top: calc(var(--spacing-xl) * -1);
+      z-index: 1;
+      margin-top: calc(var(--spacing-xl) * -1);
+      padding-top: var(--spacing-md);
+      background: var(--color-bg-white);
+    }
+
+    &__customize-trigger {
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+    }
+  }
+
+  .btn-download--appbar {
+    height: 36px;
+    padding: 0 var(--spacing-md);
   }
 }
 
 @media screen and (max-width: 480px) {
   .appbar__logo {
+    display: none;
+  }
+}
+
+/* Very narrow (large Android display size): drop the passive "Saved" tick.
+   Errors still show, since those need attention. */
+@media screen and (max-width: 374px) {
+  .save-indicator:not(.save-indicator--error) {
     display: none;
   }
 }

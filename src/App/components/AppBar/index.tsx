@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { SlidersHorizontal, Undo2, Redo2, Target } from 'lucide-react';
+import { SlidersHorizontal, Undo2, Redo2, Target, X } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
 import DownloadButton from '../../sections/DownloadButton';
@@ -33,6 +33,12 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
       await onDownload();
     } catch (err) {
       console.error(err);
+      // After a deploy, the old page can't load the new PDF code chunk.
+      const stale = err instanceof Error && /dynamically imported module|Failed to fetch|Importing a module/i.test(err.message);
+      if (stale && window.confirm('A new version of NS Studio is available. Reload now to download your PDF? Your work is saved.')) {
+        window.location.reload();
+        return;
+      }
       window.alert('Sorry, the PDF could not be created. Please try again.');
     } finally {
       // Print dialogs return immediately; keep the spinner briefly for feedback.
@@ -114,7 +120,17 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
               role="dialog"
               aria-label="Customize resume"
             >
-              <p className="appbar__popover-title">Resume Style</p>
+              <div className="appbar__popover-head">
+                <p className="appbar__popover-title">Resume Style</p>
+                <button
+                  type="button"
+                  className="appbar__popover-close"
+                  onClick={() => customize.setOpen(false)}
+                  aria-label="Close customize panel"
+                >
+                  <X size={16} />
+                </button>
+              </div>
               <CVCustomizer />
             </div>
           )}

@@ -46,7 +46,7 @@ describe('matchJob', () => {
     const missing = result.missing.map((k) => k.term);
     expect(matched).toContain('react native');
     expect(matched).toContain('typescript');
-    expect(missing).toContain('graphql');
+    expect(missing).toContain('kubernetes');
     expect(result.score).toBeGreaterThan(0);
     expect(result.score).toBeLessThan(100);
     expect(result.suggestions.length).toBeGreaterThan(0);

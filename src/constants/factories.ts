@@ -69,11 +69,12 @@ export const createCertification = (): CertificationType => ({
 
 export const DEFAULT_STYLE: ResumeStyle = {
   theme: 'default',
-  layout: 'classic',
+  layout: 'compact',
   fontFamily: 'Inter, sans-serif',
   accentColor: null,
   fontScale: 1,
   spacingScale: 1,
+  gaps: { section: 1, heading: 1, entry: 1 },
   qrTarget: 'none',
   hiddenSections: [],
 };

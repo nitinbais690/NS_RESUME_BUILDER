@@ -738,6 +738,99 @@
     }
   }
 
+  .compact-row--top {
+    align-items: flex-start;
+  }
+
+  .layout-picker {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-width: 0;
+
+    &__group {
+      margin: 0 0 var(--spacing-tiny);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-light);
+    }
+
+    &__hint {
+      margin: 0;
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-base);
+      color: var(--color-text-muted);
+    }
+  }
+
+  /* --- My templates --- */
+  .my-templates {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-width: 0;
+
+    &__chip {
+      display: inline-flex;
+      align-items: stretch;
+      max-width: 100%;
+      border: var(--border-thin) solid var(--color-border-medium);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    &__apply,
+    &__delete {
+      border: none;
+      background: var(--color-bg-white);
+      color: var(--color-text-main);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--color-primary-soft);
+        color: var(--color-primary);
+      }
+    }
+
+    &__apply {
+      overflow: hidden;
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__delete {
+      display: flex;
+      align-items: center;
+      padding: 0 var(--spacing-xs);
+      border-left: var(--border-thin) solid var(--color-border-light);
+      color: var(--color-text-light);
+    }
+
+    &__add {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      text-transform: none;
+    }
+
+    &__form {
+      display: flex;
+      flex: 1 1 100%;
+      gap: var(--spacing-xs);
+
+      .form-input {
+        flex: 1;
+        min-width: 0;
+        padding: var(--spacing-xs) var(--spacing-sm);
+      }
+    }
+  }
+
   /* --- Swatches — bigger + ring indicator --- */
   .swatch-grid {
     display: flex;

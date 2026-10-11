@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
-import { ContactInfo, ResumeData, ResumeField, ResumeStyle } from '../../types';
+import { ContactInfo, ResumeData, ResumeField, ResumeStyle, SpacingGaps } from '../../types';
 import { stripBulletMarker } from '../../lib/bulletLint';
 
 /**
@@ -9,39 +9,40 @@ import { stripBulletMarker } from '../../lib/bulletLint';
  * Helvetica, single column, and entries that never split across pages.
  * Mirrors LAYOUT_CONFIG.ats section order.
  */
-const makeStyles = (scale: number, spacing: number) => {
+const makeStyles = (scale: number, spacing: number, gaps: SpacingGaps) => {
   const fs = (n: number) => n * scale;
   const sp = (n: number) => n * spacing;
   return StyleSheet.create({
     page: {
-      paddingVertical: sp(30),
-      paddingHorizontal: sp(38),
+      paddingVertical: sp(28),
+      paddingHorizontal: sp(28),
       fontFamily: 'Helvetica',
-      fontSize: fs(9.5),
+      fontSize: fs(9),
       lineHeight: 1.3,
       color: '#111111',
     },
-    name: { fontSize: fs(19), fontFamily: 'Helvetica-Bold', lineHeight: 1.2 },
-    position: { fontSize: fs(11.5), lineHeight: 1.3, marginTop: 4 },
-    contact: { marginTop: sp(6), fontSize: fs(9.5), color: '#333333' },
-    rule: { borderBottomWidth: 1, borderBottomColor: '#111111', marginTop: sp(8) },
+    // Name and title share one line: "Alex Johnson | Senior Engineer".
+    name: { fontSize: fs(16), fontFamily: 'Helvetica-Bold', lineHeight: 1.15 },
+    position: { fontSize: fs(10.5), fontFamily: 'Helvetica' },
+    separator: { color: '#888888' },
+    contact: { marginTop: 2, fontSize: fs(9) },
     sectionTitle: {
-      marginTop: sp(10),
-      marginBottom: sp(4),
-      paddingBottom: 2,
-      fontSize: fs(11),
+      marginTop: sp(7) * gaps.section,
+      marginBottom: sp(3) * gaps.heading,
+      paddingBottom: 1,
+      fontSize: fs(10),
       fontFamily: 'Helvetica-Bold',
       textTransform: 'uppercase',
       letterSpacing: 0.5,
       borderBottomWidth: 0.75,
       borderBottomColor: '#111111',
     },
-    entry: { marginBottom: sp(6) },
+    entry: { marginBottom: sp(4) * gaps.entry },
     entryHead: { flexDirection: 'row', justifyContent: 'space-between' },
     entryTitle: { fontFamily: 'Helvetica-Bold', flexShrink: 1, paddingRight: 8 },
-    entryDate: { color: '#333333' },
-    entrySub: { color: '#333333' },
-    bullet: { flexDirection: 'row', marginTop: sp(1) },
+    entrySubInline: { fontFamily: 'Helvetica-Oblique' },
+    entryDate: {},
+    bullet: { flexDirection: 'row' },
     bulletDot: { width: 10 },
     bulletText: { flex: 1 },
     tech: { marginTop: 2, color: '#333333' },
@@ -86,7 +87,7 @@ const Section: React.FC<{ title: string; s: Styles; children: React.ReactNode }>
 };
 
 export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = ({ data, style }) => {
-  const s = makeStyles(style.fontScale, style.spacingScale);
+  const s = makeStyles(style.fontScale, style.spacingScale, style.gaps);
   const c = data[ResumeField.CONTACT];
   const contact = [
     c[ContactInfo.EMAIL],
@@ -105,10 +106,16 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
   return (
     <Document title={`${c[ContactInfo.NAME] || 'Resume'} — Resume`} author={c[ContactInfo.NAME]} creator="NS Studio">
       <Page size="A4" style={s.page}>
-        <Text style={s.name}>{c[ContactInfo.NAME]}</Text>
-        {!!c[ContactInfo.POSITION] && <Text style={s.position}>{c[ContactInfo.POSITION]}</Text>}
+        <Text style={s.name}>
+          {c[ContactInfo.NAME]}
+          {!!c[ContactInfo.POSITION] && (
+            <Text style={s.position}>
+              <Text style={s.separator}>{'  |  '}</Text>
+              {c[ContactInfo.POSITION]}
+            </Text>
+          )}
+        </Text>
         {contact.length > 0 && <Text style={s.contact}>{contact.join('  |  ')}</Text>}
-        <View style={s.rule} />
 
         {show(ResumeField.ABOUT_ME) && !!data[ResumeField.ABOUT_ME].trim() && (
           <Section title="Summary" s={s}>
@@ -127,10 +134,12 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
             {data[ResumeField.EXPERIENCE].map((e) => (
               <View key={e.id} style={s.entry} wrap={false}>
                 <View style={s.entryHead}>
-                  <Text style={s.entryTitle}>{e.title}</Text>
+                  <Text style={s.entryTitle}>
+                    {e.title}
+                    {!!e.company && <Text style={s.entrySubInline}> — {e.company}</Text>}
+                  </Text>
                   <Text style={s.entryDate}>{e.date}</Text>
                 </View>
-                {!!e.company && <Text style={s.entrySub}>{e.company}</Text>}
                 <Bullets items={lines(e.desc)} s={s} />
                 {e.technologies.length > 0 && (
                   <Text style={s.tech}>Technologies: {e.technologies.join(', ')}</Text>
@@ -166,10 +175,12 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
             {data[ResumeField.VOLUNTEERING].map((v) => (
               <View key={v.id} style={s.entry} wrap={false}>
                 <View style={s.entryHead}>
-                  <Text style={s.entryTitle}>{v.role}</Text>
+                  <Text style={s.entryTitle}>
+                    {v.role}
+                    {!!v.org && <Text style={s.entrySubInline}> — {v.org}</Text>}
+                  </Text>
                   <Text style={s.entryDate}>{v.date}</Text>
                 </View>
-                {!!v.org && <Text style={s.entrySub}>{v.org}</Text>}
                 <Bullets items={lines(v.desc)} s={s} />
               </View>
             ))}
@@ -193,12 +204,12 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
             {data[ResumeField.EDUCATION].map((e) => (
               <View key={e.id} style={s.entry} wrap={false}>
                 <View style={s.entryHead}>
-                  <Text style={s.entryTitle}>{e.degree}</Text>
-                  <Text style={s.entryDate}>{e.year}</Text>
+                  <Text style={s.entryTitle}>
+                    {e.degree}
+                    {!!e.school && <Text style={s.entrySubInline}>, {e.school}</Text>}
+                  </Text>
+                  <Text style={s.entryDate}>{[e.score, e.year].filter(Boolean).join('  ')}</Text>
                 </View>
-                <Text style={s.entrySub}>
-                  {[e.school, e.score].filter(Boolean).join(' · ')}
-                </Text>
               </View>
             ))}
           </Section>
@@ -209,10 +220,12 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
             {data[ResumeField.CERTIFICATIONS].map((x) => (
               <View key={x.id} style={s.entry} wrap={false}>
                 <View style={s.entryHead}>
-                  <Text style={s.entryTitle}>{x.name}</Text>
+                  <Text style={s.entryTitle}>
+                    {x.name}
+                    {!!x.issuer && <Text style={s.entrySubInline}>, {x.issuer}</Text>}
+                  </Text>
                   <Text style={s.entryDate}>{x.date}</Text>
                 </View>
-                {!!x.issuer && <Text style={s.entrySub}>{x.issuer}</Text>}
               </View>
             ))}
           </Section>
@@ -222,10 +235,12 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
             {data[ResumeField.AWARDS].map((a) => (
               <View key={a.id} style={s.entry} wrap={false}>
                 <View style={s.entryHead}>
-                  <Text style={s.entryTitle}>{a.title}</Text>
+                  <Text style={s.entryTitle}>
+                    {a.title}
+                    {!!a.issuer && <Text style={s.entrySubInline}>, {a.issuer}</Text>}
+                  </Text>
                   <Text style={s.entryDate}>{a.date}</Text>
                 </View>
-                {!!a.issuer && <Text style={s.entrySub}>{a.issuer}</Text>}
                 {!!a.desc && <Text>{a.desc}</Text>}
               </View>
             ))}

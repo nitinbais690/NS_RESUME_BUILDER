@@ -10,21 +10,28 @@ import {
 } from '../../types';
 import ResumeHeader from './layout/ResumeHeader';
 import { LAYOUT_CONFIG } from './layoutConfig';
+import { LayoutContext } from './layoutContext';
 import TimelineSection from './layout/TimeLine';
 import { pickStyle, useResumeStore } from '../../store/useResumeStore';
 import themes from '../../constants/themes';
 
+interface SectionProps {
+  data: ResumeData;
+  /** Heading text; layouts may rename sections (e.g. "About Me" → "Summary"). */
+  title: string;
+}
+
 // Section renderers — one per ResumeField variant
-const AboutMeSection = ({ data }: { data: ResumeData }) => (
+const AboutMeSection = ({ data, title }: SectionProps) => (
   <section className="template-main-section" data-jump={ResumeField.ABOUT_ME}>
-    <h3 className="template-section-title">{ResumeField.ABOUT_ME}</h3>
+    <h3 className="template-section-title">{title}</h3>
     <p className="template-about-text">{data[ResumeField.ABOUT_ME]}</p>
   </section>
 );
 
-const KeyImpactSection = ({ data }: { data: ResumeData }) => (
+const KeyImpactSection = ({ data, title }: SectionProps) => (
   <section className="template-main-section" data-jump={ResumeField.KEY_IMPACT}>
-    <h3 className="template-section-title">{ResumeField.KEY_IMPACT}</h3>
+    <h3 className="template-section-title">{title}</h3>
     <ul className="template-impact-list">
       {data[ResumeField.KEY_IMPACT].map((impact, i) =>
         impact ? (
@@ -39,9 +46,9 @@ const KeyImpactSection = ({ data }: { data: ResumeData }) => (
   </section>
 );
 
-const ToolsSection = ({ data }: { data: ResumeData }) => (
+const ToolsSection = ({ data, title }: SectionProps) => (
   <section className="template-sidebar-section" data-jump={ResumeField.TOOLS}>
-    <h3 className="template-section-title">{ResumeField.TOOLS}</h3>
+    <h3 className="template-section-title">{title}</h3>
     <div className="template-tech-wrapper">
       {data[ResumeField.TOOLS].map((tool, i) => (
         <span key={`${tool}-${i}`} className="template-item-tech" data-jump-index={i}>
@@ -52,9 +59,9 @@ const ToolsSection = ({ data }: { data: ResumeData }) => (
   </section>
 );
 
-const SkillsSection = ({ data }: { data: ResumeData }) => (
+const SkillsSection = ({ data, title }: SectionProps) => (
   <section className="template-sidebar-section" data-jump={ResumeField.SKILLS}>
-    <h3 className="template-section-title">{ResumeField.SKILLS}</h3>
+    <h3 className="template-section-title">{title}</h3>
     <div className="template-tech-wrapper">
       {data[ResumeField.SKILLS].map((skill, i) => (
         <span key={`${skill}-${i}`} className="template-item-tech" data-jump-index={i}>
@@ -65,9 +72,9 @@ const SkillsSection = ({ data }: { data: ResumeData }) => (
   </section>
 );
 
-const ExperienceSection = ({ data }: { data: ResumeData }) => (
+const ExperienceSection = ({ data, title }: SectionProps) => (
   <TimelineSection
-    title="Experience"
+    title={title}
     field={ResumeField.EXPERIENCE}
     items={data[ResumeField.EXPERIENCE].map((exp) => ({
       ...exp,
@@ -77,9 +84,9 @@ const ExperienceSection = ({ data }: { data: ResumeData }) => (
   />
 );
 
-const ProjectsSection = ({ data }: { data: ResumeData }) => (
+const ProjectsSection = ({ data, title }: SectionProps) => (
   <TimelineSection
-    title={ResumeField.PROJECTS}
+    title={title}
     field={ResumeField.PROJECTS}
     items={data[ResumeField.PROJECTS].map((proj: ProjectType) => ({
       ...proj,
@@ -90,9 +97,9 @@ const ProjectsSection = ({ data }: { data: ResumeData }) => (
   />
 );
 
-const EducationSection = ({ data }: { data: ResumeData }) => (
+const EducationSection = ({ data, title }: SectionProps) => (
   <div className="template-sidebar-section" data-jump={ResumeField.EDUCATION}>
-    <h3 className="template-section-title">{ResumeField.EDUCATION}</h3>
+    <h3 className="template-section-title">{title}</h3>
     {data[ResumeField.EDUCATION].map((edu) => (
       <div key={edu.id} className="template-credential-item" data-jump-id={edu.id}>
         <div className="template-credential-header">
@@ -110,9 +117,9 @@ const EducationSection = ({ data }: { data: ResumeData }) => (
   </div>
 );
 
-const CertificationsSection = ({ data }: { data: ResumeData }) => (
+const CertificationsSection = ({ data, title }: SectionProps) => (
   <div className="template-sidebar-section" data-jump={ResumeField.CERTIFICATIONS}>
-    <h3 className="template-section-title">{ResumeField.CERTIFICATIONS}</h3>
+    <h3 className="template-section-title">{title}</h3>
     {data[ResumeField.CERTIFICATIONS].map((cer) => (
       <div key={cer.id} className="template-credential-item" data-jump-id={cer.id}>
         <div className="template-credential-header">
@@ -137,9 +144,9 @@ const CertificationsSection = ({ data }: { data: ResumeData }) => (
   </div>
 );
 
-const LanguagesSection = ({ data }: { data: ResumeData }) => (
+const LanguagesSection = ({ data, title }: SectionProps) => (
   <section className="template-sidebar-section" data-jump={ResumeField.LANGUAGES}>
-    <h3 className="template-section-title">{ResumeField.LANGUAGES}</h3>
+    <h3 className="template-section-title">{title}</h3>
     <ul className="template-language-list">
       {data[ResumeField.LANGUAGES]
         .filter((l) => l.name.trim())
@@ -153,9 +160,9 @@ const LanguagesSection = ({ data }: { data: ResumeData }) => (
   </section>
 );
 
-const AwardsSection = ({ data }: { data: ResumeData }) => (
+const AwardsSection = ({ data, title }: SectionProps) => (
   <div className="template-sidebar-section" data-jump={ResumeField.AWARDS}>
-    <h3 className="template-section-title">{ResumeField.AWARDS}</h3>
+    <h3 className="template-section-title">{title}</h3>
     {data[ResumeField.AWARDS].map((a) => (
       <div key={a.id} className="template-credential-item" data-jump-id={a.id}>
         <div className="template-credential-header">
@@ -169,9 +176,9 @@ const AwardsSection = ({ data }: { data: ResumeData }) => (
   </div>
 );
 
-const VolunteeringSection = ({ data }: { data: ResumeData }) => (
+const VolunteeringSection = ({ data, title }: SectionProps) => (
   <TimelineSection
-    title={ResumeField.VOLUNTEERING}
+    title={title}
     field={ResumeField.VOLUNTEERING}
     items={data[ResumeField.VOLUNTEERING].map((v) => ({
       id: v.id,
@@ -183,6 +190,76 @@ const VolunteeringSection = ({ data }: { data: ResumeData }) => (
   />
 );
 
+const CONTACT_ROWS: Array<{ key: ContactInfo; label: string; href?: (v: string) => string }> = [
+  { key: ContactInfo.EMAIL, label: 'Email', href: (v) => `mailto:${v}` },
+  { key: ContactInfo.PHONE, label: 'Phone', href: (v) => `tel:${v}` },
+  { key: ContactInfo.LINKEDIN, label: 'LinkedIn', href: (v) => (/^https?:/i.test(v) ? v : `https://${v}`) },
+  { key: ContactInfo.GITHUB, label: 'GitHub', href: (v) => (/^https?:/i.test(v) ? v : `https://${v}`) },
+  { key: ContactInfo.LOCATION, label: 'Location' },
+];
+
+/**
+ * Contact details as labelled text lines ("Email: …") for layouts that put
+ * them in a column. Plain text labels, no icons, so parsers can tag each one.
+ */
+const ContactSection = ({ data, title }: SectionProps) => {
+  const contact = data[ResumeField.CONTACT];
+  const rows = CONTACT_ROWS.filter((r) => contact[r.key]?.trim());
+  if (rows.length === 0) return null;
+  return (
+    <section className="template-sidebar-section template-contact-section" data-jump={ResumeField.CONTACT}>
+      <h3 className="template-section-title">{title}</h3>
+      <ul className="template-contact-list">
+        {rows.map((r) => {
+          const value = contact[r.key]!.trim();
+          return (
+            <li key={r.key} className="template-contact-row">
+              <span className="template-contact-label">{r.label}</span>
+              {r.href ? (
+                <a href={r.href(value)} target="_blank" rel="noopener noreferrer">
+                  {value}
+                </a>
+              ) : (
+                <span>{value}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+};
+
+/**
+ * Skills and Tools as labelled rows under one heading ("Skills: a, b, c"),
+ * the dense format ATS-first layouts use instead of chips.
+ */
+const InlineSkillsSection = ({
+  data,
+  title,
+  showTools,
+}: SectionProps & { showTools: boolean }) => {
+  const rows = [
+    { field: ResumeField.SKILLS, label: 'Skills', items: data[ResumeField.SKILLS] },
+    ...(showTools
+      ? [{ field: ResumeField.TOOLS, label: 'Tools', items: data[ResumeField.TOOLS] }]
+      : []),
+  ]
+    .map((row) => ({ ...row, items: row.items.filter((i) => i.trim()) }))
+    .filter((row) => row.items.length > 0);
+  if (rows.length === 0) return null;
+  return (
+    <section className="template-main-section template-inline-skills" data-jump={ResumeField.SKILLS}>
+      <h3 className="template-section-title">{title}</h3>
+      {rows.map((row) => (
+        <p key={row.field} className="template-inline-skills__row" data-jump={row.field}>
+          <strong>{row.label}:</strong> {row.items.join(', ')}
+        </p>
+      ))}
+    </section>
+  );
+};
+
 // Optional sections stay off the page entirely until they have content.
 const OPTIONAL_SECTIONS = new Set<ResumeField>([
   ResumeField.LANGUAGES,
@@ -191,9 +268,8 @@ const OPTIONAL_SECTIONS = new Set<ResumeField>([
 ]);
 
 // Registry: ResumeField → section component
-const sectionRegistry: Partial<
-  Record<ResumeField, React.FC<{ data: ResumeData }>>
-> = {
+const sectionRegistry: Partial<Record<ResumeField, React.FC<SectionProps>>> = {
+  [ResumeField.CONTACT]: ContactSection,
   [ResumeField.ABOUT_ME]: AboutMeSection,
   [ResumeField.KEY_IMPACT]: KeyImpactSection,
   [ResumeField.TOOLS]: ToolsSection,
@@ -217,6 +293,9 @@ const styleVars = (style: ResumeStyle): React.CSSProperties => {
   const vars: Record<string, string> = {
     '--resume-font-scale': String(style.fontScale),
     '--resume-spacing-scale': String(style.spacingScale),
+    '--resume-gap-section': String(style.gaps.section),
+    '--resume-gap-heading': String(style.gaps.heading),
+    '--resume-gap-entry': String(style.gaps.entry),
   };
   if (style.accentColor) {
     const c = style.accentColor;
@@ -257,34 +336,49 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
     if (!Section || style.hiddenSections.includes(field)) return null;
     const items = data[field];
     if (OPTIONAL_SECTIONS.has(field) && Array.isArray(items) && items.length === 0) return null;
-    return <Section key={field} data={data} />;
+    if (config.inlineSkills && field === ResumeField.SKILLS) {
+      return (
+        <InlineSkillsSection
+          key={field}
+          data={data}
+          title={config.titles?.[field] ?? 'Technical Skills'}
+          showTools={!style.hiddenSections.includes(ResumeField.TOOLS)}
+        />
+      );
+    }
+    return <Section key={field} data={data} title={config.titles?.[field] ?? field} />;
   };
 
   return (
-    <div
-      className="template-resume-outer-wrapper"
-      style={{ fontFamily, ...styleVars(style) }}
-      data-layout={layout}
-      data-theme={theme}
-    >
-      <div className="template-resume-page">
-        <ResumeHeader
-          {...data[ResumeField.CONTACT]}
-          accentColor={accent}
-          qrUrl={qrUrlFor(data, style.qrTarget)}
-        />
+    // Context lets deep renderers (timeline entries) follow the layout's options.
+    <LayoutContext.Provider value={config}>
+      <div
+        className="template-resume-outer-wrapper"
+        style={{ fontFamily, ...styleVars(style) }}
+        data-layout={layout}
+        data-theme={theme}
+      >
+        <div className="template-resume-page">
+          <ResumeHeader
+            {...data[ResumeField.CONTACT]}
+            accentColor={accent}
+            qrUrl={qrUrlFor(data, style.qrTarget)}
+            hideContacts={config.contactInColumn}
+            variant={config.headerStyle}
+          />
 
-        <div key={layout} className="template-resume-body">
-          <aside className="template-left-column">
-            {config.left?.map((field) => renderSection(field))}
-          </aside>
+          <div key={layout} className="template-resume-body">
+            <aside className="template-left-column">
+              {config.left?.map((field) => renderSection(field))}
+            </aside>
 
-          <main className="template-right-column">
-            {config.right?.map((field) => renderSection(field))}
-          </main>
+            <main className="template-right-column">
+              {config.right?.map((field) => renderSection(field))}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </LayoutContext.Provider>
   );
 };
 
