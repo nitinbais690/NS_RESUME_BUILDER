@@ -98,6 +98,7 @@ export const normalizeResumeData = (input: unknown): ResumeData => {
         issuer: str(c.issuer),
         date: str(c.date),
         link: str(c.link),
+        desc: str(c.desc),
       }),
     ),
     [ResumeField.LANGUAGES]: list(input[ResumeField.LANGUAGES]).map((l) => ({
@@ -167,6 +168,7 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
           (Object.values(ResumeField) as unknown[]).includes(f) && f !== ResumeField.CONTACT,
         )
       : [],
+    dateFormat: input.dateFormat === 'numeric' ? 'numeric' : 'short',
   };
 };
 

@@ -65,6 +65,7 @@ export const createCertification = (): CertificationType => ({
   issuer: '',
   date: '',
   link: '',
+  desc: '',
 });
 
 export const DEFAULT_STYLE: ResumeStyle = {
@@ -76,6 +77,7 @@ export const DEFAULT_STYLE: ResumeStyle = {
   spacingScale: 1,
   gaps: { section: 1, heading: 1, entry: 1 },
   qrTarget: 'none',
+  dateFormat: 'short',
   hiddenSections: [],
 };
 

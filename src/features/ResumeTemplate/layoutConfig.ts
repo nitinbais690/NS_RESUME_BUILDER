@@ -71,7 +71,7 @@ export const LAYOUT_CONFIG: Record<LayoutType, LayoutConfig> = {
       ResumeField.LANGUAGES,
       ResumeField.VOLUNTEERING,
     ],
-    titles: { ...ATS_TITLES, [ResumeField.EXPERIENCE]: 'Experience' },
+    titles: { ...ATS_TITLES, [ResumeField.EXPERIENCE]: 'Experience', [ResumeField.SKILLS]: 'Skills' },
     inlineSkills: true,
     entryStyle: 'inline',
   },

@@ -1,3 +1,5 @@
+import type { DateFormat } from '../types';
+
 /**
  * Month-precision dates for experience/volunteering. Stored as "YYYY-MM" (what
  * <input type="month"> produces); an end of "present" means ongoing.
@@ -8,17 +10,29 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 export const isMonth = (v: unknown): v is string => typeof v === 'string' && MONTH_RE.test(v);
 
-/** "2022-01" → "Jan 2022"; "present" → "Present"; anything else → "". */
-export const formatMonth = (v?: string) => {
+/**
+ * "2022-01" → "Jan 2022" (or "01/2022" when numeric); "present" → "Present";
+ * anything else → "".
+ */
+export const formatMonth = (v?: string, format: DateFormat = 'short') => {
   if (v === PRESENT) return 'Present';
   if (!isMonth(v)) return '';
   const [y, m] = v.split('-');
-  return `${MONTHS[Number(m) - 1]} ${y}`;
+  return format === 'numeric' ? `${m}/${y}` : `${MONTHS[Number(m) - 1]} ${y}`;
 };
 
 /** Display string for a range, e.g. "Jan 2022 – Present". */
-export const formatRange = (start?: string, end?: string) =>
-  [formatMonth(start), formatMonth(end)].filter(Boolean).join(' – ');
+export const formatRange = (start?: string, end?: string, format: DateFormat = 'short') =>
+  [formatMonth(start, format), formatMonth(end, format)].filter(Boolean).join(' – ');
+
+/**
+ * The date to print for a ranged entry: re-derived from start/end in the
+ * chosen format, or the stored text for entries without structured dates.
+ */
+export const displayRange = (
+  entry: { date: string; start?: string; end?: string },
+  format: DateFormat = 'short',
+) => (entry.start ? formatRange(entry.start, entry.end, format) : entry.date);
 
 const monthIndex = (name: string) =>
   MONTHS.findIndex((m) => name.toLowerCase().startsWith(m.toLowerCase()));

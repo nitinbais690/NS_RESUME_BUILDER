@@ -9,23 +9,29 @@ import {
   ResumeStyle,
 } from '../../types';
 import ResumeHeader from './layout/ResumeHeader';
+import Emphasis from './layout/Emphasis';
 import { LAYOUT_CONFIG } from './layoutConfig';
 import { LayoutContext } from './layoutContext';
 import TimelineSection from './layout/TimeLine';
 import { pickStyle, useResumeStore } from '../../store/useResumeStore';
 import themes from '../../constants/themes';
+import { splitSkillLabel } from '../../lib/emphasis';
+import { displayRange } from '../../lib/dates';
 
 interface SectionProps {
   data: ResumeData;
   /** Heading text; layouts may rename sections (e.g. "About Me" → "Summary"). */
   title: string;
+  dateFormat?: ResumeStyle['dateFormat'];
 }
 
 // Section renderers — one per ResumeField variant
 const AboutMeSection = ({ data, title }: SectionProps) => (
   <section className="template-main-section" data-jump={ResumeField.ABOUT_ME}>
     <h3 className="template-section-title">{title}</h3>
-    <p className="template-about-text">{data[ResumeField.ABOUT_ME]}</p>
+    <p className="template-about-text">
+      <Emphasis text={data[ResumeField.ABOUT_ME]} />
+    </p>
   </section>
 );
 
@@ -38,7 +44,7 @@ const KeyImpactSection = ({ data, title }: SectionProps) => (
           // data-jump-index keeps the original index so click-to-edit
           // lands on the right row even when empty rows are skipped.
           <li key={i} className="template-impact-item" data-jump-index={i}>
-            {impact}
+            <Emphasis text={impact} />
           </li>
         ) : null,
       )}
@@ -72,12 +78,13 @@ const SkillsSection = ({ data, title }: SectionProps) => (
   </section>
 );
 
-const ExperienceSection = ({ data, title }: SectionProps) => (
+const ExperienceSection = ({ data, title, dateFormat }: SectionProps) => (
   <TimelineSection
     title={title}
     field={ResumeField.EXPERIENCE}
     items={data[ResumeField.EXPERIENCE].map((exp) => ({
       ...exp,
+      date: displayRange(exp, dateFormat),
       subtitle: exp.company,
       description: exp.desc,
     }))}
@@ -139,6 +146,7 @@ const CertificationsSection = ({ data, title }: SectionProps) => (
             </a>
           )}
         </p>
+        {cer.desc && <p className="template-credential-desc">{cer.desc}</p>}
       </div>
     ))}
   </div>
@@ -176,7 +184,7 @@ const AwardsSection = ({ data, title }: SectionProps) => (
   </div>
 );
 
-const VolunteeringSection = ({ data, title }: SectionProps) => (
+const VolunteeringSection = ({ data, title, dateFormat }: SectionProps) => (
   <TimelineSection
     title={title}
     field={ResumeField.VOLUNTEERING}
@@ -184,7 +192,7 @@ const VolunteeringSection = ({ data, title }: SectionProps) => (
       id: v.id,
       title: v.role,
       subtitle: v.org,
-      date: v.date,
+      date: displayRange(v, dateFormat),
       description: v.desc,
     }))}
   />
@@ -232,28 +240,35 @@ const ContactSection = ({ data, title }: SectionProps) => {
 
 /**
  * Skills and Tools as labelled rows under one heading ("Skills: a, b, c"),
- * the dense format ATS-first layouts use instead of chips.
+ * the dense format ATS-first layouts use instead of chips. Skills written as
+ * "Category: a · b" become their own rows, labelled by that category.
  */
 const InlineSkillsSection = ({
   data,
   title,
   showTools,
 }: SectionProps & { showTools: boolean }) => {
+  const skills = data[ResumeField.SKILLS].filter((i) => i.trim());
+  const labelled = skills.map(splitSkillLabel);
+  const plainSkills = skills.filter((_, i) => !labelled[i]);
   const rows = [
-    { field: ResumeField.SKILLS, label: 'Skills', items: data[ResumeField.SKILLS] },
-    ...(showTools
-      ? [{ field: ResumeField.TOOLS, label: 'Tools', items: data[ResumeField.TOOLS] }]
+    ...labelled.flatMap((row, i) =>
+      row ? [{ key: `skill-${i}`, field: ResumeField.SKILLS, label: row.label, text: row.items }] : [],
+    ),
+    ...(plainSkills.length > 0
+      ? [{ key: 'skills', field: ResumeField.SKILLS, label: 'Skills', text: plainSkills.join(', ') }]
       : []),
-  ]
-    .map((row) => ({ ...row, items: row.items.filter((i) => i.trim()) }))
-    .filter((row) => row.items.length > 0);
+    ...(showTools
+      ? [{ key: 'tools', field: ResumeField.TOOLS, label: 'Tools', text: data[ResumeField.TOOLS].filter((i) => i.trim()).join(', ') }]
+      : []),
+  ].filter((row) => row.text);
   if (rows.length === 0) return null;
   return (
     <section className="template-main-section template-inline-skills" data-jump={ResumeField.SKILLS}>
       <h3 className="template-section-title">{title}</h3>
       {rows.map((row) => (
-        <p key={row.field} className="template-inline-skills__row" data-jump={row.field}>
-          <strong>{row.label}:</strong> {row.items.join(', ')}
+        <p key={row.key} className="template-inline-skills__row" data-jump={row.field}>
+          <strong>{row.label}:</strong> {row.text}
         </p>
       ))}
     </section>
@@ -346,7 +361,14 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
         />
       );
     }
-    return <Section key={field} data={data} title={config.titles?.[field] ?? field} />;
+    return (
+      <Section
+        key={field}
+        data={data}
+        title={config.titles?.[field] ?? field}
+        dateFormat={style.dateFormat}
+      />
+    );
   };
 
   return (

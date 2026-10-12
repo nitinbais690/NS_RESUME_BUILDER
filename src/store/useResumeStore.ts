@@ -17,6 +17,7 @@ import {
   ListField,
   EntityField,
   QrTarget,
+  DateFormat,
   LanguageType,
   AwardType,
   VolunteerType,
@@ -70,6 +71,7 @@ interface ResumeState extends ResumeStyle {
   /** Puts all fine-grained spacing back to the layout's defaults. */
   resetGaps: () => void;
   setQrTarget: (qrTarget: QrTarget) => void;
+  setDateFormat: (dateFormat: DateFormat) => void;
   setColorScheme: (colorScheme: ColorScheme) => void;
 
   /** Styles the user saved by name ("My templates"), shared by all resumes. */
@@ -150,6 +152,7 @@ export const pickStyle = (s: ResumeStyle): ResumeStyle => ({
   gaps: s.gaps,
   qrTarget: s.qrTarget,
   hiddenSections: s.hiddenSections,
+  dateFormat: s.dateFormat ?? 'short',
 });
 
 const snapshot = (s: ResumeState): SavedResume => ({
@@ -260,6 +263,7 @@ export const useResumeStore = create<ResumeState>()(
         setGap: (key, value) => set((s) => ({ gaps: { ...s.gaps, [key]: clampGap(value) } })),
         resetGaps: () => set({ gaps: { ...DEFAULT_STYLE.gaps } }),
         setQrTarget: (qrTarget) => set({ qrTarget }),
+        setDateFormat: (dateFormat) => set({ dateFormat }),
         setColorScheme: (colorScheme) => set({ colorScheme }),
 
         customTemplates: [],

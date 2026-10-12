@@ -6,6 +6,7 @@ import { FormCardWrapper } from '../common/FormCardWrapper';
 import { SortableList } from '../common/Sortable';
 import { EmptyState } from '../common/EmptyState';
 import AddButton from '../common/AddButton';
+import { AutoGrowTextarea } from '../common/FormFields';
 import { useResumeStore } from '../../../store/useResumeStore';
 
 const Certification: React.FC = () => {
@@ -92,6 +93,19 @@ const Certification: React.FC = () => {
                     }
                   />
                 </div>
+              </div>
+
+              <div className="form-input-group">
+                <label className="form-label" htmlFor={`${cert.id}-desc`}>
+                  Skills gained or project built (optional)
+                </label>
+                <AutoGrowTextarea
+                  id={`${cert.id}-desc`}
+                  rows={1}
+                  placeholder="e.g. Designed serverless APIs with Lambda and DynamoDB"
+                  value={cert.desc || ''}
+                  onChange={(e) => updateCertification(cert.id, { desc: e.target.value })}
+                />
               </div>
             </FormCardWrapper>
           ))}

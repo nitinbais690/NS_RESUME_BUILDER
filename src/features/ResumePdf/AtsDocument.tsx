@@ -3,6 +3,8 @@ import { Document, Link, Page, StyleSheet, Text, View } from '@react-pdf/rendere
 
 import { ContactInfo, ResumeData, ResumeField, ResumeStyle, SpacingGaps } from '../../types';
 import { stripBulletMarker } from '../../lib/bulletLint';
+import { splitEmphasis, splitSkillLabel } from '../../lib/emphasis';
+import { displayRange } from '../../lib/dates';
 
 /**
  * ATS-safe resume as a real PDF: selectable text in reading order, standard
@@ -47,6 +49,7 @@ const makeStyles = (scale: number, spacing: number, gaps: SpacingGaps) => {
     bulletText: { flex: 1 },
     tech: { marginTop: 2, color: '#333333' },
     link: { color: '#111111', textDecoration: 'none' },
+    bold: { fontFamily: 'Helvetica-Bold' },
   });
 };
 
@@ -58,12 +61,29 @@ const lines = (text: string) =>
     .map(stripBulletMarker)
     .filter(Boolean);
 
+/** Text runs with "**bold**" set in Helvetica-Bold. */
+const Rich: React.FC<{ text: string; s: Styles }> = ({ text, s }) => (
+  <>
+    {splitEmphasis(text).map((part, i) =>
+      part.bold ? (
+        <Text key={i} style={s.bold}>
+          {part.text}
+        </Text>
+      ) : (
+        part.text
+      ),
+    )}
+  </>
+);
+
 const Bullets: React.FC<{ items: string[]; s: Styles }> = ({ items, s }) => (
   <>
     {items.map((t, i) => (
       <View key={i} style={s.bullet}>
         <Text style={s.bulletDot}>•</Text>
-        <Text style={s.bulletText}>{t}</Text>
+        <Text style={s.bulletText}>
+          <Rich text={t} s={s} />
+        </Text>
       </View>
     ))}
   </>
@@ -119,7 +139,9 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
 
         {show(ResumeField.ABOUT_ME) && !!data[ResumeField.ABOUT_ME].trim() && (
           <Section title="Summary" s={s}>
-            <Text>{data[ResumeField.ABOUT_ME].trim()}</Text>
+            <Text>
+              <Rich text={data[ResumeField.ABOUT_ME].trim()} s={s} />
+            </Text>
           </Section>
         )}
 
@@ -138,7 +160,7 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
                     {e.title}
                     {!!e.company && <Text style={s.entrySubInline}> — {e.company}</Text>}
                   </Text>
-                  <Text style={s.entryDate}>{e.date}</Text>
+                  <Text style={s.entryDate}>{displayRange(e, style.dateFormat)}</Text>
                 </View>
                 <Bullets items={lines(e.desc)} s={s} />
                 {e.technologies.length > 0 && (
@@ -179,7 +201,7 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
                     {v.role}
                     {!!v.org && <Text style={s.entrySubInline}> — {v.org}</Text>}
                   </Text>
-                  <Text style={s.entryDate}>{v.date}</Text>
+                  <Text style={s.entryDate}>{displayRange(v, style.dateFormat)}</Text>
                 </View>
                 <Bullets items={lines(v.desc)} s={s} />
               </View>
@@ -189,7 +211,25 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
 
         {show(ResumeField.SKILLS) && skills.length > 0 && (
           <Section title="Skills" s={s}>
-            <Text>{skills.join(', ')}</Text>
+            {skills.some(splitSkillLabel) ? (
+              skills.map((skill, i) => {
+                const row = splitSkillLabel(skill);
+                return (
+                  <Text key={i}>
+                    {row ? (
+                      <>
+                        <Text style={s.bold}>{row.label}: </Text>
+                        {row.items}
+                      </>
+                    ) : (
+                      skill
+                    )}
+                  </Text>
+                );
+              })
+            ) : (
+              <Text>{skills.join(', ')}</Text>
+            )}
           </Section>
         )}
 
@@ -226,6 +266,7 @@ export const AtsDocument: React.FC<{ data: ResumeData; style: ResumeStyle }> = (
                   </Text>
                   <Text style={s.entryDate}>{x.date}</Text>
                 </View>
+                {!!x.desc && <Text>{x.desc}</Text>}
               </View>
             ))}
           </Section>

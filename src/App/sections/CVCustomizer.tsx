@@ -1,4 +1,4 @@
-import { FontFamily, GapKey, QrTarget } from '../../types';
+import { DateFormat, FontFamily, GapKey, QrTarget } from '../../types';
 
 import React, { useState } from 'react';
 import {
@@ -8,6 +8,7 @@ import {
   Palette,
   ChevronDown,
   QrCode,
+  CalendarDays,
   Pipette,
   MoveVertical,
   Bookmark,
@@ -86,6 +87,8 @@ const CVCustomizer: React.FC = () => {
   const resetGaps = useResumeStore((s) => s.resetGaps);
   const qrTarget = useResumeStore((s) => s.qrTarget);
   const setQrTarget = useResumeStore((s) => s.setQrTarget);
+  const dateFormat = useResumeStore((s) => s.dateFormat);
+  const setDateFormat = useResumeStore((s) => s.setDateFormat);
   const themeColor = (themes.find((t) => t.name === currentTheme) ?? themes[0]).color;
   const customTemplates = useResumeStore((s) => s.customTemplates);
   const saveTemplate = useResumeStore((s) => s.saveTemplate);
@@ -337,6 +340,25 @@ const CVCustomizer: React.FC = () => {
             <option value="none">None</option>
             <option value="linkedin">LinkedIn profile</option>
             <option value="github">GitHub profile</option>
+          </select>
+          <ChevronDown className="mini-select-chevron" size={14} />
+        </div>
+      </div>
+
+      <div className="compact-row">
+        <label className="control-label-wrapper" htmlFor="date-format">
+          <CalendarDays size={12} />
+          <span className="control-label">Dates</span>
+        </label>
+        <div className="mini-select-wrapper">
+          <select
+            id="date-format"
+            className="mini-select"
+            value={dateFormat}
+            onChange={(e) => setDateFormat(e.target.value as DateFormat)}
+          >
+            <option value="short">Jul 2022</option>
+            <option value="numeric">07/2022</option>
           </select>
           <ChevronDown className="mini-select-chevron" size={14} />
         </div>

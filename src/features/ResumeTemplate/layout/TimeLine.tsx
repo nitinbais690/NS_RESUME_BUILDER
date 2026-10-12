@@ -1,5 +1,6 @@
 import { useLayoutConfig } from '../layoutContext';
 import { stripBulletMarker } from '../../../lib/bulletLint';
+import Emphasis from './Emphasis';
 
 /** "https://github.com/x/y/" → "github.com/x/y": the readable part ATS keep. */
 const displayUrl = (url: string) =>
@@ -25,11 +26,19 @@ const TechList: React.FC<{ technologies?: string[] }> = ({ technologies }) =>
 const Description: React.FC<{ text: string }> = ({ text }) => {
   const lines = text.split('\n').filter((l) => l.trim());
   const isList = lines.length > 1 || /^\s*(?:[•\-–*·▪]|\d+[.)])\s/.test(lines[0] ?? '');
-  if (!isList) return <div className="template-item-desc">{text.trim()}</div>;
+  if (!isList) {
+    return (
+      <div className="template-item-desc">
+        <Emphasis text={text.trim()} />
+      </div>
+    );
+  }
   return (
     <ul className="template-item-desc template-item-bullets">
       {lines.map((line, i) => (
-        <li key={i}>{stripBulletMarker(line)}</li>
+        <li key={i}>
+          <Emphasis text={stripBulletMarker(line)} />
+        </li>
       ))}
     </ul>
   );
@@ -158,7 +167,9 @@ const TimelineItem: React.FC<TimelineSectionItemProps> = ({
           View Project ↗
         </a>
       )}
-      <div className="template-item-desc">{description}</div>
+      <div className="template-item-desc">
+        <Emphasis text={description} />
+      </div>
       <TechList technologies={technologies} />
     </div>
   );

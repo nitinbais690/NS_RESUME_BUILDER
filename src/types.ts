@@ -28,6 +28,8 @@ export type CertificationType = {
   issuer: string;
   date: string;
   link?: string;
+  /** Optional line on skills gained or work done for it. */
+  desc?: string;
 };
 
 export interface ProjectType {
@@ -146,7 +148,11 @@ export interface ResumeStyle {
   qrTarget: QrTarget;
   /** Sections the user switched off; their content is kept, just not shown. */
   hiddenSections: ResumeField[];
+  /** How month dates read on the resume: "Jul 2022" or "07/2022". */
+  dateFormat: DateFormat;
 }
+
+export type DateFormat = 'short' | 'numeric';
 
 export type QrTarget = 'none' | 'linkedin' | 'github';
 
