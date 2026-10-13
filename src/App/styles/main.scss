@@ -218,17 +218,27 @@
     }
   }
 
+  /* Fixed size; the tab panel scrolls inside instead of the page. */
   &__popover {
     position: absolute;
     top: calc(100% + var(--spacing-sm));
     right: 0;
-    min-width: 280px;
-    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    max-height: min(640px, calc(100dvh - 80px));
+    padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl);
     background: var(--color-bg-white);
     border: var(--border-thin) solid var(--color-border-medium);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     z-index: var(--z-sticky);
+  }
+
+  /* Bottom-sheet pieces, phones only (see the mobile block below). */
+  &__scrim,
+  &__sheet-grip {
+    display: none;
   }
 }
 
@@ -638,13 +648,58 @@
       display: none; /* icon-only on small screens */
     }
 
+    /* Customize as a bottom sheet: the resume stays visible above it. */
     &__popover {
       position: fixed;
-      top: 56px;
-      left: var(--spacing-md);
-      right: var(--spacing-md);
-      min-width: 0;
+      top: auto;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 58dvh;
+      max-height: none;
+      padding: var(--spacing-xs) var(--spacing-lg) calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
+      border-width: var(--border-thin) 0 0;
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+      z-index: calc(var(--z-sticky) + 20);
+      animation: sheet-up 0.22s ease-out;
     }
+
+    &__sheet-grip {
+      display: block;
+      flex-shrink: 0;
+      width: 36px;
+      height: 4px;
+      margin: var(--spacing-xs) auto var(--spacing-sm);
+      border-radius: 2px;
+      background: var(--color-border-medium);
+    }
+
+    &__scrim {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--z-sticky) + 15);
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    &__popover-head {
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* The floating edit/preview button would sit on top of the sheet. */
+@include mobile {
+  body:has(.appbar__popover) .pane-fab {
+    display: none;
   }
 }
 
@@ -753,312 +808,10 @@
   }
 }
 
-/* =========================================
-   RESUME TEMPLATE — MOBILE
-   ========================================= */
-.template-resume-outer-wrapper {
-  @include mobile {
-    padding: 0;
-    background-color: var(--color-bg-white);
-  }
-}
-
-.template-resume-page {
-  @include mobile {
-    width: 100%;
-    min-height: auto;
-    box-shadow: none;
-  }
-}
-
-/* --- Header --- */
-.template-resume-header {
-  @include mobile {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
-    border-top-width: 8px;
-  }
-
-  .template-header-name {
-    @include mobile {
-      font-size: var(--font-size-2xl);
-    }
-  }
-
-  .template-header-position {
-    @include mobile {
-      font-size: var(--font-size-base);
-    }
-  }
-
-  .template-header-right {
-    @include mobile {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-      width: 100%;
-      margin-top: var(--spacing-sm);
-    }
-  }
-
-  .template-contact-item {
-    @include mobile {
-      justify-content: flex-start;
-      font-size: var(--font-size-xs);
-    }
-  }
-}
-
-/* --- Body Columns → Stack --- */
-.template-resume-body {
-  @include mobile {
-    flex-direction: column;
-  }
-}
-
-.template-left-column {
-  @include mobile {
-    width: 100%;
-    padding: var(--spacing-md);
-    background-color: var(--color-bg-resume-sidebar);
-    border-right: none;
-    border-bottom: var(--border-thin) solid var(--color-border-light);
-  }
-}
-
-.template-right-column {
-  @include mobile {
-    width: 100%;
-    padding: var(--spacing-md);
-  }
-}
-
-/* --- Sections --- */
-.template-main-section {
-  @include mobile {
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-.template-sidebar-section {
-  @include mobile {
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-.template-section-title {
-  @include mobile {
-    font-size: var(--font-size-base);
-    margin-bottom: var(--spacing-sm);
-  }
-}
-
-/* --- About --- */
-.template-about-text {
-  @include mobile {
-    max-width: 100%;
-    font-size: var(--font-size-sm);
-  }
-}
-
-/* --- Impact List --- */
-.template-impact-list {
-  @include mobile {
-    padding-left: var(--spacing-md);
-  }
-}
-
-.template-impact-item {
-  @include mobile {
-    font-size: var(--font-size-sm);
-  }
-}
-
-/* --- Timeline --- */
-.template-timeline-section {
-  @include mobile {
-    margin: var(--spacing-md) 0;
-
-    .template-timeline-track {
-      padding-left: var(--spacing-3xl);
-
-      &::before {
-        left: calc(var(--timeline-dot-size) / 2);
-        top: var(--spacing-3xl);
-      }
-    }
-
-    .template-timeline-marker {
-      left: 0;
-      transform: translateY(-50%);
-      width: var(--timeline-dot-size);
-      height: var(--timeline-dot-size);
-    }
-
-    .template-timeline-item {
-      margin-bottom: var(--spacing-md);
-    }
-  }
-}
-
-.template-item-header {
-  @include mobile {
-    flex-direction: column;
-    gap: 2px;
-
-    .template-item-title {
-      font-size: var(--font-size-base);
-    }
-
-    .template-item-date {
-      font-size: var(--font-size-xs);
-    }
-  }
-}
-
-.template-item-subtitle {
-  @include mobile {
-    font-size: var(--font-size-sm);
-  }
-}
-
-.template-item-desc {
-  @include mobile {
-    font-size: var(--font-size-sm);
-  }
-}
-
-/* --- Credentials --- */
-.template-credential-item {
-  @include mobile {
-    .template-credential-header {
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .template-credential-meta-wrapper {
-      text-align: left;
-    }
-
-    .template-credential-title {
-      font-size: var(--font-size-sm);
-    }
-  }
-}
-
-/* --- Skills --- */
-
-/* --- Tech Chips --- */
-.template-tech-wrapper {
-  @include mobile {
-    gap: 3px;
-
-    .template-tech-label {
-      font-size: var(--font-size-xs);
-    }
-
-    .template-item-tech {
-      font-size: var(--font-size-xs);
-      padding: 2px 5px;
-    }
-  }
-}
-
-/* =========================================
-   LAYOUT VARIANTS — MOBILE OVERRIDES
-   ========================================= */
-
-/* --- Classic Mobile --- */
-[data-layout='classic'] {
-  @include mobile {
-    .template-resume-header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .template-contact-item {
-      flex-direction: row;
-      justify-content: flex-start;
-    }
-
-    .template-left-column {
-      width: 100%;
-      border-right: none;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .template-right-column {
-      width: 100%;
-    }
-  }
-}
-
-/* --- Modern Mobile --- */
-[data-layout='modern'] {
-  @include mobile {
-    .template-resume-header {
-      align-items: flex-start;
-      text-align: left;
-      padding-bottom: var(--spacing-md);
-    }
-
-    .template-header-left {
-      text-align: left;
-    }
-
-    .template-header-right {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
-    }
-
-    .template-left-column {
-      grid-template-columns: 1fr;
-      gap: var(--spacing-md);
-      padding: var(--spacing-md);
-    }
-
-    .template-right-column {
-      padding: var(--spacing-md);
-      padding-top: 0;
-    }
-
-    .template-section-title {
-      padding-left: 8px;
-    }
-  }
-}
-
-/* --- Executive Mobile --- */
-[data-layout='executive'] {
-  @include mobile {
-    .template-resume-header {
-      flex-direction: column;
-      align-items: flex-start;
-      padding-bottom: var(--spacing-md);
-      border-bottom-width: 2px;
-    }
-
-    .template-contact-item {
-      flex-direction: row;
-      justify-content: flex-start;
-    }
-
-    .template-left-column {
-      width: 100%;
-      padding: var(--spacing-md);
-      border-right: none;
-      border-bottom: 1px solid var(--color-border-light);
-    }
-
-    .template-right-column {
-      width: 100%;
-      padding: var(--spacing-md);
-      border-left: none;
-    }
-  }
-}
+/* The resume sheet has no small-screen rules on purpose: the preview shows
+   a fixed A4 sheet scaled to fit (usePreviewScale), so it must lay out
+   exactly as it prints. Reflowing it on phones made the page count and the
+   preview disagree with the PDF. */
 
 /* =========================================
    SAFE AREA / NOTCHED DEVICES
@@ -1081,20 +834,6 @@
 
   .form-card {
     padding: var(--spacing-sm);
-  }
-
-  .template-resume-header {
-    padding: var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
-    border-top-width: 6px;
-  }
-
-  .template-left-column,
-  .template-right-column {
-    padding: var(--spacing-sm);
-  }
-
-  .template-header-name {
-    font-size: var(--font-size-xl) !important;
   }
 }
 
@@ -1216,6 +955,10 @@
    REDUCED MOTION
    ========================================= */
 @media (prefers-reduced-motion: reduce) {
+  .appbar__popover {
+    animation: none !important;
+  }
+
   .rail__item,
   .rail__label,
   .pane-fab__btn,

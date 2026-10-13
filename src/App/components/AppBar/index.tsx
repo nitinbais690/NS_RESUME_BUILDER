@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SlidersHorizontal, Undo2, Redo2, Target, X } from 'lucide-react';
 
 import CVCustomizer from '../../sections/CVCustomizer';
@@ -11,6 +11,10 @@ import JobMatchDialog from '../JobMatchDialog';
 import { usePopover } from '../../hooks/usePopover';
 import { useCompleteness } from '../../hooks/useCompleteness';
 import { useResumeStore } from '../../../store/useResumeStore';
+import type { PaneMode } from '../../hooks/usePaneMode';
+
+/** Below this width only one pane shows at a time (see .shell styles). */
+const SINGLE_PANE = '(max-width: 1023px)';
 
 interface AppBarProps {
   onDownload: () => void | Promise<void>;
@@ -26,6 +30,20 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
   const canUndo = useResumeStore((s) => s._past.length > 0);
   const canRedo = useResumeStore((s) => s._future.length > 0);
   const { score, items } = useCompleteness();
+
+  // Phones/tablets: show the resume behind the Customize sheet so changes are
+  // visible live, then return to whichever pane the user was on.
+  const paneBeforeCustomize = useRef<PaneMode | null>(null);
+  useEffect(() => {
+    const { paneMode, setPaneMode } = useResumeStore.getState();
+    if (customize.open && window.matchMedia(SINGLE_PANE).matches) {
+      paneBeforeCustomize.current = paneMode;
+      setPaneMode('preview');
+    } else if (!customize.open && paneBeforeCustomize.current) {
+      setPaneMode(paneBeforeCustomize.current);
+      paneBeforeCustomize.current = null;
+    }
+  }, [customize.open]);
 
   const handleDownload = useCallback(async () => {
     setIsDownloading(true);
@@ -115,13 +133,19 @@ const AppBar: React.FC<AppBarProps> = ({ onDownload }) => {
             <span>Customize</span>
           </button>
           {customize.open && (
+            // Phones: a bottom sheet; tapping the backdrop closes it without
+            // also triggering whatever is underneath.
+            <div className="appbar__scrim" onClick={() => customize.setOpen(false)} aria-hidden="true" />
+          )}
+          {customize.open && (
             <div
               className="appbar__popover"
               role="dialog"
               aria-label="Customize resume"
             >
+              <span className="appbar__sheet-grip" aria-hidden="true" />
               <div className="appbar__popover-head">
-                <p className="appbar__popover-title">Resume Style</p>
+                <p className="appbar__popover-title">Customize</p>
                 <button
                   type="button"
                   className="appbar__popover-close"

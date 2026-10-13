@@ -89,13 +89,13 @@ const SectionOrganizer: React.FC = () => {
 
   return (
     <div className="section-spacing section-organizer">
+      {/* The tab is already called "Sections", so no heading of its own. */}
       <div className="section-spacing__head">
-        <span className="control-label">Sections</span>
+        <p className="section-organizer__hint">Drag to reorder. Type to rename a heading.</p>
         <button type="button" className="section-spacing__reset" onClick={resetSections} disabled={!isCustom}>
           Reset
         </button>
       </div>
-      <p className="section-organizer__hint">Drag to reorder. Type to rename a heading.</p>
       {lists.map((list) => (
         <div key={list.key} role="group" aria-label={list.label || 'Sections'}>
           {list.label && <p className="layout-picker__group">{list.label}</p>}

@@ -621,6 +621,127 @@
   }
 }
 
+/* Customize: tab bar + one scrolling panel (popover on desktop, sheet on phones). */
+.cv-customizer.compact {
+  flex: 1;
+  min-height: 0;
+  gap: var(--spacing-md);
+}
+
+.customizer-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: var(--radius-md);
+  background: var(--color-border-alt);
+
+  &__tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px; /* comfortable touch target */
+    padding: var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text-light);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: background var(--transition-base), color var(--transition-base);
+
+    &:hover {
+      color: var(--color-text-main);
+    }
+
+    &.is-active {
+      background: var(--color-bg-white);
+      color: var(--color-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 1px;
+    }
+  }
+}
+
+.customizer-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-height: 0;
+  /* Desktop: same height for every tab so the popover doesn't jump. */
+  height: 420px;
+  margin: 0 calc(var(--spacing-xs) * -1);
+  padding: 0 var(--spacing-xs) var(--spacing-xs);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  @media screen and (max-width: 767px) {
+    height: auto;
+  }
+
+  /* Panel children keep their natural height (the picker is flex: 1 elsewhere). */
+  > * {
+    flex-shrink: 0;
+  }
+}
+
+/* The picker is flex: 1 in the old one-row layout; in a tab it keeps its height. */
+.cv-customizer.compact .customizer-panel > .layout-picker {
+  flex: none;
+}
+
+/* Phones: each control is a full-width row under its left-aligned label. */
+@media screen and (max-width: 767px) {
+  .cv-customizer.compact .customizer-panel {
+    .compact-row {
+      align-items: stretch;
+    }
+
+    .mini-select-wrapper,
+    .range-control {
+      flex: none;
+      width: 100%;
+    }
+
+    .swatch-grid {
+      justify-content: flex-start;
+    }
+  }
+}
+
+/* "My templates" under the layout picker */
+.customizer-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: var(--border-thin) solid var(--color-border-light);
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-sm);
+    color: var(--color-text-light);
+  }
+}
+
 /* Customize → Sections: draggable rows with an editable heading. */
 .section-organizer {
   &__hint {
@@ -1094,6 +1215,16 @@
   font-weight: var(--font-weight-bold);
   box-shadow: var(--shadow-md);
   white-space: nowrap;
+
+  /* Phones: wrap the fix buttons under the message instead of overflowing. */
+  @media screen and (max-width: 767px) {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: max-content;
+    max-width: calc(100% - var(--spacing-lg));
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+  }
 
   &--ok {
     background: #dcfce7;

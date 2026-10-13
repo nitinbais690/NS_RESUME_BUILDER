@@ -14,6 +14,8 @@ import {
   Bookmark,
   Plus,
   X,
+  ListOrdered,
+  type LucideIcon,
 } from 'lucide-react';
 import themes, {
   ATS_LAYOUTS,
@@ -70,6 +72,19 @@ const RangeRow: React.FC<RangeRowProps> = ({ id, label, icon, title, min, max, v
   </div>
 );
 
+type TabId = 'layout' | 'sections' | 'text' | 'style';
+
+/** One short screen each, so nothing needs a long scroll (especially on phones). */
+const TABS: Array<{ id: TabId; label: string; Icon: LucideIcon }> = [
+  { id: 'layout', label: 'Layout', Icon: LayoutIcon },
+  { id: 'sections', label: 'Sections', Icon: ListOrdered },
+  { id: 'text', label: 'Text', Icon: Type },
+  { id: 'style', label: 'Style', Icon: Palette },
+];
+
+// Reopening Customize returns to the tab used last (this session).
+let lastTab: TabId = 'layout';
+
 const CVCustomizer: React.FC = () => {
   const currentLayout = useResumeStore((s) => s.layout);
   const currentTheme = useResumeStore((s) => s.theme);
@@ -109,43 +124,56 @@ const CVCustomizer: React.FC = () => {
     { label: 'Designed', items: layouts.filter((l) => !ATS_LAYOUTS.has(l)) },
   ];
 
-  return (
-    <div className="cv-customizer compact">
-      {/* Layout Row — ATS-friendly layouts first, designed ones after */}
-      <div className="compact-row compact-row--top">
-        <div className="control-label-wrapper">
-          <LayoutIcon size={12} />
-          <span className="control-label">Layout</span>
-        </div>
-        <div className="layout-picker">
-          {layoutGroups.map((group) => (
-            <div key={group.label} role="group" aria-label={group.label}>
-              <p className="layout-picker__group">{group.label}</p>
-              <div className="layout-card-grid">
-                {group.items.map((layout) => (
-                  <button
-                    key={layout}
-                    onClick={() => setLayout(layout)}
-                    className={`layout-card-btn ${currentLayout === layout ? 'active' : ''}`}
-                    aria-pressed={currentLayout === layout}
-                    title={layoutHints[layout]}
-                  >
-                    {layoutLabels[layout]}
-                  </button>
-                ))}
-              </div>
+  const [tab, setTab] = useState<TabId>(lastTab);
+  const selectTab = (id: TabId) => {
+    lastTab = id;
+    setTab(id);
+  };
+
+  // Arrow keys move between tabs (WAI-ARIA tabs pattern).
+  const onTabKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const i = TABS.findIndex((t) => t.id === tab);
+    const next =
+      e.key === 'ArrowRight' ? (i + 1) % TABS.length
+      : e.key === 'ArrowLeft' ? (i - 1 + TABS.length) % TABS.length
+      : e.key === 'Home' ? 0
+      : e.key === 'End' ? TABS.length - 1
+      : -1;
+    if (next === -1) return;
+    e.preventDefault();
+    selectTab(TABS[next].id);
+    e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+  };
+
+  const layoutPanel = (
+    <>
+      <div className="layout-picker">
+        {layoutGroups.map((group) => (
+          <div key={group.label} role="group" aria-label={group.label}>
+            <p className="layout-picker__group">{group.label}</p>
+            <div className="layout-card-grid">
+              {group.items.map((layout) => (
+                <button
+                  key={layout}
+                  onClick={() => setLayout(layout)}
+                  className={`layout-card-btn ${currentLayout === layout ? 'active' : ''}`}
+                  aria-pressed={currentLayout === layout}
+                  title={layoutHints[layout]}
+                >
+                  {layoutLabels[layout]}
+                </button>
+              ))}
             </div>
-          ))}
-          <p className="layout-picker__hint">{layoutHints[currentLayout]}</p>
-        </div>
+          </div>
+        ))}
+        <p className="layout-picker__hint">{layoutHints[currentLayout]}</p>
       </div>
 
       {/* My templates — save the current look by name, reapply anywhere */}
-      <div className="compact-row compact-row--top">
-        <div className="control-label-wrapper">
-          <Bookmark size={12} />
-          <span className="control-label">Mine</span>
-        </div>
+      <div className="customizer-group">
+        <p className="customizer-group__title">
+          <Bookmark size={12} /> My templates
+        </p>
         <div className="my-templates">
           {customTemplates.map((t) => (
             <span key={t.id} className="my-templates__chip">
@@ -199,20 +227,18 @@ const CVCustomizer: React.FC = () => {
               type="button"
               className="layout-card-btn my-templates__add"
               onClick={() => setNaming(true)}
-              title="Save layout, font, size, spacing, color and hidden sections as your own template"
+              title="Save layout, font, size, spacing, color and sections as your own template"
             >
               <Plus size={12} /> Save current style
             </button>
           )}
         </div>
       </div>
+    </>
+  );
 
-      {/* Sections — reorder and rename headings */}
-      <SectionOrganizer />
-
-      <hr className="compact-divider" />
-
-      {/* Font Row */}
+  const textPanel = (
+    <>
       <div className="compact-row">
         <div className="control-label-wrapper">
           <Type size={12} />
@@ -285,14 +311,15 @@ const CVCustomizer: React.FC = () => {
           />
         ))}
       </div>
+    </>
+  );
 
-      <hr className="compact-divider" />
-
-      {/* Theme Row */}
+  const stylePanel = (
+    <>
       <div className="compact-row">
         <div className="control-label-wrapper">
           <Palette size={12} />
-          <span className="control-label">Theme</span>
+          <span className="control-label">Color</span>
         </div>
         <div className="swatch-grid mini">
           {themes.map((theme) => (
@@ -326,8 +353,6 @@ const CVCustomizer: React.FC = () => {
           </label>
         </div>
       </div>
-
-      <hr className="compact-divider" />
 
       <div className="compact-row">
         <label className="control-label-wrapper" htmlFor="qr-target">
@@ -366,6 +391,46 @@ const CVCustomizer: React.FC = () => {
           </select>
           <ChevronDown className="mini-select-chevron" size={14} />
         </div>
+      </div>
+    </>
+  );
+
+  const panels: Record<TabId, React.ReactNode> = {
+    layout: layoutPanel,
+    sections: <SectionOrganizer />,
+    text: textPanel,
+    style: stylePanel,
+  };
+
+  return (
+    <div className="cv-customizer compact">
+      <div className="customizer-tabs" role="tablist" aria-label="Customize" onKeyDown={onTabKeyDown}>
+        {TABS.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`customize-tab-${id}`}
+            aria-selected={tab === id}
+            aria-controls="customize-panel"
+            tabIndex={tab === id ? 0 : -1}
+            className={`customizer-tabs__tab ${tab === id ? 'is-active' : ''}`}
+            onClick={() => selectTab(id)}
+          >
+            <Icon size={16} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div
+        id="customize-panel"
+        role="tabpanel"
+        aria-labelledby={`customize-tab-${tab}`}
+        className="customizer-panel"
+        tabIndex={0}
+      >
+        {panels[tab]}
       </div>
     </div>
   );
