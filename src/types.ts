@@ -150,6 +150,14 @@ export interface ResumeStyle {
   hiddenSections: ResumeField[];
   /** How month dates read on the resume: "Jul 2022" or "07/2022". */
   dateFormat: DateFormat;
+  /**
+   * The user's section order (Customize → Sections). Each layout keeps its
+   * columns but orders the sections in them by this list. Empty = the
+   * layout's own order.
+   */
+  sectionOrder: ResumeField[];
+  /** Headings the user renamed, e.g. "Key Impact" → "Highlights". */
+  sectionTitles: Partial<Record<ResumeField, string>>;
 }
 
 export type DateFormat = 'short' | 'numeric';

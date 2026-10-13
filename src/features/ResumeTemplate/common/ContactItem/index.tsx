@@ -1,5 +1,9 @@
 import React from 'react';
 
+import { profileHandle, withProtocol } from '../../../../lib/links';
+
+const PROFILE_LABELS = { linkedin: 'LinkedIn', github: 'GitHub' } as const;
+
 export interface ContactItemProps {
   value?: string;
   Icon: React.FC<{ size?: number; color?: string }>;
@@ -21,9 +25,11 @@ export const ContactItem: React.FC<ContactItemProps> = ({
   } else if (type === 'phone') {
     href = `tel:${value}`;
   } else if (type === 'linkedin' || type === 'github') {
-    // Ensure protocol exists
-    href = value.startsWith('http') ? value : `https://${value}`;
+    href = withProtocol(value);
   }
+  // Profiles show just the user name; the link still opens the full page.
+  const isProfile = type === 'linkedin' || type === 'github';
+  const text = isProfile ? profileHandle(value) : value;
 
   const isLink = !!href;
 
@@ -35,7 +41,9 @@ export const ContactItem: React.FC<ContactItemProps> = ({
   const content = (
     <>
       <Icon size={14} color={color} />
-      <span>{value}</span>
+      {/* Stands in for the icon on layouts that hide icons (ATS-first). */}
+      {isProfile && <span className="template-contact-item__label">{PROFILE_LABELS[type]}: </span>}
+      <span>{text}</span>
     </>
   );
 
@@ -46,7 +54,8 @@ export const ContactItem: React.FC<ContactItemProps> = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${type}: ${value}`}
+        aria-label={isProfile ? `${PROFILE_LABELS[type]}: ${text}` : `${type}: ${value}`}
+        title={isProfile ? href : undefined}
         {...containerProps}
       >
         {content}

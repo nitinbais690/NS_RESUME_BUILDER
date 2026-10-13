@@ -25,6 +25,7 @@ import themes, {
 
 import { useResumeStore } from '../../store/useResumeStore';
 import { GAP_MAX, GAP_MIN } from '../../lib/resumeIO';
+import SectionOrganizer from './SectionOrganizer';
 
 const GAP_ROWS: Array<{ key: GapKey; label: string; hint: string }> = [
   { key: 'section', label: 'Sections', hint: 'Space between one section and the next' },
@@ -205,6 +206,9 @@ const CVCustomizer: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Sections — reorder and rename headings */}
+      <SectionOrganizer />
 
       <hr className="compact-divider" />
 

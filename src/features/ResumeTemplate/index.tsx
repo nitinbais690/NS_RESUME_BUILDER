@@ -10,13 +10,14 @@ import {
 } from '../../types';
 import ResumeHeader from './layout/ResumeHeader';
 import Emphasis from './layout/Emphasis';
-import { LAYOUT_CONFIG } from './layoutConfig';
+import { LAYOUT_CONFIG, layoutColumns, sectionTitle } from './layoutConfig';
 import { LayoutContext } from './layoutContext';
 import TimelineSection from './layout/TimeLine';
 import { pickStyle, useResumeStore } from '../../store/useResumeStore';
 import themes from '../../constants/themes';
 import { splitSkillLabel } from '../../lib/emphasis';
 import { displayRange } from '../../lib/dates';
+import { profileHandle, withProtocol } from '../../lib/links';
 
 interface SectionProps {
   data: ResumeData;
@@ -198,11 +199,17 @@ const VolunteeringSection = ({ data, title, dateFormat }: SectionProps) => (
   />
 );
 
-const CONTACT_ROWS: Array<{ key: ContactInfo; label: string; href?: (v: string) => string }> = [
+const CONTACT_ROWS: Array<{
+  key: ContactInfo;
+  label: string;
+  href?: (v: string) => string;
+  /** Profiles show just the user name; the link opens the full page. */
+  text?: (v: string) => string;
+}> = [
   { key: ContactInfo.EMAIL, label: 'Email', href: (v) => `mailto:${v}` },
   { key: ContactInfo.PHONE, label: 'Phone', href: (v) => `tel:${v}` },
-  { key: ContactInfo.LINKEDIN, label: 'LinkedIn', href: (v) => (/^https?:/i.test(v) ? v : `https://${v}`) },
-  { key: ContactInfo.GITHUB, label: 'GitHub', href: (v) => (/^https?:/i.test(v) ? v : `https://${v}`) },
+  { key: ContactInfo.LINKEDIN, label: 'LinkedIn', href: withProtocol, text: profileHandle },
+  { key: ContactInfo.GITHUB, label: 'GitHub', href: withProtocol, text: profileHandle },
   { key: ContactInfo.LOCATION, label: 'Location' },
 ];
 
@@ -225,7 +232,7 @@ const ContactSection = ({ data, title }: SectionProps) => {
               <span className="template-contact-label">{r.label}</span>
               {r.href ? (
                 <a href={r.href(value)} target="_blank" rel="noopener noreferrer">
-                  {value}
+                  {r.text ? r.text(value) : value}
                 </a>
               ) : (
                 <span>{value}</span>
@@ -331,8 +338,7 @@ const qrUrlFor = (data: ResumeData, target: ResumeStyle['qrTarget']) => {
       : target === 'github'
         ? contact[ContactInfo.GITHUB]
         : '';
-  if (!raw?.trim()) return undefined;
-  return /^https?:\/\//i.test(raw) ? raw.trim() : `https://${raw.trim()}`;
+  return raw?.trim() ? withProtocol(raw) : undefined;
 };
 
 const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
@@ -342,6 +348,7 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
   const style = resume?.style ?? storeStyle;
   const { layout, theme, fontFamily } = style;
   const config = LAYOUT_CONFIG[layout];
+  const columns = layoutColumns(layout, style.sectionOrder);
   const accent =
     style.accentColor ??
     (themes.find((t) => t.name === theme) ?? themes[0]).color;
@@ -356,7 +363,7 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
         <InlineSkillsSection
           key={field}
           data={data}
-          title={config.titles?.[field] ?? 'Technical Skills'}
+          title={sectionTitle(config, style, field, 'Technical Skills')}
           showTools={!style.hiddenSections.includes(ResumeField.TOOLS)}
         />
       );
@@ -365,7 +372,7 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
       <Section
         key={field}
         data={data}
-        title={config.titles?.[field] ?? field}
+        title={sectionTitle(config, style, field)}
         dateFormat={style.dateFormat}
       />
     );
@@ -391,11 +398,11 @@ const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resume }) => {
 
           <div key={layout} className="template-resume-body">
             <aside className="template-left-column">
-              {config.left?.map((field) => renderSection(field))}
+              {columns.left.map((field) => renderSection(field))}
             </aside>
 
             <main className="template-right-column">
-              {config.right?.map((field) => renderSection(field))}
+              {columns.right.map((field) => renderSection(field))}
             </main>
           </div>
         </div>

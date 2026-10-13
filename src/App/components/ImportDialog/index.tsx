@@ -3,8 +3,7 @@ import { Download, FileJson, ClipboardPaste } from 'lucide-react';
 
 import Modal from '../Modal';
 import { useResumeStore } from '../../../store/useResumeStore';
-import { downloadText, parseResumeFile, toResumeFile } from '../../../lib/resumeIO';
-import { DEFAULT_STYLE } from '../../../constants/factories';
+import { FILE_APP, FILE_VERSION, downloadText, parseResumeFile } from '../../../lib/resumeIO';
 import dummyResumeData from '../../../data';
 
 interface Props {
@@ -76,13 +75,9 @@ const ImportDialog: React.FC<Props> = ({ open, onClose }) => {
   };
 
   const downloadSample = () => {
-    const sample = toResumeFile({
-      id: 'sample',
-      name: 'Sample resume',
-      updatedAt: 0,
-      data: dummyResumeData,
-      style: DEFAULT_STYLE,
-    });
+    // No `style` in the sample: importing an edited copy keeps the template
+    // the user already picked.
+    const sample = { app: FILE_APP, version: FILE_VERSION, name: 'Sample resume', data: dummyResumeData };
     downloadText('sample-resume.json', JSON.stringify(sample, null, 2), 'application/json');
   };
 

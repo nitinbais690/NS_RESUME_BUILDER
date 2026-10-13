@@ -1107,9 +1107,13 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Hide all chrome */
+  /* Hide all chrome, including the preview's page-fit badge and
+     page-break guides, which sit next to the resume on the page. */
   .appbar,
   .rail,
+  .page-fit,
+  .page-break-guide,
+  .update-toast,
   .pane-fab,
   .form-navigation-buttons,
   .btn-clear-storage,

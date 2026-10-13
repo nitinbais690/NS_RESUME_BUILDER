@@ -181,6 +181,23 @@ describe('multiple resumes', () => {
     expect(store().layout).toBe('ats');
   });
 
+  it('keeps the current template when the import has no style', () => {
+    store().setLayout('harvard');
+    store().importResume({ name: 'Hand written', data: store().resumeData });
+    expect(store().layout).toBe('harvard');
+  });
+
+  it('reorders and renames sections, and resets both', () => {
+    store().setSectionOrder([ResumeField.SKILLS, ResumeField.ABOUT_ME, ResumeField.SKILLS]);
+    expect(store().sectionOrder).toEqual([ResumeField.SKILLS, ResumeField.ABOUT_ME]);
+    store().setSectionTitle(ResumeField.KEY_IMPACT, 'Highlights');
+    expect(store().sectionTitles[ResumeField.KEY_IMPACT]).toBe('Highlights');
+    store().setSectionTitle(ResumeField.KEY_IMPACT, '');
+    expect(store().sectionTitles).toEqual({});
+    store().resetSections();
+    expect(store().sectionOrder).toEqual([]);
+  });
+
   it('getActiveResume reflects unsaved edits', () => {
     store().updateAboutMe('Live edit');
     expect(store().getActiveResume().data[ResumeField.ABOUT_ME]).toBe('Live edit');

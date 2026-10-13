@@ -27,7 +27,7 @@ import {
 import dummyResumeData from '../data';
 import { LOCAL_STORAGE_KEY } from '../constants';
 import { DEFAULT_STYLE, createEmptyResumeData } from '../constants/factories';
-import { clampGap, normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
+import { SECTION_TITLE_MAX, clampGap, normalizeResumeData, normalizeStyle } from '../lib/resumeIO';
 import { compareByRecency } from '../lib/dates';
 import { reportingStorage } from './saveStatus';
 
@@ -116,6 +116,12 @@ interface ResumeState extends ResumeStyle {
   sortByDate: (field: ResumeField.EXPERIENCE | ResumeField.VOLUNTEERING) => void;
   /** Shows or hides a section on the resume (content is kept). */
   toggleSection: (field: ResumeField) => void;
+  /** Saves the user's section order (Customize → Sections). */
+  setSectionOrder: (order: ResumeField[]) => void;
+  /** Renames a section heading; an empty title restores the layout's one. */
+  setSectionTitle: (field: ResumeField, title: string) => void;
+  /** Back to the layout's own section order and headings. */
+  resetSections: () => void;
 
   addCertification: (certification: CertificationType) => void;
   removeCertification: (id: string) => void;
@@ -126,8 +132,11 @@ interface ResumeState extends ResumeStyle {
 
   /** Creates a resume (blank or a copy of the active one) and switches to it. */
   createResume: (name: string, mode: 'blank' | 'duplicate') => string;
-  /** Adds imported content as a new resume and switches to it. */
-  importResume: (resume: Pick<SavedResume, 'name' | 'data' | 'style'>) => string;
+  /**
+   * Adds imported content as a new resume and switches to it. Without a
+   * style (hand-written JSON) it keeps the template currently in use.
+   */
+  importResume: (resume: Pick<SavedResume, 'name' | 'data'> & { style?: ResumeStyle }) => string;
   switchResume: (id: string) => void;
   renameResume: (id: string, name: string) => void;
   /** Deletes a resume. The last remaining resume can't be deleted. */
@@ -153,6 +162,8 @@ export const pickStyle = (s: ResumeStyle): ResumeStyle => ({
   qrTarget: s.qrTarget,
   hiddenSections: s.hiddenSections,
   dateFormat: s.dateFormat ?? 'short',
+  sectionOrder: s.sectionOrder ?? [],
+  sectionTitles: s.sectionTitles ?? {},
 });
 
 const snapshot = (s: ResumeState): SavedResume => ({
@@ -356,6 +367,17 @@ export const useResumeStore = create<ResumeState>()(
               : [...s.hiddenSections, field],
           })),
 
+        setSectionOrder: (order) => set({ sectionOrder: [...new Set(order)], editedAt: Date.now() }),
+        setSectionTitle: (field, title) =>
+          set((s) => {
+            const next = { ...s.sectionTitles };
+            const t = title.slice(0, SECTION_TITLE_MAX);
+            if (t.trim()) next[field] = t;
+            else delete next[field];
+            return { sectionTitles: next, editedAt: Date.now() };
+          }),
+        resetSections: () => set({ sectionOrder: [], sectionTitles: {}, editedAt: Date.now() }),
+
         addCertification: cert.add,
         removeCertification: cert.remove,
         updateCertification: cert.update,
@@ -378,7 +400,7 @@ export const useResumeStore = create<ResumeState>()(
 
         importResume: ({ name, data, style }) => {
           const id = crypto.randomUUID();
-          addAndSwitch({ id, name, updatedAt: Date.now(), data, style });
+          addAndSwitch({ id, name, updatedAt: Date.now(), data, style: style ?? pickStyle(get()) });
           return id;
         },
 

@@ -621,6 +621,62 @@
   }
 }
 
+/* Customize → Sections: draggable rows with an editable heading. */
+.section-organizer {
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    &.is-hidden .section-organizer__title {
+      opacity: var(--opacity-disabled);
+      text-decoration: line-through;
+    }
+  }
+
+  &__title.form-input {
+    flex: 1;
+    min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-bg-white);
+      color: var(--color-primary);
+    }
+  }
+}
+
 .swatch-btn--custom {
   position: relative;
   display: flex;

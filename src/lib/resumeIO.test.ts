@@ -9,6 +9,7 @@ import {
   toResumeFile,
 } from './resumeIO';
 import { buildShareUrl, parseShareHash } from './share';
+import { profileHandle, withProtocol } from './links';
 import { ResumeField } from '../types';
 import dummyResumeData from '../data';
 import { DEFAULT_STYLE } from '../constants/factories';
@@ -67,6 +68,27 @@ describe('normalizeStyle', () => {
   });
 });
 
+describe('profile links', () => {
+  it('shows just the user name of LinkedIn and GitHub links', () => {
+    expect(profileHandle('https://www.linkedin.com/in/alex-j/')).toBe('alex-j');
+    expect(profileHandle('linkedin.com/in/alexjohnson?utm=x')).toBe('alexjohnson');
+    expect(profileHandle('github.com/alexjohnson')).toBe('alexjohnson');
+    expect(profileHandle('alex.dev/about')).toBe('alex.dev/about');
+    expect(withProtocol('github.com/alex')).toBe('https://github.com/alex');
+  });
+});
+
+describe('normalizeStyle sections', () => {
+  it('keeps valid section order and titles, drops the rest', () => {
+    const style = normalizeStyle({
+      sectionOrder: ['Skills', 'Nope', 'Skills', 'About Me'],
+      sectionTitles: { 'Key Impact': '  Highlights ', Bogus: 'x', Skills: '  ' },
+    });
+    expect(style.sectionOrder).toEqual(['Skills', 'About Me']);
+    expect(style.sectionTitles).toEqual({ 'Key Impact': 'Highlights' });
+  });
+});
+
 describe('parseResumeFile', () => {
   const file = toResumeFile({
     id: '1',
@@ -89,7 +111,15 @@ describe('parseResumeFile', () => {
     expect(parsed.name).toBe('Imported resume');
     expect(parsed.data[ResumeField.CONTACT].Name).toBe('Priya');
     expect(parsed.data[ResumeField.SKILLS]).toEqual(['Go']);
-    expect(parsed.style).toEqual(DEFAULT_STYLE);
+    // No style in the file: the importer keeps the user's current template.
+    expect(parsed.style).toBeUndefined();
+  });
+
+  it('keeps the style of an exported file', () => {
+    const parsed = parseResumeFile(
+      JSON.stringify({ ...file, style: { ...DEFAULT_STYLE, layout: 'harvard' } }),
+    );
+    expect(parsed.style?.layout).toBe('harvard');
   });
 
   it('rejects invalid JSON, foreign files and newer versions with readable errors', () => {

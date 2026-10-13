@@ -203,6 +203,10 @@ $modern-accent-border: 4px;
     }
   }
 
+  .template-contact-item__label {
+    display: none; /* the icon says which profile it is */
+  }
+
   .template-contact-item {
     display: flex;
     justify-content: flex-end;
@@ -759,6 +763,12 @@ $modern-accent-border: 4px;
 
     svg {
       display: none; /* icon glyphs are invisible or garbled to parsers */
+    }
+
+    /* No icon here, so say which profile a bare user name belongs to. */
+    .template-contact-item__label {
+      display: inline;
+      text-decoration: none;
     }
 
     span {

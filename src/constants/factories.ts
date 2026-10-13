@@ -79,6 +79,8 @@ export const DEFAULT_STYLE: ResumeStyle = {
   qrTarget: 'none',
   dateFormat: 'short',
   hiddenSections: [],
+  sectionOrder: [],
+  sectionTitles: {},
 };
 
 export const createEmptyResumeData = (): ResumeData => ({

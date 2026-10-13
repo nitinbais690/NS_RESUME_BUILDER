@@ -1,4 +1,4 @@
-import { LayoutType, ResumeField } from '../../types';
+import { LayoutType, ResumeField, ResumeStyle } from '../../types';
 
 export type EntryStyle = 'inline' | 'stacked' | 'org-first';
 
@@ -252,4 +252,34 @@ export const LAYOUT_CONFIG: Record<LayoutType, LayoutConfig> = {
     titles: { [ResumeField.ABOUT_ME]: 'Summary' },
     entryStyle: 'inline',
   },
+};
+
+/**
+ * A column's sections in the user's order. Sections the user never placed
+ * keep the layout's order, after the placed ones.
+ */
+export const orderSections = (fields: ResumeField[] = [], order: ResumeField[]): ResumeField[] => {
+  if (order.length === 0) return fields;
+  const rank = (f: ResumeField) => {
+    const i = order.indexOf(f);
+    return i === -1 ? order.length + fields.indexOf(f) : i;
+  };
+  return [...fields].sort((a, b) => rank(a) - rank(b));
+};
+
+/** Heading for a section: the user's rename, else the layout's wording, else the field name. */
+export const sectionTitle = (
+  config: LayoutConfig,
+  style: Pick<ResumeStyle, 'sectionTitles'>,
+  field: ResumeField,
+  fallback: string = field,
+) => style.sectionTitles[field]?.trim() || config.titles?.[field] || fallback;
+
+/** Both columns of a layout, each in the user's section order. */
+export const layoutColumns = (layout: LayoutType, order: ResumeField[]) => {
+  const config = LAYOUT_CONFIG[layout];
+  return {
+    left: orderSections(config.left, order),
+    right: orderSections(config.right, order),
+  };
 };

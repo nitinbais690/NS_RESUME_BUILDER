@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Mail, Phone, Linkedin, MapPin, GithubIcon } from 'lucide-react';
 import QRCode from 'qrcode';
 import { ContactItem } from '../common/ContactItem';
+import { profileHandle, withProtocol } from '../../../lib/links';
 
 type ResumeHeaderProps = ContactInfoType & {
   accentColor: string;
@@ -15,7 +16,6 @@ type ResumeHeaderProps = ContactInfoType & {
   variant?: 'split';
 };
 
-const withProtocol = (v: string) => (/^https?:\/\//i.test(v) ? v : `https://${v}`);
 
 /** One labelled contact line, e.g. "Email:  alex@example.com". */
 const LabelledContact: React.FC<{ label: string; value?: string; href?: string }> = ({ label, value, href }) =>
@@ -87,8 +87,8 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = (props) => {
         <div className="template-header-left">
           <h1 className="template-header-name">{props[ContactInfo.NAME]}</h1>
           <p className="template-header-position">{props[ContactInfo.POSITION]}</p>
-          <LabelledContact label="LinkedIn" value={linkedin} href={linkedin && withProtocol(linkedin)} />
-          <LabelledContact label="GitHub" value={github} href={github && withProtocol(github)} />
+          <LabelledContact label="LinkedIn" value={linkedin && profileHandle(linkedin)} href={linkedin && withProtocol(linkedin)} />
+          <LabelledContact label="GitHub" value={github && profileHandle(github)} href={github && withProtocol(github)} />
         </div>
         <div className="template-header-right">
           <LabelledContact

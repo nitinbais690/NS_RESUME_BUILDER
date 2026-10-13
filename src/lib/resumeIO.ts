@@ -137,6 +137,22 @@ const normalizeGaps = (input: unknown): SpacingGaps => {
   return { section: clampGap(g.section), heading: clampGap(g.heading), entry: clampGap(g.entry) };
 };
 
+const isField = (f: unknown): f is ResumeField =>
+  (Object.values(ResumeField) as unknown[]).includes(f);
+
+/** Longest heading the user can type for a section. */
+export const SECTION_TITLE_MAX = 40;
+
+const normalizeTitles = (input: unknown): ResumeStyle['sectionTitles'] => {
+  const out: ResumeStyle['sectionTitles'] = {};
+  if (!isObj(input)) return out;
+  for (const [field, title] of Object.entries(input)) {
+    const t = str(title).trim().slice(0, SECTION_TITLE_MAX);
+    if (isField(field) && t) out[field] = t;
+  }
+  return out;
+};
+
 export const normalizeStyle = (input: unknown): ResumeStyle => {
   if (!isObj(input)) return { ...DEFAULT_STYLE };
   const scale = Number(input.fontScale);
@@ -164,11 +180,15 @@ export const normalizeStyle = (input: unknown): ResumeStyle => {
       ? (input.qrTarget as QrTarget)
       : 'none',
     hiddenSections: Array.isArray(input.hiddenSections)
-      ? [...new Set(input.hiddenSections)].filter((f): f is ResumeField =>
-          (Object.values(ResumeField) as unknown[]).includes(f) && f !== ResumeField.CONTACT,
+      ? [...new Set(input.hiddenSections)].filter(
+          (f): f is ResumeField => isField(f) && f !== ResumeField.CONTACT,
         )
       : [],
     dateFormat: input.dateFormat === 'numeric' ? 'numeric' : 'short',
+    sectionOrder: Array.isArray(input.sectionOrder)
+      ? [...new Set(input.sectionOrder)].filter(isField)
+      : [],
+    sectionTitles: normalizeTitles(input.sectionTitles),
   };
 };
 
@@ -192,14 +212,17 @@ export const toResumeFile = (resume: SavedResume): ResumeFile => ({
 const looksLikeResumeData = (v: Obj) =>
   Object.values(ResumeField).some((field) => field in v);
 
+/** Parsed import. `style` is only set when the file carries one. */
+export type ParsedResumeFile = Pick<SavedResume, 'name' | 'data'> & { style?: ResumeStyle };
+
 /**
  * Parses an exported .json file. Also accepts a bare resume-data object (just
  * the `data` part), which is what people tend to write by hand. Throws a
  * user-readable Error for anything else; otherwise returns normalized content.
+ * Files without a `style` leave it unset, so the importer keeps the template
+ * the user already picked instead of resetting to the default.
  */
-export const parseResumeFile = (
-  text: string,
-): Pick<SavedResume, 'name' | 'data' | 'style'> => {
+export const parseResumeFile = (text: string): ParsedResumeFile => {
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
@@ -207,11 +230,7 @@ export const parseResumeFile = (
     throw new Error('That file is not valid JSON. Check for missing commas or quotes.');
   }
   if (isObj(parsed) && parsed.app !== FILE_APP && looksLikeResumeData(parsed)) {
-    return {
-      name: 'Imported resume',
-      data: normalizeResumeData(parsed),
-      style: { ...DEFAULT_STYLE },
-    };
+    return { name: 'Imported resume', data: normalizeResumeData(parsed) };
   }
   if (!isObj(parsed) || parsed.app !== FILE_APP) {
     throw new Error(
@@ -224,7 +243,7 @@ export const parseResumeFile = (
   return {
     name: str(parsed.name).trim() || 'Imported resume',
     data: normalizeResumeData(parsed.data),
-    style: normalizeStyle(parsed.style),
+    ...(isObj(parsed.style) ? { style: normalizeStyle(parsed.style) } : {}),
   };
 };
 
