@@ -89,6 +89,9 @@ const ResumeForm: React.FC = () => {
       >
         <RotateCcw size={14} /> Clear Progress
       </button>
+
+      {/* App chrome only: the editor pane never prints. */}
+      <p className="app-version">v{__APP_VERSION__}</p>
     </div>
   );
 };

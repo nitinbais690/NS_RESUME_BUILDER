@@ -558,6 +558,14 @@
   }
 }
 
+.app-version {
+  margin: var(--spacing-xs) 0 0;
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-placeholder);
+  user-select: all;
+}
+
 /* Legacy generic download button (still used by common/Button → AddButton) */
 
 .btn-download {
@@ -1107,10 +1115,24 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Hide all chrome, including the preview's page-fit badge and
-     page-break guides, which sit next to the resume on the page. */
+  /* Print only the resume. Allowlist: on the path from <body> down to
+     .resume-print-container, every sibling is hidden, so any chrome added
+     later (badges, toasts, version, dialogs) can never reach the PDF. */
+  body > :not(#root),
+  #root > :not(.shell):not(.shared),
+  .shell > :not(.shell__body),
+  .shell__body > :not(.shell__pane--preview),
+  .shared > :not(.shared__preview),
+  .preview-wrap > :not(.preview),
+  .preview__measure > :not(.resume-print-container),
+  dialog {
+    display: none !important;
+  }
+
+  /* Named chrome too, for engines that ignore the rules above. */
   .appbar,
   .rail,
+  .app-version,
   .page-fit,
   .page-break-guide,
   .update-toast,
